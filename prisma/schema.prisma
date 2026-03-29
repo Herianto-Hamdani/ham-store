@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+}
+
+enum CardMode {
+  IMAGE
+  TEMPLATE
+}
+
+enum RateLimitScope {
+  CREDENTIAL
+  IP
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique @db.VarChar(50)
+  passwordHash String         @map("password_hash") @db.VarChar(255)
+  role         UserRole       @default(ADMIN)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  sessions     AdminSession[]
+
+  @@map("users")
+}
+
+model AdminSession {
+  id         String   @id @default(cuid())
+  userId     Int      @map("user_id")
+  tokenHash  String   @unique @map("token_hash") @db.VarChar(64)
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}
+
+model Type {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  products  Product[]
+
+  @@map("types")
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  typeId       Int      @map("type_id")
+  name         String   @db.VarChar(160)
+  brand        String   @default("") @db.VarChar(80)
+  model        String   @default("") @db.VarChar(80)
+  cardMode     CardMode @default(IMAGE) @map("card_mode")
+  detail       String   @default("")
+  priceItem    Int      @default(0) @map("price_item")
+  priceInstall Int      @default(0) @map("price_install")
+  imagePosX    Int      @default(50) @map("image_pos_x")
+  imagePosY    Int      @default(50) @map("image_pos_y")
+  imageScale   Int      @default(100) @map("image_scale")
+  imagePath    String?  @map("image_path") @db.VarChar(255)
+  thumbPath    String?  @map("thumb_path") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  type         Type     @relation(fields: [typeId], references: [id], onDelete: Restrict)
+
+  @@index([typeId])
+  @@index([name])
+  @@index([createdAt])
+  @@map("products")
+}
+
+model SiteSetting {
+  id                    Int      @id @default(1)
+  webName               String   @default("HAM STORE") @map("web_name") @db.VarChar(160)
+  whatsappNumber        String   @default("") @map("whatsapp_number") @db.VarChar(20)
+  whatsappMessage       String   @default("Halo admin, saya ingin bertanya tentang produk.") @map("whatsapp_message") @db.VarChar(255)
+  logoPath              String?  @map("logo_path") @db.VarChar(255)
+  logoThumbPath         String?  @map("logo_thumb_path") @db.VarChar(255)
+  bannerPath            String?  @map("banner_path") @db.VarChar(255)
+  bannerThumbPath       String?  @map("banner_thumb_path") @db.VarChar(255)
+  templateBgPath        String?  @map("template_bg_path") @db.VarChar(255)
+  templateBgThumbPath   String?  @map("template_bg_thumb_path") @db.VarChar(255)
+  templateLogoPath      String?  @map("template_logo_path") @db.VarChar(255)
+  templateLogoThumbPath String?  @map("template_logo_thumb_path") @db.VarChar(255)
+  templateBgPosX        Int      @default(50) @map("template_bg_pos_x")
+  templateBgPosY        Int      @default(50) @map("template_bg_pos_y")
+  templateBgScale       Int      @default(100) @map("template_bg_scale")
+  templateLogoTop       Int      @default(4) @map("template_logo_top")
+  templateLogoRight     Int      @default(4) @map("template_logo_right")
+  templateLogoWidth     Int      @default(32) @map("template_logo_width")
+  templateTitleLeft     Int      @default(10) @map("template_title_left")
+  templateTitleWidth    Int      @default(80) @map("template_title_width")
+  templateTitleBottom   Int      @default(2) @map("template_title_bottom")
+  templateTitleFont     Int      @default(14) @map("template_title_font")
+  templateSideTop       Int      @default(22) @map("template_side_top")
+  templateSideLeft      Int      @default(3) @map("template_side_left")
+  templateSideRight     Int      @default(3) @map("template_side_right")
+  templateSideFont      Int      @default(12) @map("template_side_font")
+  templatePhotoTop      Int      @default(18) @map("template_photo_top")
+  templatePhotoLeft     Int      @default(15) @map("template_photo_left")
+  templatePhotoWidth    Int      @default(70) @map("template_photo_width")
+  templatePhotoHeight   Int      @default(58) @map("template_photo_height")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+model TrafficDailyMetric {
+  date       DateTime @id @db.Date
+  hits       Int      @default(0)
+  uniqueHits Int      @default(0) @map("unique_hits")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("traffic_daily_metrics")
+}
+
+model TrafficPageMetric {
+  path      String   @id @db.VarChar(512)
+  hits      Int      @default(0)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("traffic_page_metrics")
+}
+
+model TrafficVisitor {
+  date        DateTime @db.Date
+  visitorHash String   @map("visitor_hash") @db.VarChar(64)
+  hits        Int      @default(1)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@id([date, visitorHash])
+  @@map("traffic_visitors")
+}
+
+model LoginRateLimit {
+  key         String         @id @db.VarChar(80)
+  scope       RateLimitScope
+  username    String?        @db.VarChar(80)
+  ip          String?        @db.VarChar(64)
+  attempts    Json
+  lockedUntil DateTime?      @map("locked_until")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  @@index([scope])
+  @@index([lockedUntil])
+  @@map("login_rate_limits")
+}

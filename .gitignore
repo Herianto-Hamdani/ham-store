@@ -1,0 +1,14 @@
+.next
+node_modules
+.env
+.env.local
+.env.production
+dist
+coverage
+*.log
+public/generated
+public/uploads
+storage/metrics
+storage/site_settings.json
+pgdata.tar.gz
+prisma/dev.db
