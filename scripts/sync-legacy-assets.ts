@@ -31,6 +31,15 @@ async function walk(dir: string): Promise<string[]> {
   return files.flat();
 }
 
+function isUploadableImage(filePath: string) {
+  const base = path.basename(filePath);
+  if (base.startsWith(".")) {
+    return false;
+  }
+
+  return [".jpg", ".jpeg", ".png", ".webp", ".svg"].includes(path.extname(filePath).toLowerCase());
+}
+
 function detectContentType(filePath: string) {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === ".png") return "image/png";
@@ -46,7 +55,7 @@ async function main() {
     throw new Error("Folder public/uploads tidak ditemukan.");
   }
 
-  const files = await walk(sourceDir);
+  const files = (await walk(sourceDir)).filter(isUploadableImage);
   let uploaded = 0;
 
   for (const file of files) {

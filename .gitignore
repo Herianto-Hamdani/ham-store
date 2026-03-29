@@ -12,3 +12,7 @@ storage/metrics
 storage/site_settings.json
 pgdata.tar.gz
 prisma/dev.db
+
+.vercel
+.tmp/
+supabase/.temp/

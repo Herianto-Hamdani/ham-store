@@ -9,10 +9,9 @@ type TopNavProps = {
   siteName: string;
   logoUrl: string;
   hasLogo: boolean;
-  isAdminUser: boolean;
 };
 
-export function TopNav({ siteName, logoUrl, hasLogo, isAdminUser }: TopNavProps) {
+export function TopNav({ siteName, logoUrl, hasLogo }: TopNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isAdminRoute = pathname.startsWith("/admin");
@@ -94,10 +93,10 @@ export function TopNav({ siteName, logoUrl, hasLogo, isAdminUser }: TopNavProps)
           </Link>
           <Link
             className={isAdminRoute ? "is-active" : ""}
-            href={isAdminUser ? "/admin" : "/admin/login"}
+            href="/admin"
             onClick={() => setOpen(false)}
           >
-            {isAdminUser ? "Admin Portal" : "Login Admin"}
+            {isAdminRoute ? "Admin Portal" : "Login Admin"}
           </Link>
         </nav>
       </div>

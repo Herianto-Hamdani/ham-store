@@ -32,12 +32,16 @@ type TemplateValues = {
 type TemplateSettingsFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
   values: TemplateValues;
+  maxUploadMb: number;
 };
 
-export function TemplateSettingsForm({ action, values }: TemplateSettingsFormProps) {
+export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSettingsFormProps) {
   const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState(values);
   const objectUrls = useRef<string[]>([]);
+  const maxUploadBytes = maxUploadMb * 1024 * 1024;
+  const visibleError = clientError ?? state.error;
 
   useEffect(() => {
     return () => {
@@ -57,6 +61,22 @@ export function TemplateSettingsForm({ action, values }: TemplateSettingsFormPro
     const nextUrl = URL.createObjectURL(file);
     objectUrls.current.push(nextUrl);
     setFormValues((current) => ({ ...current, [field]: nextUrl }));
+  }
+
+  function validateImageFile(file: File | null) {
+    if (!file) {
+      return null;
+    }
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      return "Format gambar harus JPG/JPEG/PNG.";
+    }
+
+    if (file.size <= 0 || file.size > maxUploadBytes) {
+      return `Ukuran gambar harus <= ${maxUploadMb}MB.`;
+    }
+
+    return null;
   }
 
   const previewStyle = {
@@ -109,7 +129,7 @@ export function TemplateSettingsForm({ action, values }: TemplateSettingsFormPro
   return (
     <section className="admin-modal-grid">
       <form action={formAction} className="form-grid admin-modal-form">
-        {state.error ? <div className="alert alert-error">{state.error}</div> : null}
+        {visibleError ? <div className="alert alert-error">{visibleError}</div> : null}
 
         <div className="field-row">
           <label>
@@ -118,8 +138,20 @@ export function TemplateSettingsForm({ action, values }: TemplateSettingsFormPro
               type="file"
               name="template_bg"
               accept=".jpg,.jpeg,.png"
-              onChange={(event) => setPreview("backgroundUrl", event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                const nextFile = event.target.files?.[0] ?? null;
+                const error = validateImageFile(nextFile);
+                if (error) {
+                  setClientError(error);
+                  event.currentTarget.value = "";
+                  return;
+                }
+
+                setClientError(null);
+                setPreview("backgroundUrl", nextFile);
+              }}
             />
+            <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
           </label>
           <label>
             Logo Template (opsional)
@@ -127,8 +159,20 @@ export function TemplateSettingsForm({ action, values }: TemplateSettingsFormPro
               type="file"
               name="template_logo"
               accept=".jpg,.jpeg,.png"
-              onChange={(event) => setPreview("logoUrl", event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                const nextFile = event.target.files?.[0] ?? null;
+                const error = validateImageFile(nextFile);
+                if (error) {
+                  setClientError(error);
+                  event.currentTarget.value = "";
+                  return;
+                }
+
+                setClientError(null);
+                setPreview("logoUrl", nextFile);
+              }}
             />
+            <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
           </label>
         </div>
 

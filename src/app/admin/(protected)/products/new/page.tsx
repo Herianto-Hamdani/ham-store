@@ -4,6 +4,7 @@ import { ProductForm } from "@/components/product-form";
 import { createProductAction } from "@/lib/actions/admin";
 import { getTypes } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getMaxUploadMb } from "@/lib/upload-config";
 import {
   getSiteName,
   templateBackgroundUrl,
@@ -15,6 +16,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminProductNewPage() {
   const [types, settings] = await Promise.all([getTypes(), getSiteSettings()]);
+  const maxUploadMb = getMaxUploadMb();
 
   return (
     <>
@@ -57,7 +59,7 @@ export default async function AdminProductNewPage() {
           backgroundUrl: templateBackgroundUrl(settings),
           logoUrl: templateLogoUrl(settings)
         }}
-        maxUploadMb={25}
+        maxUploadMb={maxUploadMb}
       />
     </>
   );

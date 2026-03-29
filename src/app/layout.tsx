@@ -3,17 +3,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { BodyClassManager } from "@/components/body-class-manager";
+import { DeferredTrafficTracker } from "@/components/deferred-traffic-tracker";
 import { TopNav } from "@/components/top-nav";
-import { TrafficTracker } from "@/components/traffic-tracker";
 import { APP_NAME } from "@/lib/constants";
-import { getOptionalAdminUser } from "@/lib/auth/session";
 import { getSiteSettings } from "@/lib/site-settings";
 import { buildWhatsappUrl, getSiteName, resolveImageUrl } from "@/lib/utils";
 
 import "./globals.css";
 import "./enterprise-refresh.css";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -25,7 +22,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [settings, user] = await Promise.all([getSiteSettings(), getOptionalAdminUser()]);
+  const settings = await getSiteSettings();
   const siteName = getSiteName(settings.webName);
   const logoUrl = resolveImageUrl(settings.logoThumbPath, settings.logoPath);
   const hasLogo = logoUrl !== "/assets/img/placeholder.svg";
@@ -39,7 +36,6 @@ export default async function RootLayout({
           siteName={siteName}
           logoUrl={logoUrl}
           hasLogo={hasLogo}
-          isAdminUser={Boolean(user)}
         />
         {children}
         <footer className="site-footer">
@@ -52,7 +48,7 @@ export default async function RootLayout({
             ) : null}
           </div>
         </footer>
-        <TrafficTracker />
+        <DeferredTrafficTracker />
       </body>
     </html>
   );

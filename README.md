@@ -84,7 +84,15 @@ Jika ingin upload seluruh asset lama ke Supabase Storage:
 npm run supabase:assets
 ```
 
+Jika ingin cek env, koneksi database, dan bucket Supabase sebelum deploy:
+
+```bash
+npm run supabase:check
+```
+
 ## Deploy Vercel + Supabase
+
+Panduan rinci ada di [VERCEL_SUPABASE.md](./VERCEL_SUPABASE.md).
 
 1. Buat project PostgreSQL di Supabase
 2. Buat bucket public bernama `catalog-assets`
@@ -98,6 +106,8 @@ npm run supabase:assets
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_STORAGE_BUCKET`
+- `UPLOAD_MAX_MB`
+- `NEXT_PUBLIC_UPLOAD_MAX_MB`
 
 4. Jalankan sekali di environment yang terhubung ke database:
 
@@ -114,4 +124,5 @@ npm run supabase:assets
 - Folder `public/uploads` sudah disalin dari project lama untuk mempermudah fallback lokal.
 - Sumber migrasi legacy yang masih dipertahankan hanya `seed.sql`, `storage/site_settings.json`, dan `storage/metrics/traffic.json`.
 - Untuk production Vercel, upload baru sebaiknya memakai Supabase Storage, dan itu sudah didukung oleh utilitas storage di project ini.
+- Untuk Vercel, batas upload aman diset ke 4MB karena request body function lebih ketat dibanding server lokal.
 - Jika ingin data lama diambil langsung dari MySQL aktif, script tambahan bisa dibuat, tetapi migrasi saat ini sudah menutup file sumber yang ada di repo.

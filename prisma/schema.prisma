@@ -80,6 +80,8 @@ model Product {
   @@index([typeId])
   @@index([name])
   @@index([createdAt])
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
+  @@index([updatedAt(sort: Desc), id(sort: Desc)])
   @@map("products")
 }
 
@@ -145,6 +147,18 @@ model TrafficVisitor {
 
   @@id([date, visitorHash])
   @@map("traffic_visitors")
+}
+
+model TrafficEvent {
+  id          BigInt   @id @default(autoincrement())
+  path        String   @db.VarChar(512)
+  visitorHash String   @map("visitor_hash") @db.VarChar(64)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([path, createdAt(sort: Desc)])
+  @@index([visitorHash, createdAt(sort: Desc)])
+  @@map("traffic_events")
 }
 
 model LoginRateLimit {

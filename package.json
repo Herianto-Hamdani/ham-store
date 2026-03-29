@@ -4,14 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
+    "db:perf:schema": "tsx scripts/ensure-performance-schema.ts",
+    "db:perf:indexes": "tsx scripts/apply-performance-indexes.ts",
     "prisma:seed": "tsx scripts/seed.ts",
     "migrate:legacy": "tsx scripts/migrate-legacy.ts",
-    "supabase:assets": "tsx scripts/sync-legacy-assets.ts"
+    "supabase:assets": "tsx scripts/sync-legacy-assets.ts",
+    "supabase:check": "tsx scripts/check-vercel-supabase.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",

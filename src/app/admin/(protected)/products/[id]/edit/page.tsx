@@ -6,6 +6,7 @@ import { updateProductAction } from "@/lib/actions/admin";
 import { getTypes } from "@/lib/data/catalog";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getMaxUploadMb } from "@/lib/upload-config";
 import {
   cardModeValue,
   encryptPublicId,
@@ -37,6 +38,8 @@ export default async function AdminProductEditPage({
   if (!product) {
     notFound();
   }
+
+  const maxUploadMb = getMaxUploadMb();
 
   return (
     <>
@@ -82,7 +85,7 @@ export default async function AdminProductEditPage({
           backgroundUrl: templateBackgroundUrl(settings),
           logoUrl: templateLogoUrl(settings)
         }}
-        maxUploadMb={25}
+        maxUploadMb={maxUploadMb}
       />
     </>
   );

@@ -1,3 +1,6 @@
+import { unstable_cache } from "next/cache";
+
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/prisma";
 import { getRecentTraffic, getTopPages, getTrafficSummary } from "@/lib/data/traffic";
 
@@ -99,9 +102,20 @@ export async function getAdminProductDashboard(options: {
   };
 }
 
-export async function getAdminOverview() {
-  const [productCount, typeCount, adminAccounts, recentProducts, typeSummaryRaw, trafficSummary, trafficDaily, trafficPages, templateProducts, averages] =
-    await Promise.all([
+const getAdminOverviewCached = unstable_cache(
+  async () => {
+    const [
+      productCount,
+      typeCount,
+      adminAccounts,
+      recentProducts,
+      typeSummaryRaw,
+      trafficSummary,
+      trafficDaily,
+      trafficPages,
+      templateProducts,
+      averages
+    ] = await Promise.all([
       prisma.product.count(),
       prisma.type.count(),
       prisma.user.findMany({
@@ -145,24 +159,34 @@ export async function getAdminOverview() {
       })
     ]);
 
-  const typeSummary = sortTypeSummary(typeSummaryRaw);
-  const activeTypes = typeSummary.filter((item) => item._count.products > 0).length;
+    const typeSummary = sortTypeSummary(typeSummaryRaw);
+    const activeTypes = typeSummary.filter((item) => item._count.products > 0).length;
 
-  return {
-    productCount,
-    typeCount,
-    activeTypes,
-    adminAccounts,
-    recentProducts,
-    typeSummary,
-    trafficSummary,
-    trafficDaily,
-    trafficPages,
-    templateProducts,
-    directProducts: Math.max(0, productCount - templateProducts),
-    averagePackagePrice:
-      Math.round((averages._avg.priceItem ?? 0) + (averages._avg.priceInstall ?? 0))
-  };
+    return {
+      productCount,
+      typeCount,
+      activeTypes,
+      adminAccounts,
+      recentProducts,
+      typeSummary,
+      trafficSummary,
+      trafficDaily,
+      trafficPages,
+      templateProducts,
+      directProducts: Math.max(0, productCount - templateProducts),
+      averagePackagePrice:
+        Math.round((averages._avg.priceItem ?? 0) + (averages._avg.priceInstall ?? 0))
+    };
+  },
+  ["admin-overview"],
+  {
+    revalidate: 60,
+    tags: [CACHE_TAGS.adminOverview, CACHE_TAGS.catalog, CACHE_TAGS.traffic]
+  }
+);
+
+export async function getAdminOverview() {
+  return getAdminOverviewCached();
 }
 
 export async function getTypeList(options: { page: number; search?: string }) {

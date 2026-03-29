@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteSettingsForm } from "@/components/site-settings-form";
 import { updateSiteSettingsAction } from "@/lib/actions/admin";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getMaxUploadMb } from "@/lib/upload-config";
 import { buildWhatsappUrl, resolveImageUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function AdminSettingsPage({
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
   const settings = await getSiteSettings();
+  const maxUploadMb = getMaxUploadMb();
 
   return (
     <>
@@ -47,6 +49,7 @@ export default async function AdminSettingsPage({
           bannerPreview: resolveImageUrl(settings.bannerThumbPath, settings.bannerPath),
           waPreview: buildWhatsappUrl(settings.whatsappNumber, settings.whatsappMessage)
         }}
+        maxUploadMb={maxUploadMb}
       />
     </>
   );

@@ -47,6 +47,7 @@ export function ProductForm({
   maxUploadMb
 }: ProductFormProps) {
   const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState(values);
   const [imageUrl, setImageUrl] = useState(values.imageUrl);
   const [priceItemInput, setPriceItemInput] = useState(
@@ -76,6 +77,8 @@ export function ProductForm({
     ? `MODEL: ${formValues.model.trim().toUpperCase()}`
     : "MODEL: -";
   const previewDetail = formValues.detail.trim() || "Detail produk akan tampil di sini.";
+  const maxUploadBytes = maxUploadMb * 1024 * 1024;
+  const visibleError = clientError ?? state.error;
 
   const previewImageStyle = useMemo(
     () =>
@@ -94,6 +97,22 @@ export function ProductForm({
       ...current,
       [key]: nextValue
     }));
+  }
+
+  function validateImageFile(file: File | null) {
+    if (!file) {
+      return null;
+    }
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      return "Format gambar harus JPG/JPEG/PNG.";
+    }
+
+    if (file.size <= 0 || file.size > maxUploadBytes) {
+      return `Ukuran gambar harus <= ${maxUploadMb}MB.`;
+    }
+
+    return null;
   }
 
   function handleFileChange(file: File | null) {
@@ -168,7 +187,7 @@ export function ProductForm({
   return (
     <section className="admin-modal-grid">
       <form action={formAction} className="form-grid admin-modal-form">
-        {state.error ? <div className="alert alert-error">{state.error}</div> : null}
+        {visibleError ? <div className="alert alert-error">{visibleError}</div> : null}
 
         <section className="form-section">
           <div className="form-section-head">
@@ -304,7 +323,19 @@ export function ProductForm({
               type="file"
               name="gambar"
               accept=".jpg,.jpeg,.png"
-              onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                const nextFile = event.target.files?.[0] ?? null;
+                const error = validateImageFile(nextFile);
+                if (error) {
+                  setClientError(error);
+                  event.currentTarget.value = "";
+                  handleFileChange(null);
+                  return;
+                }
+
+                setClientError(null);
+                handleFileChange(nextFile);
+              }}
             />
             <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
           </label>

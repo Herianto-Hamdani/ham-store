@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/product-card";
@@ -5,7 +6,7 @@ import { getCatalog } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/site-settings";
 import { buildWhatsappUrl, getSiteName, resolveImageUrl } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -61,12 +62,14 @@ export default async function HomePage({
         </div>
         {bannerImage ? (
           <div className="hero-banner-wrap hero-banner-wrap-compact">
-            <img
+            <Image
               src={bannerImage}
               alt={`Banner ${siteName}`}
               className="hero-banner-image hero-banner-image-compact"
-              loading="eager"
-              decoding="async"
+              width={1600}
+              height={400}
+              priority
+              sizes="(max-width: 980px) 100vw, 1200px"
             />
           </div>
         ) : null}

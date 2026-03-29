@@ -1,6 +1,6 @@
 import { redirectToWhatsapp } from "@/app/kontak/redirect-to-whatsapp";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type SearchParams = Record<string, string | string[] | undefined>;
 

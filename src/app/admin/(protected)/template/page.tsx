@@ -3,6 +3,7 @@ import Link from "next/link";
 import { TemplateSettingsForm } from "@/components/template-settings-form";
 import { updateTemplateSettingsAction } from "@/lib/actions/admin";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getMaxUploadMb } from "@/lib/upload-config";
 import { getSiteName, templateBackgroundUrl, templateLogoUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function AdminTemplatePage({
   const success = typeof params.success === "string" ? params.success : null;
   const error = typeof params.error === "string" ? params.error : null;
   const settings = await getSiteSettings();
+  const maxUploadMb = getMaxUploadMb();
 
   return (
     <>
@@ -67,6 +69,7 @@ export default async function AdminTemplatePage({
           templatePhotoWidth: settings.templatePhotoWidth,
           templatePhotoHeight: settings.templatePhotoHeight
         }}
+        maxUploadMb={maxUploadMb}
       />
     </>
   );

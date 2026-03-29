@@ -11,9 +11,18 @@ export function TrafficTracker() {
       return;
     }
 
+    const storageKey = `wk-track:${pathname}`;
+    const now = Date.now();
+    const lastTrackedAt = Number.parseInt(sessionStorage.getItem(storageKey) ?? "", 10);
+    if (Number.isFinite(lastTrackedAt) && now - lastTrackedAt < 30 * 60 * 1000) {
+      return;
+    }
+
     const payload = JSON.stringify({ pathname });
 
     const send = () => {
+      sessionStorage.setItem(storageKey, String(now));
+
       if (navigator.sendBeacon) {
         const sent = navigator.sendBeacon(
           "/api/track",

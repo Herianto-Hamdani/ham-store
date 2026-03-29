@@ -1,6 +1,6 @@
 import { redirectToWhatsapp } from "@/app/kontak/redirect-to-whatsapp";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function ContactRefPage({
   params

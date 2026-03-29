@@ -1,9 +1,10 @@
 "use server";
 
 import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/prisma";
 import type { FormState } from "@/lib/form-state";
 import {
@@ -20,7 +21,7 @@ import {
   getOptionalAdminUser,
   requireAdmin
 } from "@/lib/auth/session";
-import { getSiteSettings } from "@/lib/site-settings";
+import { getMutableSiteSettings } from "@/lib/site-settings";
 import { deleteImageSet, storeUploadedImage } from "@/lib/storage/images";
 import {
   cardModeValue,
@@ -141,6 +142,13 @@ function parseProductPayload(formData: FormData) {
 }
 
 function revalidateCatalogPaths(productId?: number) {
+  revalidateTag(CACHE_TAGS.catalog);
+  revalidateTag(CACHE_TAGS.products);
+  revalidateTag(CACHE_TAGS.types);
+  revalidateTag(CACHE_TAGS.siteSettings);
+  revalidateTag(CACHE_TAGS.sitemap);
+  revalidateTag(CACHE_TAGS.adminOverview);
+
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/products");
@@ -444,6 +452,7 @@ export async function createAdminAccountAction(
         role: "ADMIN"
       }
     });
+    revalidateTag(CACHE_TAGS.adminOverview);
     revalidatePath("/admin/accounts");
   } catch (error) {
     return {
@@ -499,6 +508,7 @@ export async function updateAdminAccountAction(
           : {})
       }
     });
+    revalidateTag(CACHE_TAGS.adminOverview);
     revalidatePath("/admin/accounts");
   } catch (error) {
     return {
@@ -533,6 +543,7 @@ export async function deleteAdminAccountAction(accountId: number) {
   await prisma.user.delete({
     where: { id: accountId }
   });
+  revalidateTag(CACHE_TAGS.adminOverview);
   revalidatePath("/admin/accounts");
   redirect("/admin/accounts?success=Akun%20admin%20berhasil%20dihapus.");
 }
@@ -543,7 +554,7 @@ export async function updateSiteSettingsAction(
 ): Promise<FormState> {
   try {
     await requireAdmin();
-    const current = await getSiteSettings();
+    const current = await getMutableSiteSettings();
     const webName = normalizeText(formData.get("web_name"));
     if (!webName) {
       throw new Error("Nama web wajib diisi.");
@@ -619,7 +630,7 @@ export async function updateTemplateSettingsAction(
 ): Promise<FormState> {
   try {
     await requireAdmin();
-    const current = await getSiteSettings();
+    const current = await getMutableSiteSettings();
     const bgFile = getOptionalFile(formData.get("template_bg"));
     const logoFile = getOptionalFile(formData.get("template_logo"));
 

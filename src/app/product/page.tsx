@@ -4,7 +4,7 @@ import { encryptPublicId } from "@/lib/utils";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function LegacyProductPage({
   searchParams

@@ -32,12 +32,16 @@ type SiteSettingsValues = {
 type SiteSettingsFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
   values: SiteSettingsValues;
+  maxUploadMb: number;
 };
 
-export function SiteSettingsForm({ action, values }: SiteSettingsFormProps) {
+export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFormProps) {
   const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState(values);
   const objectUrls = useRef<string[]>([]);
+  const maxUploadBytes = maxUploadMb * 1024 * 1024;
+  const visibleError = clientError ?? state.error;
 
   useEffect(() => {
     return () => {
@@ -54,6 +58,22 @@ export function SiteSettingsForm({ action, values }: SiteSettingsFormProps) {
     const nextUrl = URL.createObjectURL(file);
     objectUrls.current.push(nextUrl);
     setFormValues((current) => ({ ...current, [field]: nextUrl }));
+  }
+
+  function validateImageFile(file: File | null) {
+    if (!file) {
+      return null;
+    }
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      return "Format gambar harus JPG/JPEG/PNG.";
+    }
+
+    if (file.size <= 0 || file.size > maxUploadBytes) {
+      return `Ukuran gambar harus <= ${maxUploadMb}MB.`;
+    }
+
+    return null;
   }
 
   function updateWhatsappField(field: "whatsappNumber" | "whatsappMessage", value: string) {
@@ -73,7 +93,7 @@ export function SiteSettingsForm({ action, values }: SiteSettingsFormProps) {
   return (
     <section className="form-wrap">
       <div className="auth-card">
-        {state.error ? <div className="alert alert-error">{state.error}</div> : null}
+        {visibleError ? <div className="alert alert-error">{visibleError}</div> : null}
         <form action={formAction} className="form-grid">
           <label>
             Nama Web
@@ -117,14 +137,21 @@ export function SiteSettingsForm({ action, values }: SiteSettingsFormProps) {
                 type="file"
                 name="logo_web"
                 accept=".jpg,.jpeg,.png"
-                onChange={(event) =>
-                  setPreview(
-                    "logoPreview",
-                    event.target.files?.[0] ?? null,
-                    values.logoPreview
-                  )
-                }
+                onChange={(event) => {
+                  const nextFile = event.target.files?.[0] ?? null;
+                  const error = validateImageFile(nextFile);
+                  if (error) {
+                    setClientError(error);
+                    event.currentTarget.value = "";
+                    setPreview("logoPreview", null, values.logoPreview);
+                    return;
+                  }
+
+                  setClientError(null);
+                  setPreview("logoPreview", nextFile, values.logoPreview);
+                }}
               />
+              <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
             </label>
             <label>
               Banner Halaman Publik (opsional)
@@ -132,14 +159,21 @@ export function SiteSettingsForm({ action, values }: SiteSettingsFormProps) {
                 type="file"
                 name="banner_web"
                 accept=".jpg,.jpeg,.png"
-                onChange={(event) =>
-                  setPreview(
-                    "bannerPreview",
-                    event.target.files?.[0] ?? null,
-                    values.bannerPreview
-                  )
-                }
+                onChange={(event) => {
+                  const nextFile = event.target.files?.[0] ?? null;
+                  const error = validateImageFile(nextFile);
+                  if (error) {
+                    setClientError(error);
+                    event.currentTarget.value = "";
+                    setPreview("bannerPreview", null, values.bannerPreview);
+                    return;
+                  }
+
+                  setClientError(null);
+                  setPreview("bannerPreview", nextFile, values.bannerPreview);
+                }}
               />
+              <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
             </label>
           </div>
 

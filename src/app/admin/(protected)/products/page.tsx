@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { deleteProductAction } from "@/lib/actions/admin";
@@ -157,10 +158,13 @@ export default async function AdminProductsPage({
                     <tr key={product.id}>
                       <td>
                         <div className="admin-product-cell">
-                          <img
+                          <Image
                             className="table-thumb"
                             src={resolveImageUrl(product.thumbPath, product.imagePath)}
                             alt={product.name}
+                            width={96}
+                            height={70}
+                            sizes="96px"
                           />
                           <div>
                             <strong>{product.name}</strong>

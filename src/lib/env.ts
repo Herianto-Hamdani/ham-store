@@ -16,7 +16,9 @@ const envSchema = z.object({
   SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   NEXT_PUBLIC_SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   SUPABASE_SERVICE_ROLE_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
-  SUPABASE_STORAGE_BUCKET: z.preprocess(emptyToUndefined, z.string().optional())
+  SUPABASE_STORAGE_BUCKET: z.preprocess(emptyToUndefined, z.string().optional()),
+  UPLOAD_MAX_MB: z.preprocess(emptyToUndefined, z.string().optional()),
+  NEXT_PUBLIC_UPLOAD_MAX_MB: z.preprocess(emptyToUndefined, z.string().optional())
 });
 
 export const env = envSchema.parse({
@@ -27,5 +29,7 @@ export const env = envSchema.parse({
   SUPABASE_URL: process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET
+  SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET,
+  UPLOAD_MAX_MB: process.env.UPLOAD_MAX_MB,
+  NEXT_PUBLIC_UPLOAD_MAX_MB: process.env.NEXT_PUBLIC_UPLOAD_MAX_MB
 });

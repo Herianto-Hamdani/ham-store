@@ -1,20 +1,32 @@
 import type { MetadataRoute } from "next";
+import { unstable_cache } from "next/cache";
 
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, encryptPublicId } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  try {
-    const products = await prisma.product.findMany({
+const getSitemapProducts = unstable_cache(
+  async () =>
+    prisma.product.findMany({
       select: {
         id: true,
         updatedAt: true
       },
       orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
       take: 20000
-    });
+    }),
+  ["sitemap-products"],
+  {
+    revalidate: 3600,
+    tags: [CACHE_TAGS.sitemap, CACHE_TAGS.products]
+  }
+);
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const products = await getSitemapProducts();
 
     return [
       {

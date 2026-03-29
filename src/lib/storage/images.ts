@@ -7,12 +7,14 @@ import sharp from "sharp";
 
 import { STORAGE_BUCKET } from "@/lib/constants";
 import { env } from "@/lib/env";
+import { getMaxUploadBytes, getMaxUploadMb } from "@/lib/upload-config";
 import { normalizeUploadPath } from "@/lib/utils";
 
-const MAX_SIZE = 25 * 1024 * 1024;
-const ALLOWED_MIMES = new Set(["image/jpeg", "image/png"]);
-const MASTER_MAX_WIDTH = 2000;
-const THUMB_WIDTH = 480;
+const ALLOWED_MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const MAX_SOURCE_PIXELS = 24_000_000;
+const MAX_SOURCE_DIMENSION = 4096;
+const MASTER_MAX_WIDTH = 1600;
+const THUMB_WIDTH = 360;
 
 type StoredImageSet = {
   imagePath: string;
@@ -29,8 +31,8 @@ function getStorageClient() {
   });
 }
 
-function getOutputExtension(mimeType: string) {
-  return mimeType === "image/png" ? "png" : "jpg";
+function getOutputExtension(hasAlpha: boolean) {
+  return hasAlpha ? "png" : "webp";
 }
 
 async function ensureLocalDirectory(targetPath: string) {
@@ -38,21 +40,29 @@ async function ensureLocalDirectory(targetPath: string) {
 }
 
 async function buildVariants(file: File) {
+  const maxSize = getMaxUploadBytes();
+  const maxSizeMb = getMaxUploadMb();
+
   if (!ALLOWED_MIMES.has(file.type)) {
     throw new Error("Format gambar harus JPG/JPEG/PNG.");
   }
 
-  if (file.size <= 0 || file.size > MAX_SIZE) {
-    throw new Error("Ukuran gambar harus <= 25MB.");
+  if (file.size <= 0 || file.size > maxSize) {
+    throw new Error(`Ukuran gambar harus <= ${maxSizeMb}MB.`);
   }
 
   const inputBuffer = Buffer.from(await file.arrayBuffer());
-  const metadata = await sharp(inputBuffer).metadata();
+  const metadata = await sharp(inputBuffer, { limitInputPixels: MAX_SOURCE_PIXELS }).metadata();
   if (!metadata.width || !metadata.height) {
     throw new Error("File bukan gambar yang valid.");
   }
 
-  const extension = getOutputExtension(file.type);
+  if (metadata.width > MAX_SOURCE_DIMENSION || metadata.height > MAX_SOURCE_DIMENSION) {
+    throw new Error(`Dimensi gambar maksimal ${MAX_SOURCE_DIMENSION}px.`);
+  }
+
+  const hasAlpha = Boolean(metadata.hasAlpha);
+  const extension = getOutputExtension(hasAlpha);
   const year = new Date().toISOString().slice(2, 4);
   const month = new Date().toISOString().slice(5, 7);
   const filename = randomBytes(16).toString("hex");
@@ -61,8 +71,9 @@ async function buildVariants(file: File) {
 
   const encoder =
     extension === "png"
-      ? (instance: sharp.Sharp) => instance.png({ compressionLevel: 8 })
-      : (instance: sharp.Sharp) => instance.jpeg({ quality: 88, mozjpeg: true });
+      ? (instance: sharp.Sharp) =>
+          instance.png({ compressionLevel: 9, palette: true, effort: 8 })
+      : (instance: sharp.Sharp) => instance.webp({ quality: 78, effort: 5 });
 
   const master = await encoder(
     sharp(inputBuffer).rotate().resize({
@@ -83,13 +94,17 @@ async function buildVariants(file: File) {
     thumbPath,
     master,
     thumb,
-    contentType: extension === "png" ? "image/png" : "image/jpeg"
+    contentType: extension === "png" ? "image/png" : "image/webp"
   };
 }
 
 export async function storeUploadedImage(file: File): Promise<StoredImageSet> {
   const variants = await buildVariants(file);
   const supabase = getStorageClient();
+
+  if (!supabase && process.env.VERCEL) {
+    throw new Error("Supabase Storage wajib diisi saat deploy di Vercel.");
+  }
 
   if (supabase) {
     const [imageUpload, thumbUpload] = await Promise.all([

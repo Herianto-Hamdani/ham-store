@@ -1,13 +1,11 @@
 import { createHash } from "node:crypto";
 
+import { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 
 function toDateKey(date = new Date()) {
   return date.toISOString().slice(0, 10);
-}
-
-function dateKeyToDate(dateKey: string) {
-  return new Date(`${dateKey}T00:00:00.000Z`);
 }
 
 export function buildVisitorHash(ip: string, userAgent: string) {
@@ -19,73 +17,22 @@ export async function recordPublicVisit(pathname: string, visitorHash: string) {
     return;
   }
 
-  const dateKey = toDateKey();
-  const date = dateKeyToDate(dateKey);
-
-  await prisma.$transaction(async (tx) => {
-    await tx.trafficDailyMetric.upsert({
-      where: { date },
-      update: {
-        hits: { increment: 1 }
-      },
-      create: {
-        date,
-        hits: 1,
-        uniqueHits: 0
-      }
-    });
-
-    await tx.trafficPageMetric.upsert({
-      where: { path: pathname },
-      update: {
-        hits: { increment: 1 }
-      },
-      create: {
-        path: pathname,
-        hits: 1
-      }
-    });
-
-    const existingVisitor = await tx.trafficVisitor.findUnique({
-      where: {
-        date_visitorHash: {
-          date,
-          visitorHash
-        }
-      }
-    });
-
-    if (existingVisitor) {
-      await tx.trafficVisitor.update({
-        where: {
-          date_visitorHash: {
-            date,
-            visitorHash
-          }
-        },
-        data: {
-          hits: { increment: 1 }
-        }
-      });
-      return;
+  await prisma.trafficEvent.create({
+    data: {
+      path: pathname,
+      visitorHash
     }
-
-    await tx.trafficVisitor.create({
-      data: {
-        date,
-        visitorHash,
-        hits: 1
-      }
-    });
-
-    await tx.trafficDailyMetric.update({
-      where: { date },
-      data: {
-        uniqueHits: { increment: 1 }
-      }
-    });
   });
 }
+
+type TrafficSummaryRow = {
+  today_hits: bigint;
+  today_unique: bigint;
+  window_hits: bigint;
+  window_unique: bigint;
+  total_hits: bigint;
+  total_unique: bigint;
+};
 
 export async function getTrafficSummary(days = 7) {
   const safeDays = Math.max(1, Math.min(days, 60));
@@ -93,37 +40,33 @@ export async function getTrafficSummary(days = 7) {
   start.setUTCDate(start.getUTCDate() - (safeDays - 1));
   start.setUTCHours(0, 0, 0, 0);
 
-  const [windowRows, totals, today] = await Promise.all([
-    prisma.trafficDailyMetric.findMany({
-      where: {
-        date: {
-          gte: start
-        }
-      }
-    }),
-    prisma.trafficDailyMetric.aggregate({
-      _sum: {
-        hits: true,
-        uniqueHits: true
-      }
-    }),
-    prisma.trafficDailyMetric.findUnique({
-      where: {
-        date: dateKeyToDate(toDateKey())
-      }
-    })
-  ]);
+  const [row] = await prisma.$queryRaw<TrafficSummaryRow[]>(Prisma.sql`
+    SELECT
+      COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE)::bigint AS today_hits,
+      COUNT(DISTINCT visitor_hash) FILTER (WHERE created_at >= CURRENT_DATE)::bigint AS today_unique,
+      COUNT(*) FILTER (WHERE created_at >= ${start})::bigint AS window_hits,
+      COUNT(DISTINCT visitor_hash) FILTER (WHERE created_at >= ${start})::bigint AS window_unique,
+      COUNT(*)::bigint AS total_hits,
+      COUNT(DISTINCT visitor_hash)::bigint AS total_unique
+    FROM traffic_events
+  `);
 
   return {
-    todayHits: today?.hits ?? 0,
-    todayUnique: today?.uniqueHits ?? 0,
+    todayHits: Number(row?.today_hits ?? 0n),
+    todayUnique: Number(row?.today_unique ?? 0n),
     windowDays: safeDays,
-    windowHits: windowRows.reduce((sum, item) => sum + item.hits, 0),
-    windowUnique: windowRows.reduce((sum, item) => sum + item.uniqueHits, 0),
-    totalHits: totals._sum.hits ?? 0,
-    totalUnique: totals._sum.uniqueHits ?? 0
+    windowHits: Number(row?.window_hits ?? 0n),
+    windowUnique: Number(row?.window_unique ?? 0n),
+    totalHits: Number(row?.total_hits ?? 0n),
+    totalUnique: Number(row?.total_unique ?? 0n)
   };
 }
+
+type RecentTrafficRow = {
+  date: Date;
+  hits: bigint;
+  unique_hits: bigint;
+};
 
 export async function getRecentTraffic(days = 7) {
   const safeDays = Math.max(1, Math.min(days, 60));
@@ -131,40 +74,46 @@ export async function getRecentTraffic(days = 7) {
   start.setUTCDate(start.getUTCDate() - (safeDays - 1));
   start.setUTCHours(0, 0, 0, 0);
 
-  const rows = await prisma.trafficDailyMetric.findMany({
-    where: {
-      date: {
-        gte: start
-      }
-    },
-    orderBy: {
-      date: "asc"
-    }
-  });
+  const rows = await prisma.$queryRaw<RecentTrafficRow[]>(Prisma.sql`
+    SELECT
+      day::date AS date,
+      COALESCE(COUNT(te.id), 0)::bigint AS hits,
+      COALESCE(COUNT(DISTINCT te.visitor_hash), 0)::bigint AS unique_hits
+    FROM generate_series(${start}::timestamp, CURRENT_DATE::timestamp, interval '1 day') AS day
+    LEFT JOIN traffic_events te
+      ON te.created_at >= day
+     AND te.created_at < day + interval '1 day'
+    GROUP BY day
+    ORDER BY day ASC
+  `);
 
-  const map = new Map(rows.map((row) => [toDateKey(row.date), row]));
-  const result: Array<{ date: string; hits: number; unique: number }> = [];
-
-  for (let offset = safeDays - 1; offset >= 0; offset -= 1) {
-    const target = new Date();
-    target.setUTCDate(target.getUTCDate() - offset);
-    const dateKey = toDateKey(target);
-    const row = map.get(dateKey);
-    result.push({
-      date: dateKey,
-      hits: row?.hits ?? 0,
-      unique: row?.uniqueHits ?? 0
-    });
-  }
-
-  return result;
+  return rows.map((row) => ({
+    date: toDateKey(row.date),
+    hits: Number(row.hits),
+    unique: Number(row.unique_hits)
+  }));
 }
 
+type TopPageRow = {
+  path: string;
+  hits: bigint;
+};
+
 export async function getTopPages(limit = 20) {
-  return prisma.trafficPageMetric.findMany({
-    orderBy: {
-      hits: "desc"
-    },
-    take: Math.max(1, Math.min(limit, 300))
-  });
+  const safeLimit = Math.max(1, Math.min(limit, 300));
+
+  const rows = await prisma.$queryRaw<TopPageRow[]>(Prisma.sql`
+    SELECT
+      path,
+      COUNT(*)::bigint AS hits
+    FROM traffic_events
+    GROUP BY path
+    ORDER BY hits DESC, path ASC
+    LIMIT ${safeLimit}
+  `);
+
+  return rows.map((row) => ({
+    path: row.path,
+    hits: Number(row.hits)
+  }));
 }
