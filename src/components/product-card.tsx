@@ -41,7 +41,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
   return (
     <article className={`product-card ${isTemplateMode ? "product-card-template" : "product-card-image"}`}>
       {isTemplateMode ? (
-        <Link className="poster-frame" href={href} style={templateStyle}>
+        <Link className="poster-frame product-card-media" href={href} style={templateStyle}>
           {templateBgUrl ? (
             <div className="poster-bg-layer">
               <Image
@@ -91,7 +91,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
           <div className="poster-title-box">{title.toUpperCase()}</div>
         </Link>
       ) : (
-        <Link className="thumb-wrap thumb-wrap-direct" href={href}>
+        <Link className="thumb-wrap thumb-wrap-direct product-card-media" href={href}>
           <Image
             src={thumb}
             alt={title}

@@ -697,13 +697,21 @@ body.admin-area .btn-nav {
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
     display: grid;
-    grid-template-rows: minmax(0, 7fr) minmax(0, 3fr);
+    grid-template-rows: auto minmax(0, 1fr);
     min-height: clamp(278px, 31vw, 372px);
 }
 
 .card-grid > .product-card {
     content-visibility: auto;
     contain-intrinsic-size: 360px;
+}
+
+.product-card-media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    min-height: 0;
 }
 
 .product-card-template .poster-frame,
@@ -893,6 +901,12 @@ body.admin-area .btn-nav {
 .product-card-image .thumb-wrap {
     border-bottom: 1px solid #ececec;
     background: #ffffff;
+}
+
+.product-card-template .poster-frame.product-card-media,
+.product-card-image .thumb-wrap.product-card-media {
+    height: auto;
+    min-height: 0;
 }
 
 .product-card-image .thumb-direct {
@@ -2255,7 +2269,11 @@ small {
     }
 
     .product-card {
-        min-height: 286px;
+        min-height: 0;
+    }
+
+    .product-card-media {
+        aspect-ratio: 5 / 4;
     }
 
     .price-table td {
