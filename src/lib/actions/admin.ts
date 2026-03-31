@@ -150,6 +150,8 @@ function revalidateCatalogPaths(productId?: number) {
   revalidateTag(CACHE_TAGS.adminOverview);
 
   revalidatePath("/");
+  revalidatePath("/produk/[ref]", "page");
+  revalidatePath("/kontak/[ref]", "page");
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/admin/settings");

@@ -23,6 +23,9 @@ type ProductCardProps = {
   settings: SiteSetting;
 };
 
+const CARD_MEDIA_SIZES =
+  "(max-width: 640px) 48vw, (max-width: 980px) 24vw, (max-width: 1280px) 20vw, (max-width: 1600px) 16vw, 12vw";
+
 export function ProductCard({ product, settings }: ProductCardProps) {
   const href = `/produk/${encryptPublicId(product.id)}`;
   const thumb = resolveImageUrl(product.thumbPath, product.imagePath);
@@ -49,7 +52,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
                 alt=""
                 className="poster-bg-image"
                 fill
-                sizes="(max-width: 640px) 92vw, (max-width: 1200px) 45vw, 320px"
+                sizes={CARD_MEDIA_SIZES}
               />
             </div>
           ) : null}
@@ -60,7 +63,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
                 alt={`${siteName} logo`}
                 className="poster-logo-image"
                 fill
-                sizes="(max-width: 640px) 28vw, 140px"
+                sizes="(max-width: 640px) 18vw, (max-width: 980px) 11vw, 88px"
               />
             ) : (
               <span className="poster-logo-text">{siteName}</span>
@@ -76,7 +79,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
               alt={title}
               className="poster-photo"
               fill
-              sizes="(max-width: 640px) 68vw, (max-width: 1200px) 32vw, 220px"
+              sizes={CARD_MEDIA_SIZES}
               style={
                 {
                   "--photo-pos-x": `${product.imagePosX}%`,
@@ -97,7 +100,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
             alt={title}
             className="thumb-direct"
             fill
-            sizes="(max-width: 640px) 92vw, (max-width: 1200px) 45vw, 320px"
+            sizes={CARD_MEDIA_SIZES}
             style={
               {
                 "--photo-pos-x": `${product.imagePosX}%`,
@@ -115,14 +118,10 @@ export function ProductCard({ product, settings }: ProductCardProps) {
         <div className="chip">{product.type.name}</div>
         <p>{excerpt(product.detail, 120)}</p>
         <div className="price-table-wrap">
-          <table className="price-table" aria-label="Harga paket">
-            <tbody>
-              <tr>
-                <th>Harga Paket</th>
-                <td>{formatRupiah(packagePrice)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="price-inline-card" aria-label="Harga paket">
+            <span className="price-inline-card-label">Harga Paket</span>
+            <strong className="price-inline-card-value">{formatRupiah(packagePrice)}</strong>
+          </div>
         </div>
       </Link>
     </article>

@@ -10,13 +10,15 @@ type LoadingLinkProps = {
   className?: string;
   children: React.ReactNode;
   loadingLabel: string;
+  showInlineSpinner?: boolean;
 };
 
 export function LoadingLink({
   href,
   className = "btn btn-ghost",
   children,
-  loadingLabel
+  loadingLabel,
+  showInlineSpinner = true
 }: LoadingLinkProps) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -44,7 +46,7 @@ export function LoadingLink({
           router.push(href);
         }}
       >
-        <span className="btn-spinner" aria-hidden="true" />
+        {showInlineSpinner ? <span className="btn-spinner" aria-hidden="true" /> : null}
         <span>{children}</span>
       </a>
 

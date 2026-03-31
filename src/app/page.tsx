@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { LoadingLink } from "@/components/loading-link";
 import { ProductCard } from "@/components/product-card";
 import { getCatalog } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -135,14 +136,24 @@ export default async function HomePage({
               }
               next.set("page", String(targetPage));
 
+              if (targetPage === catalog.page) {
+                return (
+                  <span key={targetPage} className="active" aria-current="page">
+                    {targetPage}
+                  </span>
+                );
+              }
+
               return (
-                <Link
+                <LoadingLink
                   key={targetPage}
                   href={`/?${next.toString()}`}
-                  className={targetPage === catalog.page ? "active" : ""}
+                  className=""
+                  loadingLabel={`Memuat Halaman Katalog ${targetPage}...`}
+                  showInlineSpinner={false}
                 >
                   {targetPage}
-                </Link>
+                </LoadingLink>
               );
             })}
           </nav>
