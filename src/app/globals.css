@@ -1151,20 +1151,22 @@ body.admin-area .chip {
 
 .price-inline-card-label {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
     color: #8f3c00;
     font-size: .78rem;
     font-weight: 700;
-    line-height: 1;
-    padding: .62rem .82rem;
+    line-height: 1.02;
+    padding: .54rem .82rem;
     background: rgba(255, 255, 255, 0.97);
     border-right: 1px solid #ffd1aa;
     flex: 0 1 auto;
-    max-width: 54%;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 96px;
+    text-align: left;
+}
+
+.price-inline-card-label span {
+    display: block;
 }
 
 .price-inline-card-value {
@@ -2736,7 +2738,8 @@ small {
 
     .price-inline-card-label {
         font-size: .72rem;
-        padding: .54rem .68rem;
+        min-width: 82px;
+        padding: .5rem .68rem;
     }
 
     .price-inline-card-value {

@@ -90,7 +90,10 @@ export function ProductCard({ product, settings }: ProductCardProps) {
         <p>{excerpt(product.detail, 120)}</p>
         <div className="price-table-wrap">
           <div className="price-inline-card" aria-label="Harga paket">
-            <span className="price-inline-card-label">Harga Paket</span>
+            <span className="price-inline-card-label">
+              <span>Harga</span>
+              <span>Paket</span>
+            </span>
             <strong className="price-inline-card-value">{formatRupiah(packagePrice)}</strong>
           </div>
         </div>
