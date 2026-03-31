@@ -1457,6 +1457,7 @@ body.admin-login-page .login-panel {
 }
 
 body.admin-login-page .login-brand-panel {
+    min-height: 0;
     padding: .88rem;
     gap: .74rem;
 }
@@ -1472,6 +1473,9 @@ body.admin-login-page .login-brand-meta p {
 }
 
 body.admin-login-page .auth-card-login {
+    min-height: 0;
+    display: grid;
+    align-content: start;
     border-color: rgba(255, 255, 255, 0.08);
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
@@ -1884,6 +1888,53 @@ body.admin-login-page .auth-card-login .btn-ghost {
     border-color: rgba(255, 188, 136, 0.16);
     background: rgba(255, 255, 255, 0.02);
     color: #f4f6fb;
+}
+
+@media (min-width: 1040px) {
+    body.admin-login-page .container {
+        width: calc(100% - clamp(1.4rem, 4vw, 4rem));
+    }
+
+    body.admin-login-page .login-panel {
+        width: min(980px, 100%);
+        grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr);
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    body.admin-login-page .login-brand-panel,
+    body.admin-login-page .auth-card-login {
+        height: 100%;
+    }
+
+    body.admin-login-page .login-brand-panel {
+        padding: 1rem;
+        gap: .82rem;
+    }
+
+    body.admin-login-page .login-wordmark-stage {
+        min-height: 100%;
+        height: 100%;
+        padding: 1rem 1.1rem;
+    }
+
+    body.admin-login-page .login-wordmark {
+        width: min(100%, 25rem);
+    }
+
+    body.admin-login-page .login-wordmark text {
+        font-size: 124px;
+        letter-spacing: 11px;
+    }
+
+    body.admin-login-page .auth-card-login {
+        padding: 1.05rem;
+    }
+
+    body.admin-login-page .login-form {
+        gap: .72rem;
+    }
 }
 
 .form-grid {
