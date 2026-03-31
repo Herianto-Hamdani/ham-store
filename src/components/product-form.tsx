@@ -7,6 +7,7 @@ import type { Type } from "@prisma/client";
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TemplatePosterContent } from "@/components/template-poster-content";
 
 type ProductFormValues = {
   name: string;
@@ -459,46 +460,17 @@ export function ProductForm({
               onPointerUp={stopDrag}
               onPointerCancel={stopDrag}
             >
-              {template.backgroundUrl ? (
-                <div className="poster-bg-layer">
-                  <img
-                    src={template.backgroundUrl}
-                    alt=""
-                    className="poster-bg-image"
-                    width={1200}
-                    height={900}
-                    decoding="async"
-                  />
-                </div>
-              ) : null}
-              <div className="poster-logo">
-                {template.logoUrl ? (
-                  <img
-                    src={template.logoUrl}
-                    alt={`${template.siteName} logo`}
-                    className="poster-logo-image"
-                    width={320}
-                    height={160}
-                    decoding="async"
-                  />
-                ) : (
-                  <span className="poster-logo-text">{template.siteName}</span>
-                )}
-              </div>
-              <div className="poster-side poster-side-left">{previewModel}</div>
-              <div className="poster-side poster-side-right">{previewBrand}</div>
-              <div className="poster-photo-wrap">
-                <img
-                  src={imageUrl}
-                  alt="Preview produk"
-                  className="poster-photo"
-                  width={1200}
-                  height={900}
-                  decoding="async"
-                  style={previewImageStyle}
-                />
-              </div>
-              <div className="poster-title-box">{previewTitle}</div>
+              <TemplatePosterContent
+                backgroundUrl={template.backgroundUrl}
+                logoUrl={template.logoUrl}
+                siteName={template.siteName}
+                title={previewTitle}
+                modelLabel={previewModel}
+                brandLabel={previewBrand}
+                imageUrl={imageUrl}
+                imageAlt="Preview produk"
+                imageStyle={previewImageStyle}
+              />
             </div>
           ) : (
             <div

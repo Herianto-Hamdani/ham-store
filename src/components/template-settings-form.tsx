@@ -5,6 +5,7 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TemplatePosterContent } from "@/components/template-poster-content";
 
 type TemplateValues = {
   siteName: string;
@@ -533,31 +534,20 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
             onPointerCancel={finishInteraction}
           >
             <div className="poster-frame product-card-media" style={previewStyle}>
-              {formValues.backgroundUrl ? (
-                <div className="poster-bg-layer">
-                  <img src={formValues.backgroundUrl} alt="" className="poster-bg-image" />
-                </div>
-              ) : null}
-              <div className="poster-logo">
-                {formValues.logoUrl ? (
-                  <img
-                    src={formValues.logoUrl}
-                    alt={`${formValues.siteName} logo`}
-                    className="poster-logo-image"
-                  />
-                ) : (
-                  <span className="poster-logo-text">{formValues.siteName}</span>
-                )}
-              </div>
-              <div className="poster-side poster-side-left">MODEL: BN52</div>
-              <div className="poster-side poster-side-right">ORI BRD</div>
-              <div className="poster-photo-wrap">
-                <div className="designer-photo-placeholder" aria-hidden="true">
-                  <div className="designer-photo-placeholder-shell" />
-                  <span className="designer-photo-placeholder-label">Foto Produk</span>
-                </div>
-              </div>
-              <div className="poster-title-box">BATERAI REDMI 9</div>
+              <TemplatePosterContent
+                backgroundUrl={formValues.backgroundUrl}
+                logoUrl={formValues.logoUrl}
+                siteName={formValues.siteName}
+                title="BATERAI REDMI 9"
+                modelLabel="MODEL: BN52"
+                brandLabel="ORI BRD"
+                placeholder={
+                  <div className="designer-photo-placeholder" aria-hidden="true">
+                    <div className="designer-photo-placeholder-shell" />
+                    <span className="designer-photo-placeholder-label">Foto Produk</span>
+                  </div>
+                }
+              />
 
               {(Object.keys(NODE_LABELS) as DesignerNode[]).map((node) => (
                 <div

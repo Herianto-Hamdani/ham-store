@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductCard } from "@/components/product-card";
+import { TemplatePosterContent } from "@/components/template-poster-content";
 import { getProductByRef, getProductRecommendations } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/site-settings";
 import {
@@ -44,66 +44,38 @@ export default async function ProductDetailPage({
         <div className="detail-image-wrap">
           {mode === "template" ? (
             <div className="poster-frame detail-poster-frame" style={templateStyle}>
-              {templateBgUrl ? (
-                <div className="poster-bg-layer">
-                  <Image
-                    src={templateBgUrl}
-                    alt=""
-                    className="poster-bg-image"
-                    fill
-                    sizes="(max-width: 980px) 100vw, 56vw"
-                  />
-                </div>
-              ) : null}
-              <div className="poster-logo">
-                {templateLogo ? (
-                  <Image
-                    src={templateLogo}
-                    alt={`${siteName} logo`}
-                    className="poster-logo-image"
-                    fill
-                    sizes="(max-width: 980px) 28vw, 180px"
-                  />
-                ) : (
-                  <span className="poster-logo-text">{siteName}</span>
-                )}
-              </div>
-              <div className="poster-side poster-side-left">
-                {product.model ? `MODEL: ${product.model.toUpperCase()}` : "MODEL: -"}
-              </div>
-              <div className="poster-side poster-side-right">
-                {product.brand ? product.brand.toUpperCase() : "ORI"}
-              </div>
-              <div className="poster-photo-wrap">
-                <Image
-                  src={imageUrl}
-                  alt={product.name}
-                  className="poster-photo"
-                  fill
-                  priority
-                  sizes="(max-width: 980px) 100vw, 56vw"
-                  style={
-                    {
-                      "--photo-pos-x": `${product.imagePosX}%`,
-                      "--photo-pos-y": `${product.imagePosY}%`,
-                      "--photo-pos-x-num": product.imagePosX,
-                      "--photo-pos-y-num": product.imagePosY,
-                      "--photo-scale": `${product.imageScale / 100}`
-                    } as React.CSSProperties
-                  }
-                />
-              </div>
-              <div className="poster-title-box">{product.name.toUpperCase()}</div>
+              <TemplatePosterContent
+                backgroundUrl={templateBgUrl}
+                logoUrl={templateLogo}
+                siteName={siteName}
+                title={product.name.toUpperCase()}
+                modelLabel={product.model ? `MODEL: ${product.model.toUpperCase()}` : "MODEL: -"}
+                brandLabel={product.brand ? product.brand.toUpperCase() : "ORI"}
+                imageUrl={imageUrl}
+                imageAlt={product.name}
+                imageLoading="eager"
+                imageDecoding="sync"
+                imageStyle={
+                  {
+                    "--photo-pos-x": `${product.imagePosX}%`,
+                    "--photo-pos-y": `${product.imagePosY}%`,
+                    "--photo-pos-x-num": product.imagePosX,
+                    "--photo-pos-y-num": product.imagePosY,
+                    "--photo-scale": `${product.imageScale / 100}`
+                  } as React.CSSProperties
+                }
+              />
             </div>
           ) : (
             <div className="thumb-wrap thumb-wrap-direct detail-thumb-wrap">
-              <Image
+              <img
                 src={imageUrl}
                 alt={product.name}
                 className="thumb-direct detail-thumb-direct"
-                fill
-                priority
-                sizes="(max-width: 980px) 100vw, 56vw"
+                width={1600}
+                height={1200}
+                loading="eager"
+                decoding="sync"
                 style={
                   {
                     "--photo-pos-x": `${product.imagePosX}%`,

@@ -1,7 +1,7 @@
 import type { Product, SiteSetting, Type } from "@prisma/client";
-import Image from "next/image";
 import Link from "next/link";
 
+import { TemplatePosterContent } from "@/components/template-poster-content";
 import {
   cardModeValue,
   encryptPublicId,
@@ -23,9 +23,6 @@ type ProductCardProps = {
   settings: SiteSetting;
 };
 
-const CARD_MEDIA_SIZES =
-  "(max-width: 640px) 44vw, (max-width: 820px) 30vw, (max-width: 1180px) 24vw, (max-width: 1540px) 18vw, 240px";
-
 export function ProductCard({ product, settings }: ProductCardProps) {
   const href = `/produk/${encryptPublicId(product.id)}`;
   const thumb = resolveImageUrl(product.thumbPath, product.imagePath);
@@ -45,66 +42,36 @@ export function ProductCard({ product, settings }: ProductCardProps) {
     <article className={`product-card ${isTemplateMode ? "product-card-template" : "product-card-image"}`}>
       {isTemplateMode ? (
         <Link className="poster-frame product-card-media" href={href} style={templateStyle}>
-          {templateBgUrl ? (
-            <div className="poster-bg-layer">
-              <Image
-                src={templateBgUrl}
-                alt=""
-                className="poster-bg-image"
-                fill
-                sizes={CARD_MEDIA_SIZES}
-                unoptimized
-              />
-            </div>
-          ) : null}
-          <div className="poster-logo">
-            {templateLogo ? (
-              <Image
-                src={templateLogo}
-                alt={`${siteName} logo`}
-                className="poster-logo-image"
-                fill
-                sizes="(max-width: 640px) 18vw, (max-width: 980px) 11vw, 88px"
-                unoptimized
-              />
-            ) : (
-              <span className="poster-logo-text">{siteName}</span>
-            )}
-          </div>
-          <div className="poster-side poster-side-left">
-            {model ? `MODEL: ${model.toUpperCase()}` : "MODEL: -"}
-          </div>
-          <div className="poster-side poster-side-right">{brand ? brand.toUpperCase() : "ORI"}</div>
-          <div className="poster-photo-wrap">
-            <Image
-              src={thumb}
-              alt={title}
-              className="poster-photo"
-              fill
-              sizes={CARD_MEDIA_SIZES}
-              unoptimized
-              style={
-                {
-                  "--photo-pos-x": `${product.imagePosX}%`,
-                  "--photo-pos-y": `${product.imagePosY}%`,
-                  "--photo-pos-x-num": product.imagePosX,
-                  "--photo-pos-y-num": product.imagePosY,
-                  "--photo-scale": `${product.imageScale / 100}`
-                } as React.CSSProperties
-              }
-            />
-          </div>
-          <div className="poster-title-box">{title.toUpperCase()}</div>
+          <TemplatePosterContent
+            backgroundUrl={templateBgUrl}
+            logoUrl={templateLogo}
+            siteName={siteName}
+            title={title.toUpperCase()}
+            modelLabel={model ? `MODEL: ${model.toUpperCase()}` : "MODEL: -"}
+            brandLabel={brand ? brand.toUpperCase() : "ORI"}
+            imageUrl={thumb}
+            imageAlt={title}
+            imageStyle={
+              {
+                "--photo-pos-x": `${product.imagePosX}%`,
+                "--photo-pos-y": `${product.imagePosY}%`,
+                "--photo-pos-x-num": product.imagePosX,
+                "--photo-pos-y-num": product.imagePosY,
+                "--photo-scale": `${product.imageScale / 100}`
+              } as React.CSSProperties
+            }
+          />
         </Link>
       ) : (
         <Link className="thumb-wrap thumb-wrap-direct product-card-media" href={href}>
-          <Image
+          <img
             src={thumb}
             alt={title}
             className="thumb-direct"
-            fill
-            sizes={CARD_MEDIA_SIZES}
-            unoptimized
+            width={720}
+            height={540}
+            loading="lazy"
+            decoding="async"
             style={
               {
                 "--photo-pos-x": `${product.imagePosX}%`,

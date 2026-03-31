@@ -1049,13 +1049,9 @@ body.admin-area .btn-nav {
     overflow: hidden;
 }
 
-.product-card .poster-title-box {
-    font-size: clamp(.72rem, .72vw + .34rem, .96rem);
-    min-height: 2.55em;
-}
-
+.product-card .poster-title-box,
 .detail-image-wrap .poster-title-box {
-    font-size: clamp(.94rem, 1vw + .48rem, 1.32rem);
+    min-height: 2.55em;
 }
 
 .product-card-template .price-table-wrap {
@@ -2593,7 +2589,6 @@ small {
     }
 
     .poster-title-box {
-        font-size: .74rem;
         border-radius: 12px;
     }
 
