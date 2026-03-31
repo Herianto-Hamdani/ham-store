@@ -221,7 +221,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
       <aside className="designer-preview-panel">
         <h3>Preview Template</h3>
         <div className="product-card product-card-template designer-preview-card">
-          <div className="poster-frame" style={previewStyle}>
+          <div className="poster-frame product-card-media" style={previewStyle}>
             {formValues.backgroundUrl ? (
               <div className="poster-bg-layer">
                 <img src={formValues.backgroundUrl} alt="" className="poster-bg-image" />

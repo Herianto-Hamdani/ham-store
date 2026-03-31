@@ -450,7 +450,7 @@ export function ProductForm({
         >
           {formValues.cardMode === "template" ? (
             <div
-              className="poster-frame"
+              className="poster-frame product-card-media"
               style={template.style}
               onPointerDown={(event) => startDrag("template", event)}
               onPointerMove={onDrag}
@@ -500,7 +500,7 @@ export function ProductForm({
             </div>
           ) : (
             <div
-              className="thumb-wrap thumb-wrap-direct"
+              className="thumb-wrap thumb-wrap-direct product-card-media"
               onPointerDown={(event) => startDrag("image", event)}
               onPointerMove={onDrag}
               onPointerUp={stopDrag}

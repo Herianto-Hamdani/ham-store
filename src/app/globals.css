@@ -1706,8 +1706,6 @@ body.admin-area .designer-preview-panel {
 .designer-preview-card {
     margin: 0 auto;
     width: min(100%, 470px);
-    content-visibility: auto;
-    contain-intrinsic-size: 760px;
     min-height: min(760px, 74vh);
 }
 
