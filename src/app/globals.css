@@ -1135,14 +1135,15 @@ body.admin-area .chip {
 }
 
 .price-inline-card {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 104px minmax(0, 1fr);
+    width: fit-content;
+    max-width: 100%;
+    display: inline-grid;
+    grid-template-columns: 96px auto;
     align-items: stretch;
     gap: 0;
-    min-height: 50px;
+    min-height: 44px;
     padding: 0;
-    border-radius: 12px;
+    border-radius: 11px;
     border: 1px solid #ffbb72;
     background: #fffaf4;
     overflow: hidden;
@@ -1154,10 +1155,10 @@ body.admin-area .chip {
     justify-items: center;
     gap: .08rem;
     color: #8f3c00;
-    font-size: .78rem;
+    font-size: .72rem;
     font-weight: 700;
-    line-height: 1;
-    padding: .54rem .68rem;
+    line-height: .95;
+    padding: .46rem .58rem;
     background: rgba(255, 255, 255, 0.97);
     border-right: 1px solid #ffd1aa;
     min-width: 0;
@@ -1173,11 +1174,11 @@ body.admin-area .chip {
     align-items: center;
     justify-content: center;
     color: var(--primary-dark);
-    font-size: clamp(.82rem, .16vw + .82rem, 1rem);
+    font-size: clamp(.84rem, .12vw + .84rem, .98rem);
     font-weight: 900;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    padding: .62rem .72rem;
+    padding: .46rem .78rem;
     background: linear-gradient(180deg, #ffb018, #ff9800);
     min-width: 0;
     text-align: center;
@@ -2733,19 +2734,19 @@ small {
     }
 
     .price-inline-card {
-        grid-template-columns: 92px minmax(0, 1fr);
-        min-height: 46px;
-        border-radius: 11px;
+        grid-template-columns: 88px auto;
+        min-height: 42px;
+        border-radius: 10px;
     }
 
     .price-inline-card-label {
-        font-size: .72rem;
-        padding: .48rem .56rem;
+        font-size: .66rem;
+        padding: .4rem .5rem;
     }
 
     .price-inline-card-value {
-        font-size: .88rem;
-        padding: .52rem .62rem;
+        font-size: .84rem;
+        padding: .4rem .64rem;
     }
 
     .detail-content {
