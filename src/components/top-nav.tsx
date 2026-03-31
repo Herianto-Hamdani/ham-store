@@ -15,6 +15,7 @@ export function TopNav({ siteName, logoUrl, hasLogo }: TopNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminLoginRoute = pathname === "/admin/login";
   const isProtectedAdminRoute = isAdminRoute && pathname !== "/admin/login";
 
   if (isProtectedAdminRoute) {
@@ -38,6 +39,38 @@ export function TopNav({ siteName, logoUrl, hasLogo }: TopNavProps) {
             <span className="brand-text">{siteName}</span>
           </Link>
           <span className="admin-chip">Area Admin</span>
+        </div>
+      </header>
+    );
+  }
+
+  if (isAdminLoginRoute) {
+    return (
+      <header className="site-header site-header-login">
+        <div className="container header-inner header-inner-login">
+          <Link className="brand brand-login" href="/">
+            {hasLogo ? (
+              <Image
+                className="brand-logo"
+                src={logoUrl}
+                alt={`${siteName} logo`}
+                width={150}
+                height={44}
+                priority
+                sizes="150px"
+              />
+            ) : (
+              <span className="brand-mark">{siteName.slice(0, 2).toUpperCase()}</span>
+            )}
+            <span className="brand-text">{siteName}</span>
+          </Link>
+
+          <div className="login-top-nav">
+            <span className="login-top-chip">Admin</span>
+            <Link className="login-top-link" href="/">
+              Katalog
+            </Link>
+          </div>
         </div>
       </header>
     );

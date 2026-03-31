@@ -8,8 +8,10 @@ export function BodyClassManager() {
 
   useEffect(() => {
     const isAdmin = pathname.startsWith("/admin");
+    const isAdminLogin = pathname === "/admin/login";
     document.body.classList.toggle("admin-area", isAdmin);
     document.body.classList.toggle("public-area", !isAdmin);
+    document.body.classList.toggle("admin-login-page", isAdminLogin);
   }, [pathname]);
 
   return null;
