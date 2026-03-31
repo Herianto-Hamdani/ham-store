@@ -4,22 +4,51 @@ import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
+const MAX_TRACKED_PATH_LENGTH = 160;
+
 function toDateKey(date = new Date()) {
   return date.toISOString().slice(0, 10);
 }
 
 export function buildVisitorHash(ip: string, userAgent: string) {
-  return createHash("sha1").update(`${ip}|${userAgent}`).digest("hex");
+  return createHash("sha256").update(`${ip}|${userAgent}`).digest("hex");
+}
+
+export function normalizeTrackedPath(pathname?: string | null): string | null {
+  const rawValue = pathname?.trim();
+  if (!rawValue) {
+    return "/";
+  }
+
+  const withoutQuery = rawValue.split(/[?#]/, 1)[0] ?? "/";
+  const normalized = `/${withoutQuery.replace(/^\/+/, "")}`
+    .replace(/\/{2,}/g, "/")
+    .replace(/\/+$/, "");
+
+  const safePath = normalized || "/";
+  if (
+    safePath.length > MAX_TRACKED_PATH_LENGTH ||
+    /[\u0000-\u001f\u007f]/.test(safePath) ||
+    !safePath.startsWith("/") ||
+    safePath.startsWith("/admin") ||
+    safePath.startsWith("/api") ||
+    safePath.startsWith("/_next")
+  ) {
+    return null;
+  }
+
+  return safePath;
 }
 
 export async function recordPublicVisit(pathname: string, visitorHash: string) {
-  if (!pathname || pathname.startsWith("/admin")) {
+  const normalizedPath = normalizeTrackedPath(pathname);
+  if (!normalizedPath) {
     return;
   }
 
   await prisma.trafficEvent.create({
     data: {
-      path: pathname,
+      path: normalizedPath,
       visitorHash
     }
   });

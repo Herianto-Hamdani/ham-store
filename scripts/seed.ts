@@ -14,8 +14,16 @@ async function main() {
 
   const adminCount = await prisma.user.count();
   if (adminCount === 0) {
+    const isProductionSeed = process.env.NODE_ENV === "production";
     const username = process.env.SEED_ADMIN_USERNAME || "admin";
-    const password = process.env.SEED_ADMIN_PASSWORD || "admin123";
+    const password = process.env.SEED_ADMIN_PASSWORD || (isProductionSeed ? "" : "admin123");
+
+    if (!password) {
+      throw new Error(
+        "SEED_ADMIN_PASSWORD wajib diisi saat menjalankan seed di production."
+      );
+    }
+
     const passwordHash = await hashPassword(password);
 
     await prisma.user.create({
@@ -27,7 +35,7 @@ async function main() {
     });
 
     console.log(`Seed admin dibuat: ${username}`);
-    if (!process.env.SEED_ADMIN_PASSWORD) {
+    if (!process.env.SEED_ADMIN_PASSWORD && !isProductionSeed) {
       console.log("Password default: admin123");
     }
   }

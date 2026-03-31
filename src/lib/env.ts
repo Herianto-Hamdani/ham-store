@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const DEFAULT_APP_URL_SECRET = "web_katalog_secret_2026_change_me";
+
 const emptyToUndefined = (value: unknown) => {
   if (typeof value === "string" && value.trim() === "") {
     return undefined;
@@ -12,7 +14,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL wajib diisi."),
   DIRECT_DATABASE_URL: z.preprocess(emptyToUndefined, z.string().optional()),
   APP_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
-  APP_URL_SECRET: z.string().min(16).default("web_katalog_secret_2026_change_me"),
+  APP_URL_SECRET: z.string().min(16).default(DEFAULT_APP_URL_SECRET),
   SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   NEXT_PUBLIC_SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   SUPABASE_SERVICE_ROLE_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
@@ -21,7 +23,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_UPLOAD_MAX_MB: z.preprocess(emptyToUndefined, z.string().optional())
 });
 
-export const env = envSchema.parse({
+const parsedEnv = envSchema.parse({
   DATABASE_URL: process.env.DATABASE_URL,
   DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL,
   APP_URL: process.env.APP_URL,
@@ -33,3 +35,14 @@ export const env = envSchema.parse({
   UPLOAD_MAX_MB: process.env.UPLOAD_MAX_MB,
   NEXT_PUBLIC_UPLOAD_MAX_MB: process.env.NEXT_PUBLIC_UPLOAD_MAX_MB
 });
+
+if (
+  process.env.NODE_ENV === "production" &&
+  (parsedEnv.APP_URL_SECRET === DEFAULT_APP_URL_SECRET || parsedEnv.APP_URL_SECRET.length < 32)
+) {
+  throw new Error(
+    "APP_URL_SECRET production harus unik, tidak boleh default, dan minimal 32 karakter."
+  );
+}
+
+export const env = parsedEnv;
