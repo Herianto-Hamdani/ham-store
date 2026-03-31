@@ -16,7 +16,7 @@ export function ActionLoadingOverlay({ label }: ActionLoadingOverlayProps) {
       aria-label={label}
     >
       <div className="action-loading-card">
-        <LoaderScene />
+        <LoaderScene compact />
         <div className="action-loading-copy">
           <strong>{label}</strong>
           <span>Mohon tunggu, proses sedang dijalankan.</span>

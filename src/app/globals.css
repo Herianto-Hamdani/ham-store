@@ -761,9 +761,9 @@ body.admin-area .btn-nav {
 .action-loading-overlay {
     z-index: 1400;
     background:
-        radial-gradient(circle at 50% 50%, rgba(255, 143, 38, 0.18) 0, rgba(255, 143, 38, 0) 26%),
-        radial-gradient(circle at 12% 10%, rgba(46, 72, 138, 0.18) 0, rgba(46, 72, 138, 0) 30%),
-        linear-gradient(180deg, rgba(236, 241, 248, 0.95), rgba(231, 237, 246, 0.92));
+        radial-gradient(circle at 50% 50%, rgba(255, 143, 38, 0.18) 0, rgba(255, 143, 38, 0) 24%),
+        radial-gradient(circle at 12% 10%, rgba(58, 112, 228, 0.18) 0, rgba(58, 112, 228, 0) 30%),
+        linear-gradient(180deg, rgba(10, 14, 22, 0.94), rgba(7, 10, 18, 0.92));
 }
 
 .action-loading-card {
@@ -773,9 +773,11 @@ body.admin-area .btn-nav {
     padding: 1.4rem 1.25rem;
     width: min(100%, 24rem);
     border-radius: 1.4rem;
-    border: 1px solid rgba(255, 169, 95, 0.2);
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+    border: 1px solid rgba(255, 169, 95, 0.18);
+    background:
+        linear-gradient(180deg, rgba(18, 24, 36, 0.92), rgba(10, 15, 24, 0.9)),
+        rgba(10, 14, 20, 0.84);
+    box-shadow: 0 28px 60px rgba(3, 6, 12, 0.42);
     backdrop-filter: blur(18px);
 }
 
@@ -783,15 +785,16 @@ body.admin-area .btn-nav {
     display: grid;
     gap: .28rem;
     text-align: center;
-    color: #91410c;
+    color: #fff5ea;
 }
 
 .action-loading-copy strong {
     font-size: 1rem;
+    color: #fff7ef;
 }
 
 .action-loading-copy span {
-    color: #8a5a34;
+    color: rgba(255, 212, 176, 0.86);
     font-size: .88rem;
 }
 
