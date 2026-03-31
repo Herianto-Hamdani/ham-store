@@ -26,10 +26,10 @@ export function LoginForm({
   const displayName = siteName.toUpperCase();
 
   return (
-    <section className="container main-content">
-      <section className="login-shell">
-        <div className="login-panel">
-          <aside className="login-brand-panel" aria-label={`${siteName} brand`}>
+      <section className="container main-content">
+        <section className="login-shell">
+        <div className="login-panel login-panel-admin">
+          <aside className="login-brand-panel login-panel-brand" aria-label={`${siteName} brand`}>
             <div className="login-brand-head">
               {hasLogo ? (
                 <span className="login-brand-logo-frame">
@@ -72,7 +72,7 @@ export function LoginForm({
             </div>
           </aside>
 
-          <div className="auth-card auth-card-login">
+          <div className="auth-card auth-card-login login-panel-form">
             <div className="login-card-head">
               <span className="login-card-kicker">HAM STORE</span>
               <h1>Login</h1>
