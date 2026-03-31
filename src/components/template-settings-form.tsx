@@ -50,6 +50,13 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
     };
   }, []);
 
+  useEffect(() => {
+    objectUrls.current.forEach((item) => URL.revokeObjectURL(item));
+    objectUrls.current = [];
+    setFormValues(values);
+    setClientError(null);
+  }, [values]);
+
   function updateNumber(key: keyof TemplateValues, nextValue: number) {
     setFormValues((current) => ({ ...current, [key]: nextValue }));
   }

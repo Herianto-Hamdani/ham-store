@@ -16,8 +16,6 @@ export default async function AdminTypesPage({
   const params = await searchParams;
   const search = typeof params.q === "string" ? params.q : "";
   const page = typeof params.page === "string" ? Number.parseInt(params.page, 10) : 1;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
   const payload = await getTypeList({ page, search });
 
   return (
@@ -40,9 +38,6 @@ export default async function AdminTypesPage({
           </Link>
         </div>
       </section>
-
-      {success ? <div className="alert alert-success">{success}</div> : null}
-      {error ? <div className="alert alert-error">{error}</div> : null}
 
       <section className="admin-metric-grid">
         <article className="metric-card metric-card-highlight">

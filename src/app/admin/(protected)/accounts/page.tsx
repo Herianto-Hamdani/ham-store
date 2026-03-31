@@ -20,8 +20,6 @@ export default async function AdminAccountsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
   const editId = typeof params.edit === "string" ? Number.parseInt(params.edit, 10) : null;
 
   const accounts = await getAdminAccounts();
@@ -49,9 +47,6 @@ export default async function AdminAccountsPage({
           </Link>
         </div>
       </section>
-
-      {success ? <div className="alert alert-success">{success}</div> : null}
-      {error ? <div className="alert alert-error">{error}</div> : null}
 
       <section className="admin-metric-grid">
         <article className="metric-card metric-card-highlight">

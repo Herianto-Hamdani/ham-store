@@ -69,6 +69,26 @@ export function ProductForm({
     };
   }, []);
 
+  useEffect(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+
+    setFormValues(values);
+    setImageUrl(values.imageUrl);
+    setPriceItemInput(values.priceItem > 0 ? String(values.priceItem) : "");
+    setPriceInstallInput(values.priceInstall > 0 ? String(values.priceInstall) : "");
+    setClientError(null);
+    dragTargetRef.current = null;
+    dragStartRef.current = {
+      x: 0,
+      y: 0,
+      posX: values.imagePosX,
+      posY: values.imagePosY
+    };
+  }, [values]);
+
   const typeName =
     types.find((item) => item.id === formValues.typeId)?.name?.trim() || "Type";
   const totalPrice = formValues.priceItem + formValues.priceInstall;

@@ -19,8 +19,6 @@ export default async function AdminProductsPage({
   const search = typeof params.q === "string" ? params.q : "";
   const typeId = typeof params.type === "string" ? Number.parseInt(params.type, 10) : null;
   const page = typeof params.page === "string" ? Number.parseInt(params.page, 10) : 1;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
 
   const dashboard = await getAdminProductDashboard({
     page,
@@ -50,9 +48,6 @@ export default async function AdminProductsPage({
           </Link>
         </div>
       </section>
-
-      {success ? <div className="alert alert-success">{success}</div> : null}
-      {error ? <div className="alert alert-error">{error}</div> : null}
 
       <section className="admin-metric-grid">
         <article className="metric-card metric-card-highlight">

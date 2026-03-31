@@ -9,8 +9,6 @@ import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type LoginFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
-  error?: string | null;
-  success?: string | null;
   siteName: string;
   logoUrl: string;
   hasLogo: boolean;
@@ -18,8 +16,6 @@ type LoginFormProps = {
 
 export function LoginForm({
   action,
-  error,
-  success,
   siteName,
   logoUrl,
   hasLogo
@@ -76,8 +72,6 @@ export function LoginForm({
             <h2>Login Admin</h2>
             <p>Masuk untuk mengelola katalog sparepart dan operasional situs.</p>
 
-            {error ? <div className="alert alert-error">{error}</div> : null}
-            {success ? <div className="alert alert-success">{success}</div> : null}
             {state.error ? <div className="alert alert-error">{state.error}</div> : null}
 
             <form action={formAction} className="form-grid login-form">

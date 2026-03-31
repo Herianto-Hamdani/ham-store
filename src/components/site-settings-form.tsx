@@ -50,6 +50,13 @@ export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFo
     };
   }, []);
 
+  useEffect(() => {
+    objectUrls.current.forEach((item) => URL.revokeObjectURL(item));
+    objectUrls.current = [];
+    setFormValues(values);
+    setClientError(null);
+  }, [values]);
+
   function setPreview(field: "logoPreview" | "bannerPreview", file: File | null, fallback: string) {
     if (!file) {
       setFormValues((current) => ({ ...current, [field]: fallback }));

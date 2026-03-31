@@ -14,9 +14,7 @@ export default async function AdminLoginPage({
 }) {
   await ensureLoginPageRedirect();
 
-  const params = await searchParams;
-  const error = typeof params.error === "string" ? params.error : null;
-  const success = typeof params.success === "string" ? params.success : null;
+  await searchParams;
   const settings = await getSiteSettings();
   const siteName = getSiteName(settings.webName);
   const logoUrl = resolveImageUrl(settings.logoThumbPath, settings.logoPath);
@@ -25,8 +23,6 @@ export default async function AdminLoginPage({
   return (
     <LoginForm
       action={loginAction}
-      error={error}
-      success={success}
       siteName={siteName}
       logoUrl={logoUrl}
       hasLogo={hasLogo}

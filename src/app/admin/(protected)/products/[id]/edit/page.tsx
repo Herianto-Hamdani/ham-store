@@ -62,6 +62,7 @@ export default async function AdminProductEditPage({
         </div>
       </section>
       <ProductForm
+        key={`product-form-${product.id}-${product.updatedAt.toISOString()}`}
         action={updateProductAction.bind(null, product.id)}
         submitLabel="Update"
         types={types}

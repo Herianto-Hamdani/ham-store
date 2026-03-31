@@ -19,8 +19,6 @@ export default async function HomePage({
   const search = typeof params.q === "string" ? params.q : "";
   const typeId = typeof params.type === "string" ? Number.parseInt(params.type, 10) : null;
   const page = typeof params.page === "string" ? Number.parseInt(params.page, 10) : 1;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
 
   const [settings, catalog] = await Promise.all([
     getSiteSettings(),
@@ -74,9 +72,6 @@ export default async function HomePage({
           </div>
         ) : null}
       </section>
-
-      {success ? <div className="alert alert-success">{success}</div> : null}
-      {error ? <div className="alert alert-error">{error}</div> : null}
 
       <section className="filter-panel filter-panel-compact">
         <form method="get" action="/" className="filter-grid">

@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import type { Metadata } from "next";
 
 import { BodyClassManager } from "@/components/body-class-manager";
 import { DeferredTrafficTracker } from "@/components/deferred-traffic-tracker";
+import { QueryToast } from "@/components/query-toast";
 import { TopNav } from "@/components/top-nav";
 import { APP_NAME } from "@/lib/constants";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -32,6 +34,9 @@ export default async function RootLayout({
     <html lang="id">
       <body className="public-area">
         <BodyClassManager />
+        <Suspense fallback={null}>
+          <QueryToast />
+        </Suspense>
         <TopNav
           siteName={siteName}
           logoUrl={logoUrl}

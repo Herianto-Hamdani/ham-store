@@ -36,6 +36,7 @@ export default async function AdminProductNewPage() {
         </div>
       </section>
       <ProductForm
+        key="product-form-create"
         action={createProductAction}
         submitLabel="Simpan"
         types={types}

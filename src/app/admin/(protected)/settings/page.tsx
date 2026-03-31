@@ -15,9 +15,7 @@ export default async function AdminSettingsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const params = await searchParams;
-  const success = typeof params.success === "string" ? params.success : null;
-  const error = typeof params.error === "string" ? params.error : null;
+  await searchParams;
   const settings = await getSiteSettings();
   const maxUploadMb = getMaxUploadMb();
 
@@ -37,8 +35,6 @@ export default async function AdminSettingsPage({
           </Link>
         </div>
       </section>
-      {success ? <div className="alert alert-success">{success}</div> : null}
-      {error ? <div className="alert alert-error">{error}</div> : null}
       <SiteSettingsForm
         action={updateSiteSettingsAction}
         values={{
