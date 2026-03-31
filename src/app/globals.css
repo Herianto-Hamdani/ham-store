@@ -64,6 +64,7 @@ body.admin-area {
 }
 
 body.admin-login-page {
+    --login-header-height: 71px;
     --text: #f3f5fb;
     --muted: rgba(222, 228, 246, 0.74);
     --border: rgba(255, 189, 138, 0.16);
@@ -72,6 +73,8 @@ body.admin-login-page {
         radial-gradient(circle at 88% 8%, rgba(72, 121, 255, 0.1) 0, rgba(72, 121, 255, 0) 24%),
         radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.04) 0, rgba(255, 255, 255, 0) 34%),
         linear-gradient(180deg, #05070c 0%, #090d15 38%, #0a0f17 100%);
+    min-height: 100dvh;
+    overflow: hidden;
 }
 
 .site-header-admin {
@@ -1382,14 +1385,20 @@ body.admin-area .empty-state {
 }
 
 body.admin-login-page .main-content {
-    padding-top: clamp(.8rem, 2.5vw, 1.5rem);
-    padding-bottom: clamp(1.4rem, 3vw, 2.4rem);
+    min-height: calc(100dvh - var(--login-header-height));
+    height: calc(100dvh - var(--login-header-height));
+    padding: 0;
+    display: flex;
+    align-items: stretch;
 }
 
 body.admin-login-page .login-shell {
-    min-height: calc(100dvh - 74px - clamp(1.4rem, 3vw, 2.4rem));
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
     align-items: center;
-    padding: clamp(.6rem, 2.8vw, 1.6rem) 0 clamp(1rem, 3vw, 2rem);
+    padding: clamp(.5rem, 2vw, 1.2rem) 0;
+    overflow: hidden;
 }
 
 .login-shell::before,
@@ -1437,10 +1446,74 @@ body.admin-login-page .login-shell {
 }
 
 body.admin-login-page .login-panel {
+    width: min(500px, 100%);
+    max-height: calc(100dvh - var(--login-header-height) - clamp(1rem, 2vw, 1.8rem));
+    gap: .75rem;
+    padding: clamp(.82rem, 2vw, 1.05rem);
     border-color: rgba(255, 186, 134, 0.2);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.05),
         0 26px 68px rgba(1, 4, 10, 0.48);
+}
+
+body.admin-login-page .login-brand-panel {
+    padding: .88rem;
+    gap: .74rem;
+}
+
+body.admin-login-page .login-wordmark-stage {
+    min-height: 156px;
+    padding: .95rem 1rem;
+}
+
+body.admin-login-page .login-brand-meta p {
+    font-size: .88rem;
+    color: rgba(255, 255, 255, 0.74);
+}
+
+body.admin-login-page .auth-card-login {
+    border-color: rgba(255, 255, 255, 0.08);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
+        linear-gradient(180deg, rgba(17, 20, 28, 0.96), rgba(10, 12, 18, 0.98));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 18px 36px rgba(0, 0, 0, 0.26);
+    padding: .96rem;
+}
+
+body.admin-login-page .auth-card-login h1,
+body.admin-login-page .auth-card-login h2 {
+    color: #ffffff;
+}
+
+body.admin-login-page .login-card-kicker {
+    color: rgba(255, 188, 127, 0.9);
+}
+
+body.admin-login-page .login-card-head p,
+body.admin-login-page .login-field > span {
+    color: rgba(232, 236, 247, 0.76);
+}
+
+body.admin-login-page .auth-card-login input {
+    border-color: rgba(255, 255, 255, 0.1);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+        rgba(8, 10, 16, 0.8);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+body.admin-login-page .auth-card-login input::placeholder {
+    color: rgba(206, 213, 232, 0.46);
+}
+
+body.admin-login-page .auth-card-login input:focus {
+    border-color: rgba(255, 174, 102, 0.74);
+    box-shadow:
+        0 0 0 4px rgba(255, 144, 50, 0.12),
+        0 0 22px rgba(255, 144, 50, 0.12);
 }
 
 .login-brand-panel {
@@ -2859,6 +2932,10 @@ small {
 }
 
 @media (max-width: 640px) {
+    body.admin-login-page {
+        --login-header-height: 65px;
+    }
+
     .header-inner-login {
         min-height: 64px;
         padding: .72rem 0;
@@ -2890,6 +2967,35 @@ small {
         width: min(100%, 100%);
         padding: .72rem;
         border-radius: 22px;
+    }
+
+    body.admin-login-page .main-content {
+        min-height: calc(100dvh - var(--login-header-height));
+        height: calc(100dvh - var(--login-header-height));
+    }
+
+    body.admin-login-page .login-shell {
+        padding: .5rem 0;
+    }
+
+    body.admin-login-page .login-panel {
+        max-height: calc(100dvh - var(--login-header-height) - 1rem);
+        gap: .68rem;
+        padding: .72rem;
+    }
+
+    body.admin-login-page .login-brand-panel {
+        padding: .78rem;
+        gap: .65rem;
+    }
+
+    body.admin-login-page .login-wordmark-stage {
+        min-height: 136px;
+        padding: .82rem .8rem;
+    }
+
+    body.admin-login-page .auth-card-login {
+        padding: .82rem;
     }
 
     .login-brand-panel {
