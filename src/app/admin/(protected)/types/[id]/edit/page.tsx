@@ -42,6 +42,7 @@ export default async function AdminTypeEditPage({
       <TypeForm
         action={updateTypeAction.bind(null, type.id)}
         submitLabel="Update"
+        pendingLabel="Memperbarui Type..."
         initialName={type.name}
       />
     </>

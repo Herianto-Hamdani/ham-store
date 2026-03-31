@@ -39,6 +39,7 @@ export default async function AdminProductNewPage() {
         key="product-form-create"
         action={createProductAction}
         submitLabel="Simpan"
+        pendingLabel="Menyimpan Produk Baru..."
         types={types}
         values={{
           name: "",

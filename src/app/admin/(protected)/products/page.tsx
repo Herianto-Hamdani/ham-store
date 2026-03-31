@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteProductAction } from "@/lib/actions/admin";
 import { getAdminProductDashboard } from "@/lib/data/admin";
@@ -89,12 +90,13 @@ export default async function AdminProductsPage({
             >
               Lihat Publik
             </Link>
-            <Link
+            <LoadingLink
               href={`/admin/products/${dashboard.latestProduct.id}/edit`}
               className="btn btn-primary"
+              loadingLabel="Membuka Editor Produk..."
             >
               Edit Produk Terbaru
-            </Link>
+            </LoadingLink>
           </div>
         </section>
       ) : null}
@@ -138,6 +140,8 @@ export default async function AdminProductsPage({
                   <th>Produk</th>
                   <th>Type</th>
                   <th>Mode</th>
+                  <th>Harga Barang</th>
+                  <th>Harga Pasang</th>
                   <th>Paket</th>
                   <th>Dibuat</th>
                   <th>Aksi</th>
@@ -176,6 +180,8 @@ export default async function AdminProductsPage({
                       <td>
                         <span className="admin-inline-pill">{modeLabel}</span>
                       </td>
+                      <td>{formatRupiah(product.priceItem)}</td>
+                      <td>{formatRupiah(product.priceInstall)}</td>
                       <td>{formatRupiah(totalPrice)}</td>
                       <td>{product.createdAt.toISOString().slice(0, 10)}</td>
                       <td>
@@ -183,13 +189,17 @@ export default async function AdminProductsPage({
                           <Link className="btn btn-small btn-ghost" href={`/produk/${publicRef}`}>
                             Publik
                           </Link>
-                          <Link className="btn btn-small btn-ghost" href={`/admin/products/${product.id}/edit`}>
+                          <LoadingLink
+                            className="btn btn-small btn-ghost"
+                            href={`/admin/products/${product.id}/edit`}
+                            loadingLabel="Membuka Editor Produk..."
+                          >
                             Edit
-                          </Link>
+                          </LoadingLink>
                           <form action={deleteProductAction.bind(null, product.id)}>
                             <PendingSubmitButton
                               idleLabel="Hapus"
-                              pendingLabel="Menghapus..."
+                              pendingLabel="Menghapus Produk..."
                               className="btn btn-small btn-danger"
                             />
                           </form>

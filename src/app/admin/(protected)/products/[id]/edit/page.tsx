@@ -65,6 +65,7 @@ export default async function AdminProductEditPage({
         key={`product-form-${product.id}-${product.updatedAt.toISOString()}`}
         action={updateProductAction.bind(null, product.id)}
         submitLabel="Update"
+        pendingLabel="Memperbarui Produk..."
         types={types}
         values={{
           name: product.name,

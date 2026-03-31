@@ -11,6 +11,7 @@ type AccountFormProps = {
   title: string;
   description: string;
   submitLabel: string;
+  pendingLabel: string;
   initialUsername?: string;
   optionalPassword?: boolean;
 };
@@ -20,6 +21,7 @@ export function AccountForm({
   title,
   description,
   submitLabel,
+  pendingLabel,
   initialUsername = "",
   optionalPassword = false
 }: AccountFormProps) {
@@ -68,7 +70,7 @@ export function AccountForm({
           <div className="form-actions">
             <PendingSubmitButton
               idleLabel={submitLabel}
-              pendingLabel="Menyimpan Akun..."
+              pendingLabel={pendingLabel}
               className="btn btn-primary"
             />
           </div>

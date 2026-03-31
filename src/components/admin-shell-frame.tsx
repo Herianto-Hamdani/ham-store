@@ -181,7 +181,7 @@ export function AdminShellFrame({
           <form action={logoutAction} className="admin-side-logout">
             <PendingSubmitButton
               idleLabel="Keluar Admin"
-              pendingLabel="Keluar..."
+              pendingLabel="Menutup Sesi Admin..."
               className="btn btn-danger"
             />
           </form>

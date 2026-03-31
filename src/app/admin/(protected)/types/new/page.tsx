@@ -22,7 +22,7 @@ export default function AdminTypeNewPage() {
           </Link>
         </div>
       </section>
-      <TypeForm action={createTypeAction} submitLabel="Simpan" />
+      <TypeForm action={createTypeAction} submitLabel="Simpan" pendingLabel="Menyimpan Type Baru..." />
     </>
   );
 }

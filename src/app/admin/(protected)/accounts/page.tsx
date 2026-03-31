@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { AccountForm } from "@/components/account-form";
 import {
@@ -116,6 +117,7 @@ export default async function AdminAccountsPage({
         title="Registrasi Admin Baru"
         description="Tambahkan akun admin baru untuk tim operasional atau owner."
         submitLabel="Buat Akun Admin"
+        pendingLabel="Membuat Akun Admin Baru..."
       />
 
       {editingAccount ? (
@@ -124,6 +126,7 @@ export default async function AdminAccountsPage({
           title={`Edit Akun #${editingAccount.id}`}
           description="Isi password baru hanya jika memang ingin mengganti kredensial akun ini."
           submitLabel="Simpan Perubahan"
+          pendingLabel="Memperbarui Akun Admin..."
           initialUsername={editingAccount.username}
           optionalPassword
         />
@@ -158,16 +161,20 @@ export default async function AdminAccountsPage({
                     </td>
                     <td>********</td>
                     <td>{account.createdAt.toISOString().slice(0, 10)}</td>
-                    <td>
-                      <div className="row-actions">
-                        <Link className="btn btn-small btn-ghost" href={`/admin/accounts?edit=${account.id}`}>
-                          Edit
-                        </Link>
+                      <td>
+                        <div className="row-actions">
+                          <LoadingLink
+                            className="btn btn-small btn-ghost"
+                            href={`/admin/accounts?edit=${account.id}`}
+                            loadingLabel="Membuka Editor Akun Admin..."
+                          >
+                            Edit
+                          </LoadingLink>
                         {canDelete ? (
                           <form action={deleteAdminAccountAction.bind(null, account.id)}>
                             <PendingSubmitButton
                               idleLabel="Hapus"
-                              pendingLabel="Menghapus..."
+                              pendingLabel="Menghapus Akun Admin..."
                               className="btn btn-small btn-danger"
                             />
                           </form>

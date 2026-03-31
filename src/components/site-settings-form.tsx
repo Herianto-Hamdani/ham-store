@@ -210,7 +210,7 @@ export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFo
           <div className="form-actions">
             <PendingSubmitButton
               idleLabel="Simpan Pengaturan"
-              pendingLabel="Menyimpan Pengaturan..."
+              pendingLabel="Memperbarui Pengaturan Situs..."
               className="btn btn-primary"
             />
             <a href="/admin/products" className="btn btn-ghost">

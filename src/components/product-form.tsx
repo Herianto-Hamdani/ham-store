@@ -33,6 +33,7 @@ type TemplatePreview = {
 type ProductFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
+  pendingLabel: string;
   types: Type[];
   values: ProductFormValues;
   template: TemplatePreview;
@@ -42,6 +43,7 @@ type ProductFormProps = {
 export function ProductForm({
   action,
   submitLabel,
+  pendingLabel,
   types,
   values,
   template,
@@ -428,7 +430,7 @@ export function ProductForm({
         <div className="form-actions">
           <PendingSubmitButton
             idleLabel={submitLabel}
-            pendingLabel="Menyimpan Produk..."
+            pendingLabel={pendingLabel}
             className="btn btn-primary"
           />
           <a href="/admin/products" className="btn btn-ghost">

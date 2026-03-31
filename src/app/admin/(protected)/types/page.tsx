@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteTypeAction } from "@/lib/actions/admin";
 import { getTypeList } from "@/lib/data/admin";
@@ -113,13 +114,17 @@ export default async function AdminTypesPage({
                       <td>{type.createdAt.toISOString().slice(0, 10)}</td>
                       <td>
                         <div className="row-actions">
-                          <Link className="btn btn-small btn-ghost" href={`/admin/types/${type.id}/edit`}>
+                          <LoadingLink
+                            className="btn btn-small btn-ghost"
+                            href={`/admin/types/${type.id}/edit`}
+                            loadingLabel="Membuka Editor Type..."
+                          >
                             Edit
-                          </Link>
+                          </LoadingLink>
                           <form action={deleteTypeAction.bind(null, type.id)}>
                             <PendingSubmitButton
                               idleLabel="Hapus"
-                              pendingLabel="Menghapus..."
+                              pendingLabel="Menghapus Type..."
                               className="btn btn-small btn-danger"
                             />
                           </form>

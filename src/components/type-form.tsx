@@ -9,10 +9,11 @@ import { PendingSubmitButton } from "@/components/pending-submit-button";
 type TypeFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
+  pendingLabel: string;
   initialName?: string;
 };
 
-export function TypeForm({ action, submitLabel, initialName = "" }: TypeFormProps) {
+export function TypeForm({ action, submitLabel, pendingLabel, initialName = "" }: TypeFormProps) {
   const [state, formAction] = useActionState(action, initialFormState);
   const [name, setName] = useState(initialName);
   const normalizedName = name.trim() || "Nama Type";
@@ -42,7 +43,7 @@ export function TypeForm({ action, submitLabel, initialName = "" }: TypeFormProp
           <div className="form-actions">
             <PendingSubmitButton
               idleLabel={submitLabel}
-              pendingLabel="Menyimpan Type..."
+              pendingLabel={pendingLabel}
               className="btn btn-primary"
             />
             <a href="/admin/types" className="btn btn-ghost">

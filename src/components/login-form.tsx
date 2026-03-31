@@ -98,7 +98,7 @@ export function LoginForm({
               <div className="form-actions auth-actions login-actions">
                 <PendingSubmitButton
                   idleLabel="Masuk Panel"
-                  pendingLabel="Memproses Login..."
+                  pendingLabel="Memverifikasi Login Admin..."
                   className="btn btn-primary"
                 />
                 <Link href="/" className="btn btn-ghost">
