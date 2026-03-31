@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
+    "test": "npx vitest run",
+    "test:watch": "npx vitest",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
@@ -35,7 +37,8 @@
     "eslint-config-next": "^15.2.3",
     "prisma": "^6.19.2",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "effect": "^3.20.0"
