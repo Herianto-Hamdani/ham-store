@@ -61,8 +61,17 @@ export function ProductForm({
     values.priceInstall > 0 ? String(values.priceInstall) : ""
   );
   const objectUrlRef = useRef<string | null>(null);
-  const dragTargetRef = useRef<"template" | "image" | null>(null);
-  const dragStartRef = useRef({ x: 0, y: 0, posX: values.imagePosX, posY: values.imagePosY });
+  const previewFrameRef = useRef<HTMLDivElement | null>(null);
+  const interactionRef = useRef<{
+    mode: "drag" | "resize";
+    pointerId: number;
+    startX: number;
+    startY: number;
+    posX: number;
+    posY: number;
+    scale: number;
+  } | null>(null);
+  const [previewInteracting, setPreviewInteracting] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -83,13 +92,8 @@ export function ProductForm({
     setPriceItemInput(values.priceItem > 0 ? String(values.priceItem) : "");
     setPriceInstallInput(values.priceInstall > 0 ? String(values.priceInstall) : "");
     setClientError(null);
-    dragTargetRef.current = null;
-    dragStartRef.current = {
-      x: 0,
-      y: 0,
-      posX: values.imagePosX,
-      posY: values.imagePosY
-    };
+    setPreviewInteracting(false);
+    interactionRef.current = null;
   }, [values]);
 
   const typeName =
@@ -176,36 +180,65 @@ export function ProductForm({
     });
   }
 
-  function startDrag(target: "template" | "image", event: React.PointerEvent<HTMLDivElement>) {
-    dragTargetRef.current = target;
-    dragStartRef.current = {
-      x: event.clientX,
-      y: event.clientY,
+  function startPreviewInteraction(
+    mode: "drag" | "resize",
+    event: React.PointerEvent<HTMLElement>
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    interactionRef.current = {
+      mode,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
       posX: formValues.imagePosX,
-      posY: formValues.imagePosY
+      posY: formValues.imagePosY,
+      scale: formValues.imageScale
     };
-    event.currentTarget.setPointerCapture(event.pointerId);
+    setPreviewInteracting(true);
+    previewFrameRef.current?.setPointerCapture?.(event.pointerId);
   }
 
-  function onDrag(event: React.PointerEvent<HTMLDivElement>) {
-    if (!dragTargetRef.current) {
+  function onPreviewMove(event: React.PointerEvent<HTMLDivElement>) {
+    const interaction = interactionRef.current;
+    const frame = previewFrameRef.current;
+
+    if (!interaction || !frame) {
       return;
     }
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const deltaX = ((event.clientX - dragStartRef.current.x) / rect.width) * 100;
-    const deltaY = ((event.clientY - dragStartRef.current.y) / rect.height) * 100;
-    updateField("imagePosX", Math.max(0, Math.min(100, Math.round(dragStartRef.current.posX + deltaX))));
-    updateField("imagePosY", Math.max(0, Math.min(100, Math.round(dragStartRef.current.posY + deltaY))));
-  }
+    const rect = frame.getBoundingClientRect();
+    const deltaX = ((event.clientX - interaction.startX) / rect.width) * 100;
+    const deltaY = ((event.clientY - interaction.startY) / rect.height) * 100;
 
-  function stopDrag(event: React.PointerEvent<HTMLDivElement>) {
-    if (!dragTargetRef.current) {
+    if (interaction.mode === "drag") {
+      updateField(
+        "imagePosX",
+        Math.max(0, Math.min(100, Math.round(interaction.posX + deltaX)))
+      );
+      updateField(
+        "imagePosY",
+        Math.max(0, Math.min(100, Math.round(interaction.posY + deltaY)))
+      );
       return;
     }
 
-    dragTargetRef.current = null;
-    event.currentTarget.releasePointerCapture(event.pointerId);
+    const deltaScale = (((event.clientX - interaction.startX) / rect.width) + ((event.clientY - interaction.startY) / rect.height)) * 120;
+    updateField("imageScale", Math.max(10, Math.min(500, Math.round(interaction.scale + deltaScale))));
+  }
+
+  function stopPreviewInteraction(event?: React.PointerEvent<HTMLDivElement>) {
+    if (!interactionRef.current) {
+      return;
+    }
+
+    if (event) {
+      previewFrameRef.current?.releasePointerCapture?.(event.pointerId);
+    }
+
+    interactionRef.current = null;
+    setPreviewInteracting(false);
   }
 
   return (
@@ -339,6 +372,7 @@ export function ProductForm({
         <section className="form-section">
           <div className="form-section-head">
             <h2>Gambar</h2>
+            <p>Geser foto langsung di preview dan tarik handle sudut untuk mengubah skala.</p>
           </div>
 
           <label>
@@ -447,18 +481,18 @@ export function ProductForm({
           </div>
         </div>
         <div
+          ref={previewFrameRef}
           className={`product-card ${
             formValues.cardMode === "template" ? "product-card-template" : "product-card-image"
-          } designer-preview-card`}
+          } designer-preview-card${previewInteracting ? " designer-dragging" : ""}`}
+          onPointerMove={onPreviewMove}
+          onPointerUp={stopPreviewInteraction}
+          onPointerCancel={stopPreviewInteraction}
         >
           {formValues.cardMode === "template" ? (
             <div
               className="poster-frame product-card-media"
               style={template.style}
-              onPointerDown={(event) => startDrag("template", event)}
-              onPointerMove={onDrag}
-              onPointerUp={stopDrag}
-              onPointerCancel={stopDrag}
             >
               <TemplatePosterContent
                 backgroundUrl={template.backgroundUrl}
@@ -471,14 +505,22 @@ export function ProductForm({
                 imageAlt="Preview produk"
                 imageStyle={previewImageStyle}
               />
+              <div
+                className="product-preview-node product-preview-node-template"
+                onPointerDown={(event) => startPreviewInteraction("drag", event)}
+              >
+                <span className="designer-node-badge">Foto Produk</span>
+                <button
+                  type="button"
+                  className="designer-resize-handle"
+                  aria-label="Resize foto produk"
+                  onPointerDown={(event) => startPreviewInteraction("resize", event)}
+                />
+              </div>
             </div>
           ) : (
             <div
               className="thumb-wrap thumb-wrap-direct product-card-media"
-              onPointerDown={(event) => startDrag("image", event)}
-              onPointerMove={onDrag}
-              onPointerUp={stopDrag}
-              onPointerCancel={stopDrag}
             >
               <img
                 src={imageUrl}
@@ -489,6 +531,18 @@ export function ProductForm({
                 decoding="async"
                 style={previewImageStyle}
               />
+              <div
+                className="product-preview-node product-preview-node-image"
+                onPointerDown={(event) => startPreviewInteraction("drag", event)}
+              >
+                <span className="designer-node-badge">Foto Produk</span>
+                <button
+                  type="button"
+                  className="designer-resize-handle"
+                  aria-label="Resize foto produk"
+                  onPointerDown={(event) => startPreviewInteraction("resize", event)}
+                />
+              </div>
             </div>
           )}
           <div className="card-body">

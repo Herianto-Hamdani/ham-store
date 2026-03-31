@@ -1878,6 +1878,67 @@ body.admin-area .designer-preview-panel {
     user-select: none;
 }
 
+.product-preview-node {
+    position: absolute;
+    z-index: 6;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    border: 1.5px dashed rgba(255, 143, 38, 0.75);
+    border-radius: 1rem;
+    box-shadow:
+        0 0 0 2px rgba(255, 143, 38, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+    background: rgba(255, 143, 38, 0.06);
+}
+
+.product-preview-node-template {
+    top: var(--tpl-photo-top, 18%);
+    left: var(--tpl-photo-left, 15%);
+    width: var(--tpl-photo-width, 70%);
+    height: var(--tpl-photo-height, 58%);
+}
+
+.product-preview-node-image {
+    inset: 7%;
+}
+
+.designer-preview-card.designer-dragging .product-preview-node {
+    cursor: grabbing;
+}
+
+.product-preview-node .designer-node-badge {
+    position: absolute;
+    top: -11px;
+    left: -11px;
+    z-index: 7;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    font-size: .62rem;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    border-radius: 999px;
+    padding: .12rem .35rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+}
+
+.product-preview-node .designer-resize-handle {
+    appearance: none;
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #fff;
+    background: #ff8b2a;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    cursor: nwse-resize;
+    z-index: 8;
+}
+
 .designer-photo-placeholder {
     position: absolute;
     inset: 0;
