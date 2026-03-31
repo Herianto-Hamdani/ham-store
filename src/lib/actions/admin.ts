@@ -573,12 +573,8 @@ export async function updateSiteSettingsAction(
     }
 
     const logoFile = getOptionalFile(formData.get("logo_web"));
-    const bannerFile = getOptionalFile(formData.get("banner_web"));
 
-    const [logoSet, bannerSet] = await Promise.all([
-      logoFile ? storeUploadedImage(logoFile) : Promise.resolve(null),
-      bannerFile ? storeUploadedImage(bannerFile) : Promise.resolve(null)
-    ]);
+    const logoSet = logoFile ? await storeUploadedImage(logoFile) : null;
 
     try {
       await prisma.siteSetting.upsert({
@@ -588,9 +584,7 @@ export async function updateSiteSettingsAction(
           whatsappNumber,
           whatsappMessage,
           logoPath: logoSet?.imagePath ?? current.logoPath,
-          logoThumbPath: logoSet?.thumbPath ?? current.logoThumbPath,
-          bannerPath: bannerSet?.imagePath ?? current.bannerPath,
-          bannerThumbPath: bannerSet?.thumbPath ?? current.bannerThumbPath
+          logoThumbPath: logoSet?.thumbPath ?? current.logoThumbPath
         },
         create: {
           id: 1,
@@ -598,23 +592,19 @@ export async function updateSiteSettingsAction(
           whatsappNumber,
           whatsappMessage,
           logoPath: logoSet?.imagePath ?? null,
-          logoThumbPath: logoSet?.thumbPath ?? null,
-          bannerPath: bannerSet?.imagePath ?? null,
-          bannerThumbPath: bannerSet?.thumbPath ?? null
+          logoThumbPath: logoSet?.thumbPath ?? null
         }
       });
     } catch (error) {
-      await Promise.all([
-        logoSet ? deleteImageSet(logoSet.imagePath, logoSet.thumbPath) : Promise.resolve(),
-        bannerSet ? deleteImageSet(bannerSet.imagePath, bannerSet.thumbPath) : Promise.resolve()
-      ]);
+      if (logoSet) {
+        await deleteImageSet(logoSet.imagePath, logoSet.thumbPath);
+      }
       throw error;
     }
 
-    await Promise.all([
-      logoSet ? deleteImageSet(current.logoPath, current.logoThumbPath) : Promise.resolve(),
-      bannerSet ? deleteImageSet(current.bannerPath, current.bannerThumbPath) : Promise.resolve()
-    ]);
+    if (logoSet) {
+      await deleteImageSet(current.logoPath, current.logoThumbPath);
+    }
 
     revalidateCatalogPaths();
   } catch (error) {
@@ -676,8 +666,6 @@ export async function updateTemplateSettingsAction(
           whatsappMessage: current.whatsappMessage,
           logoPath: current.logoPath,
           logoThumbPath: current.logoThumbPath,
-          bannerPath: current.bannerPath,
-          bannerThumbPath: current.bannerThumbPath,
           templateBgPath: bgSet?.imagePath ?? null,
           templateBgThumbPath: bgSet?.thumbPath ?? null,
           templateLogoPath: logoSet?.imagePath ?? null,

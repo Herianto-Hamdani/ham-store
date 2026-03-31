@@ -39,7 +39,7 @@ const navItems = [
   {
     href: "/admin/settings",
     label: "Pengaturan Situs",
-    description: "Logo, banner, dan WhatsApp"
+    description: "Logo dan WhatsApp"
   },
   {
     href: "/admin/template",

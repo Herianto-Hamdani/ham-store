@@ -92,8 +92,6 @@ model SiteSetting {
   whatsappMessage       String   @default("Halo admin, saya ingin bertanya tentang produk.") @map("whatsapp_message") @db.VarChar(255)
   logoPath              String?  @map("logo_path") @db.VarChar(255)
   logoThumbPath         String?  @map("logo_thumb_path") @db.VarChar(255)
-  bannerPath            String?  @map("banner_path") @db.VarChar(255)
-  bannerThumbPath       String?  @map("banner_thumb_path") @db.VarChar(255)
   templateBgPath        String?  @map("template_bg_path") @db.VarChar(255)
   templateBgThumbPath   String?  @map("template_bg_thumb_path") @db.VarChar(255)
   templateLogoPath      String?  @map("template_logo_path") @db.VarChar(255)

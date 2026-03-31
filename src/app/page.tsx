@@ -1,11 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { LoadingLink } from "@/components/loading-link";
 import { ProductCard } from "@/components/product-card";
 import { getCatalog } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/site-settings";
-import { buildWhatsappUrl, getSiteName, resolveImageUrl } from "@/lib/utils";
+import { buildWhatsappUrl, getSiteName } from "@/lib/utils";
 
 export const revalidate = 300;
 
@@ -31,13 +30,11 @@ export default async function HomePage({
   ]);
 
   const siteName = getSiteName(settings.webName);
-  const hasBanner = Boolean(settings.bannerThumbPath || settings.bannerPath);
-  const bannerImage = hasBanner ? resolveImageUrl(settings.bannerThumbPath, settings.bannerPath) : null;
   const whatsappUrl = buildWhatsappUrl(settings.whatsappNumber, settings.whatsappMessage);
 
   return (
     <main className="container main-content">
-      <section className={`hero-panel hero-panel-compact${hasBanner ? " hero-panel-with-banner" : ""}`}>
+      <section className="hero-panel hero-panel-compact">
         <div className="hero-panel-top">
           <div className="hero-panel-content">
             <h1>{siteName}</h1>
@@ -59,19 +56,6 @@ export default async function HomePage({
             </a>
           </div>
         </div>
-        {bannerImage ? (
-          <div className="hero-banner-wrap hero-banner-wrap-compact">
-            <Image
-              src={bannerImage}
-              alt={`Banner ${siteName}`}
-              className="hero-banner-image hero-banner-image-compact"
-              width={1600}
-              height={400}
-              priority
-              sizes="(max-width: 980px) 100vw, 1200px"
-            />
-          </div>
-        ) : null}
       </section>
 
       <section className="filter-panel filter-panel-compact">

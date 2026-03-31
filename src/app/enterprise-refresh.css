@@ -7,15 +7,6 @@
   margin-bottom: 0.72rem;
 }
 
-.hero-banner-wrap-compact {
-  aspect-ratio: 16 / 4;
-  max-height: 160px;
-}
-
-.hero-banner-image-compact {
-  object-fit: contain;
-}
-
 .section-eyebrow {
   display: inline-block;
   margin-bottom: 0.25rem;
@@ -516,10 +507,6 @@ body.admin-sidebar-open {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .hero-banner-wrap-compact {
-    max-height: 132px;
-  }
-
   .admin-sidebar-toggle {
     display: inline-flex;
   }
@@ -575,11 +562,6 @@ body.admin-sidebar-open {
 
   .hero-panel-compact {
     padding: 0.72rem 0.68rem;
-  }
-
-  .hero-banner-wrap-compact {
-    aspect-ratio: 16 / 5;
-    max-height: 108px;
   }
 
   .hero-panel-top {

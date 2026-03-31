@@ -26,7 +26,6 @@ type SiteSettingsValues = {
   whatsappNumber: string;
   whatsappMessage: string;
   logoPreview: string;
-  bannerPreview: string;
   waPreview: string | null;
 };
 
@@ -57,15 +56,15 @@ export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFo
     setClientError(null);
   }, [values]);
 
-  function setPreview(field: "logoPreview" | "bannerPreview", file: File | null, fallback: string) {
+  function setPreview(file: File | null, fallback: string) {
     if (!file) {
-      setFormValues((current) => ({ ...current, [field]: fallback }));
+      setFormValues((current) => ({ ...current, logoPreview: fallback }));
       return;
     }
 
     const nextUrl = URL.createObjectURL(file);
     objectUrls.current.push(nextUrl);
-    setFormValues((current) => ({ ...current, [field]: nextUrl }));
+    setFormValues((current) => ({ ...current, logoPreview: nextUrl }));
   }
 
   function validateImageFile(file: File | null) {
@@ -151,49 +150,21 @@ export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFo
                   if (error) {
                     setClientError(error);
                     event.currentTarget.value = "";
-                    setPreview("logoPreview", null, values.logoPreview);
+                    setPreview(null, values.logoPreview);
                     return;
                   }
 
                   setClientError(null);
-                  setPreview("logoPreview", nextFile, values.logoPreview);
-                }}
-              />
-              <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
-            </label>
-            <label>
-              Banner Halaman Publik (opsional)
-              <input
-                type="file"
-                name="banner_web"
-                accept=".jpg,.jpeg,.png"
-                onChange={(event) => {
-                  const nextFile = event.target.files?.[0] ?? null;
-                  const error = validateImageFile(nextFile);
-                  if (error) {
-                    setClientError(error);
-                    event.currentTarget.value = "";
-                    setPreview("bannerPreview", null, values.bannerPreview);
-                    return;
-                  }
-
-                  setClientError(null);
-                  setPreview("bannerPreview", nextFile, values.bannerPreview);
+                  setPreview(nextFile, values.logoPreview);
                 }}
               />
               <small>Maksimal {maxUploadMb}MB. Format JPG/JPEG/PNG.</small>
             </label>
           </div>
 
-          <div className="settings-preview-grid">
-            <div className="image-preview-block">
-              <p>Preview Logo</p>
-              <img src={formValues.logoPreview} alt="Preview logo web" className="preview-thumb preview-thumb-wide" />
-            </div>
-            <div className="image-preview-block">
-              <p>Preview Banner</p>
-              <img src={formValues.bannerPreview} alt="Preview banner web" className="preview-thumb preview-thumb-banner" />
-            </div>
+          <div className="image-preview-block">
+            <p>Preview Logo</p>
+            <img src={formValues.logoPreview} alt="Preview logo web" className="preview-thumb preview-thumb-wide" />
           </div>
 
           <div className="settings-wa-preview">

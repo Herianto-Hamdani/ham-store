@@ -26,7 +26,7 @@ export default async function AdminSettingsPage({
           <span className="section-eyebrow">Brand settings</span>
           <h1>Pengaturan Situs</h1>
           <p className="admin-lead">
-            Atur identitas brand, banner publik, dan koneksi WhatsApp dari satu tempat.
+            Atur identitas brand dan koneksi WhatsApp dari satu tempat.
           </p>
         </div>
         <div className="filter-actions">
@@ -42,7 +42,6 @@ export default async function AdminSettingsPage({
           whatsappNumber: settings.whatsappNumber,
           whatsappMessage: settings.whatsappMessage,
           logoPreview: resolveImageUrl(settings.logoThumbPath, settings.logoPath),
-          bannerPreview: resolveImageUrl(settings.bannerThumbPath, settings.bannerPath),
           waPreview: buildWhatsappUrl(settings.whatsappNumber, settings.whatsappMessage)
         }}
         maxUploadMb={maxUploadMb}

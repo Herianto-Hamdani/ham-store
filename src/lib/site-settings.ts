@@ -13,8 +13,6 @@ export const defaultSiteSettingValues = {
   whatsappMessage: DEFAULT_WHATSAPP_MESSAGE,
   logoPath: null,
   logoThumbPath: null,
-  bannerPath: null,
-  bannerThumbPath: null,
   templateBgPath: null,
   templateBgThumbPath: null,
   templateLogoPath: null,
