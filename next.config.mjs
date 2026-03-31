@@ -1,5 +1,6 @@
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
 const remotePatterns = [];
+const allowedConnectOrigins = new Set(["'self'"]);
 
 if (supabaseUrl) {
   try {
@@ -10,6 +11,7 @@ if (supabaseUrl) {
       port: url.port || undefined,
       pathname: "/storage/v1/object/public/**"
     });
+    allowedConnectOrigins.add(url.origin);
   } catch {
     // Ignore invalid storage URL and keep local image delivery working.
   }
@@ -18,6 +20,20 @@ if (supabaseUrl) {
 const isProduction = process.env.NODE_ENV === "production";
 const hasHttpsAppUrl = /^https:\/\//i.test(process.env.APP_URL ?? "");
 
+if (process.env.APP_URL) {
+  try {
+    allowedConnectOrigins.add(new URL(process.env.APP_URL).origin);
+  } catch {
+    // Ignore invalid app URL and keep runtime functional.
+  }
+}
+
+if (!isProduction) {
+  allowedConnectOrigins.add("http:");
+  allowedConnectOrigins.add("ws:");
+  allowedConnectOrigins.add("wss:");
+}
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -25,7 +41,7 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
-  `connect-src 'self' https:${isProduction ? "" : " http: ws: wss:"}`,
+  `connect-src ${Array.from(allowedConnectOrigins).join(" ")}`,
   `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
   "object-src 'none'",
