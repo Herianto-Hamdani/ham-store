@@ -149,6 +149,7 @@ function revalidateCatalogPaths(productId?: number) {
   revalidateTag(CACHE_TAGS.sitemap);
   revalidateTag(CACHE_TAGS.adminOverview);
 
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/produk/[ref]", "page");
   revalidatePath("/kontak/[ref]", "page");

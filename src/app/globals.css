@@ -831,10 +831,10 @@ body.admin-area .btn-nav {
 }
 
 .card-grid {
-    --card-grid-columns: 5;
+    --card-min-width: 220px;
     display: grid;
-    grid-template-columns: repeat(var(--card-grid-columns), minmax(0, 1fr));
-    gap: clamp(.62rem, .9vw, .9rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min-width)), 1fr));
+    gap: clamp(.7rem, 1vw, 1rem);
     align-items: stretch;
 }
 
@@ -847,7 +847,7 @@ body.admin-area .btn-nav {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
-    min-height: clamp(248px, 23vw, 346px);
+    min-height: clamp(286px, 24vw, 404px);
 }
 
 .card-grid > .product-card {
@@ -953,11 +953,9 @@ body.admin-area .btn-nav {
     height: var(--tpl-photo-height, 58%);
     z-index: 1;
     overflow: hidden;
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 255, 0.9));
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.55),
-        0 10px 24px rgba(0, 0, 0, 0.1);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .poster-photo {
@@ -972,7 +970,7 @@ body.admin-area .btn-nav {
         )
         scale(var(--photo-scale, 1));
     transform-origin: center center;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.22));
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
     user-select: none;
     -webkit-user-drag: none;
 }
@@ -1039,7 +1037,7 @@ body.admin-area .btn-nav {
     margin: 0;
     color: var(--muted);
     line-height: 1.45;
-    font-size: .84rem;
+    font-size: .86rem;
     min-height: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -2104,9 +2102,11 @@ body.admin-area .settings-wa-preview {
 
 .detail-layout {
     display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 1.1rem;
+    grid-template-columns: minmax(340px, 1.02fr) minmax(320px, .98fr);
+    gap: clamp(.9rem, 1.5vw, 1.4rem);
     align-items: start;
+    max-width: 1540px;
+    margin: 0 auto;
 }
 
 .detail-image-wrap {
@@ -2115,6 +2115,7 @@ body.admin-area .settings-wa-preview {
     border-radius: 16px;
     overflow: hidden;
     aspect-ratio: 4 / 3;
+    min-width: 0;
 }
 
 .detail-image-wrap .poster-frame,
@@ -2237,6 +2238,12 @@ small {
     color: var(--muted);
 }
 
+@media (max-width: 1200px) {
+    .card-grid {
+        --card-min-width: 205px;
+    }
+}
+
 @media (max-width: 980px) {
     .login-panel {
         grid-template-columns: 1fr;
@@ -2247,7 +2254,7 @@ small {
     }
 
     .card-grid {
-        --card-grid-columns: 4;
+        --card-min-width: 190px;
     }
 
     .hero-panel-top {
@@ -2386,7 +2393,7 @@ small {
     }
 
     .card-grid {
-        --card-grid-columns: 2;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .admin-insights-bar {
@@ -2601,14 +2608,8 @@ small {
 
 }
 
-@media (min-width: 1280px) {
-    .card-grid {
-        --card-grid-columns: 6;
-    }
-}
-
 @media (min-width: 1600px) {
     .card-grid {
-        --card-grid-columns: 8;
+        --card-min-width: 236px;
     }
 }

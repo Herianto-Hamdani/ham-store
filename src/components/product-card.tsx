@@ -24,7 +24,7 @@ type ProductCardProps = {
 };
 
 const CARD_MEDIA_SIZES =
-  "(max-width: 640px) 48vw, (max-width: 980px) 24vw, (max-width: 1280px) 20vw, (max-width: 1600px) 16vw, 12vw";
+  "(max-width: 640px) 44vw, (max-width: 820px) 30vw, (max-width: 1180px) 24vw, (max-width: 1540px) 18vw, 240px";
 
 export function ProductCard({ product, settings }: ProductCardProps) {
   const href = `/produk/${encryptPublicId(product.id)}`;
