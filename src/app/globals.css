@@ -1135,13 +1135,12 @@ body.admin-area .chip {
 }
 
 .price-inline-card {
-    width: fit-content;
-    max-width: 100%;
-    display: inline-flex;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
     align-items: stretch;
-    justify-content: center;
     gap: 0;
-    min-height: 0;
+    min-height: 50px;
     padding: 0;
     border-radius: 12px;
     border: 1px solid #ffbb72;
@@ -1150,19 +1149,19 @@ body.admin-area .chip {
 }
 
 .price-inline-card-label {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: .08rem;
     color: #8f3c00;
     font-size: .78rem;
     font-weight: 700;
-    line-height: 1.02;
-    padding: .54rem .82rem;
+    line-height: 1;
+    padding: .54rem .68rem;
     background: rgba(255, 255, 255, 0.97);
     border-right: 1px solid #ffd1aa;
-    flex: 0 1 auto;
-    min-width: 96px;
-    text-align: left;
+    min-width: 0;
+    text-align: center;
 }
 
 .price-inline-card-label span {
@@ -1172,15 +1171,16 @@ body.admin-area .chip {
 .price-inline-card-value {
     display: flex;
     align-items: center;
+    justify-content: center;
     color: var(--primary-dark);
-    font-size: clamp(.84rem, .18vw + .82rem, 1rem);
+    font-size: clamp(.82rem, .16vw + .82rem, 1rem);
     font-weight: 900;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    padding: .62rem .82rem;
+    padding: .62rem .72rem;
     background: linear-gradient(180deg, #ffb018, #ff9800);
-    flex: 0 0 auto;
-    text-align: right;
+    min-width: 0;
+    text-align: center;
     white-space: nowrap;
     letter-spacing: -.01em;
 }
@@ -2733,18 +2733,19 @@ small {
     }
 
     .price-inline-card {
+        grid-template-columns: 92px minmax(0, 1fr);
+        min-height: 46px;
         border-radius: 11px;
     }
 
     .price-inline-card-label {
         font-size: .72rem;
-        min-width: 82px;
-        padding: .5rem .68rem;
+        padding: .48rem .56rem;
     }
 
     .price-inline-card-value {
         font-size: .88rem;
-        padding: .54rem .7rem;
+        padding: .52rem .62rem;
     }
 
     .detail-content {
