@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
@@ -22,87 +23,93 @@ export function LoginForm({
 }: LoginFormProps) {
   const [state, formAction] = useActionState(action, initialFormState);
   const brandMark = siteName.replace(/\s+/g, "").slice(0, 2).toUpperCase() || "HS";
+  const displayName = siteName.toUpperCase();
 
   return (
     <section className="container main-content">
       <section className="login-shell">
         <div className="login-panel">
-          <aside className="login-brand-panel">
-            <span className="login-brand-eyebrow">{siteName.toUpperCase()} CONTROL CENTER</span>
-            <h1>Admin portal yang lebih rapi untuk operasional katalog.</h1>
-            <p>
-              Masuk ke panel admin untuk mengatur produk, type, branding situs, template card,
-              dan akses tim dari satu tempat.
-            </p>
-            <ul className="login-feature-list" aria-label="Fitur utama panel admin">
-              <li>Dashboard katalog dan traffic dalam satu workspace</li>
-              <li>Preview desain produk sebelum dipublikasikan</li>
-              <li>Keamanan login dengan proteksi rate-limit database</li>
-            </ul>
-            <div className="login-trust-grid">
-              <div className="login-trust-card">
-                <strong>Modern admin</strong>
-                <span>Tampilan baru untuk kerja harian yang lebih cepat.</span>
-              </div>
-              <div className="login-trust-card">
-                <strong>Production ready</strong>
-                <span>Siap untuk alur deploy Vercel dan PostgreSQL.</span>
-              </div>
-            </div>
-            <div className="login-brand-identity">
+          <aside className="login-brand-panel" aria-label={`${siteName} brand`}>
+            <div className="login-brand-head">
               {hasLogo ? (
-                <img
-                  src={logoUrl}
-                  alt={`${siteName} logo`}
-                  className="login-brand-logo"
-                  width={72}
-                  height={72}
-                />
+                <span className="login-brand-logo-frame">
+                  <Image
+                    src={logoUrl}
+                    alt={`${siteName} logo`}
+                    className="login-brand-logo"
+                    width={78}
+                    height={78}
+                    sizes="78px"
+                  />
+                </span>
               ) : (
                 <span className="login-brand-mark">{brandMark}</span>
               )}
-              <div>
-                <strong>{siteName}</strong>
-                <small>Admin Access</small>
-              </div>
+              <span className="login-brand-chip">Admin</span>
+            </div>
+
+            <div className="login-wordmark-stage" aria-hidden="true">
+              <span className="login-wordmark-halo login-wordmark-halo-alpha" />
+              <span className="login-wordmark-halo login-wordmark-halo-beta" />
+              <span className="login-wordmark-grid" />
+              <span className="login-wordmark-sweep" />
+              <svg className="login-wordmark" viewBox="0 0 760 220" role="presentation">
+                <text className="login-wordmark-shadow" x="50%" y="54%" textAnchor="middle">
+                  {displayName}
+                </text>
+                <text className="login-wordmark-base" x="50%" y="54%" textAnchor="middle">
+                  {displayName}
+                </text>
+                <text className="login-wordmark-energy" x="50%" y="54%" textAnchor="middle">
+                  {displayName}
+                </text>
+              </svg>
+            </div>
+
+            <div className="login-brand-meta">
+              <span className="login-brand-eyebrow">Secure Access</span>
+              <p>Masuk ke panel.</p>
             </div>
           </aside>
 
           <div className="auth-card auth-card-login">
-            <h2>Login Admin</h2>
-            <p>Masuk untuk mengelola katalog sparepart dan operasional situs.</p>
+            <div className="login-card-head">
+              <span className="login-card-kicker">HAM STORE</span>
+              <h1>Login</h1>
+              <p>Username dan password.</p>
+            </div>
 
             {state.error ? <div className="alert alert-error">{state.error}</div> : null}
 
             <form action={formAction} className="form-grid login-form">
-              <label>
-                Username
+              <label className="login-field">
+                <span>Username</span>
                 <input
                   type="text"
                   name="username"
                   required
                   autoComplete="username"
-                  placeholder="Masukkan username admin"
+                  placeholder="Username admin"
                 />
               </label>
-              <label>
-                Password
+              <label className="login-field">
+                <span>Password</span>
                 <input
                   type="password"
                   name="password"
                   required
                   autoComplete="current-password"
-                  placeholder="Masukkan password"
+                  placeholder="Password"
                 />
               </label>
               <div className="form-actions auth-actions login-actions">
                 <PendingSubmitButton
-                  idleLabel="Masuk Panel"
+                  idleLabel="Masuk"
                   pendingLabel="Memverifikasi Login Admin..."
                   className="btn btn-primary"
                 />
                 <Link href="/" className="btn btn-ghost">
-                  Kembali ke Katalog
+                  Katalog
                 </Link>
               </div>
             </form>
