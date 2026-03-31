@@ -148,14 +148,25 @@ export default async function AdminTypesPage({
               }
               next.set("page", String(targetPage));
 
+              if (targetPage === payload.page) {
+                return (
+                  <span key={targetPage} className="active" aria-current="page">
+                    {targetPage}
+                  </span>
+                );
+              }
+
               return (
-                <Link
+                <LoadingLink
                   key={targetPage}
                   href={`/admin/types?${next.toString()}`}
-                  className={targetPage === payload.page ? "active" : ""}
+                  className=""
+                  loadingLabel={`Memuat Halaman Type ${targetPage}...`}
+                  showInlineSpinner={false}
+                  overlayMode="wordmark"
                 >
                   {targetPage}
-                </Link>
+                </LoadingLink>
               );
             })}
           </nav>

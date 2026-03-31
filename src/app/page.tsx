@@ -151,6 +151,7 @@ export default async function HomePage({
                   className=""
                   loadingLabel={`Memuat Halaman Katalog ${targetPage}...`}
                   showInlineSpinner={false}
+                  overlayMode="wordmark"
                 >
                   {targetPage}
                 </LoadingLink>

@@ -221,14 +221,26 @@ export default async function AdminProductsPage({
               if (search) next.set("q", search);
               if (typeId) next.set("type", String(typeId));
               next.set("page", String(targetPage));
+
+              if (targetPage === dashboard.page) {
+                return (
+                  <span key={targetPage} className="active" aria-current="page">
+                    {targetPage}
+                  </span>
+                );
+              }
+
               return (
-                <Link
+                <LoadingLink
                   key={targetPage}
                   href={`/admin/products?${next.toString()}`}
-                  className={targetPage === dashboard.page ? "active" : ""}
+                  className=""
+                  loadingLabel={`Memuat Halaman Produk ${targetPage}...`}
+                  showInlineSpinner={false}
+                  overlayMode="wordmark"
                 >
                   {targetPage}
-                </Link>
+                </LoadingLink>
               );
             })}
           </nav>

@@ -11,6 +11,7 @@ type LoadingLinkProps = {
   children: React.ReactNode;
   loadingLabel: string;
   showInlineSpinner?: boolean;
+  overlayMode?: "auto" | "wordmark" | "action";
 };
 
 export function LoadingLink({
@@ -18,7 +19,8 @@ export function LoadingLink({
   className = "btn btn-ghost",
   children,
   loadingLabel,
-  showInlineSpinner = true
+  showInlineSpinner = true,
+  overlayMode = "auto"
 }: LoadingLinkProps) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -50,7 +52,7 @@ export function LoadingLink({
         <span>{children}</span>
       </a>
 
-      {pending ? <ActionLoadingOverlay label={loadingLabel} /> : null}
+      {pending ? <ActionLoadingOverlay label={loadingLabel} modeOverride={overlayMode} /> : null}
     </>
   );
 }
