@@ -1136,7 +1136,7 @@ body.admin-area .chip {
 
 .price-inline-card {
     width: 100%;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: space-between;
     gap: .45rem;
@@ -1145,20 +1145,26 @@ body.admin-area .chip {
     border-radius: 10px;
     border: 1px solid #ffd0a6;
     background: linear-gradient(180deg, #fff8f0, #fff1e3);
-    white-space: nowrap;
+    flex-wrap: wrap;
 }
 
 .price-inline-card-label {
     color: #8f3c00;
     font-size: .78rem;
     font-weight: 700;
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
 .price-inline-card-value {
     color: var(--primary-dark);
-    font-size: .96rem;
+    font-size: clamp(.84rem, .3vw + .8rem, .96rem);
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
 }
 
 .price-table {
@@ -1188,6 +1194,7 @@ body.admin-area .chip {
     color: var(--primary-dark);
     font-size: 1.05rem;
     line-height: 1.1;
+    white-space: nowrap;
 }
 
 .pagination {
