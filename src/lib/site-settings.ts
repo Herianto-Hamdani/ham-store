@@ -1,8 +1,7 @@
-import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 import type { SiteSetting } from "@prisma/client";
 
-import { CACHE_TAGS } from "@/lib/cache-tags";
 import { APP_NAME, DEFAULT_WHATSAPP_MESSAGE } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 
@@ -39,7 +38,7 @@ export const defaultSiteSettingValues = {
   templatePhotoHeight: 58
 } satisfies Omit<SiteSetting, "createdAt" | "updatedAt">;
 
-async function readSiteSettings(): Promise<SiteSetting> {
+const readSiteSettings = cache(async (): Promise<SiteSetting> => {
   const existing = await prisma.siteSetting.findUnique({
     where: { id: 1 }
   });
@@ -57,15 +56,10 @@ async function readSiteSettings(): Promise<SiteSetting> {
       where: { id: 1 }
     });
   }
-}
-
-const getCachedSiteSettings = unstable_cache(async () => readSiteSettings(), ["site-settings"], {
-  revalidate: 60 * 60,
-  tags: [CACHE_TAGS.siteSettings]
 });
 
 export async function getSiteSettings(): Promise<SiteSetting> {
-  return getCachedSiteSettings();
+  return readSiteSettings();
 }
 
 export async function getMutableSiteSettings(): Promise<SiteSetting> {

@@ -988,10 +988,14 @@ body.admin-area .btn-nav {
     font-weight: 900;
     font-size: calc(var(--tpl-title-font, 14) * 1px);
     letter-spacing: .03em;
-    padding: .58rem .65rem;
+    padding: .5rem .72rem;
     border: 1px solid rgba(255, 255, 255, 0.52);
     text-transform: uppercase;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.14;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1043,6 +1047,15 @@ body.admin-area .btn-nav {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.product-card .poster-title-box {
+    font-size: clamp(.72rem, .72vw + .34rem, .96rem);
+    min-height: 2.55em;
+}
+
+.detail-image-wrap .poster-title-box {
+    font-size: clamp(.94rem, 1vw + .48rem, 1.32rem);
 }
 
 .product-card-template .price-table-wrap {
@@ -1867,6 +1880,41 @@ body.admin-area .designer-preview-panel {
     cursor: grab;
     touch-action: none;
     user-select: none;
+}
+
+.designer-photo-placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: transparent;
+}
+
+.designer-photo-placeholder-shell {
+    width: 62%;
+    aspect-ratio: 3 / 4;
+    border-radius: 22px;
+    border: 2px dashed rgba(255, 255, 255, 0.78);
+    background:
+        radial-gradient(circle at 24% 20%, rgba(255, 176, 93, 0.9) 0 10%, transparent 11%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04));
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.24),
+        0 18px 30px rgba(0, 0, 0, 0.14);
+}
+
+.designer-photo-placeholder-label {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    padding: .28rem .68rem;
+    background: rgba(12, 21, 54, 0.78);
+    color: #ffffff;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
 }
 
 .designer-preview-card.designer-dragging .poster-photo-wrap,

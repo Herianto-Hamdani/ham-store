@@ -109,10 +109,12 @@ export async function storeUploadedImage(file: File): Promise<StoredImageSet> {
   if (supabase) {
     const [imageUpload, thumbUpload] = await Promise.all([
       supabase.storage.from(STORAGE_BUCKET).upload(variants.imagePath, variants.master, {
+        cacheControl: "31536000",
         contentType: variants.contentType,
         upsert: true
       }),
       supabase.storage.from(STORAGE_BUCKET).upload(variants.thumbPath, variants.thumb, {
+        cacheControl: "31536000",
         contentType: variants.contentType,
         upsert: true
       })

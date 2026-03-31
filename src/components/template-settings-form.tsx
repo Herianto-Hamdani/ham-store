@@ -552,20 +552,10 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
               <div className="poster-side poster-side-left">MODEL: BN52</div>
               <div className="poster-side poster-side-right">ORI BRD</div>
               <div className="poster-photo-wrap">
-                <img
-                  src="/assets/img/placeholder.svg"
-                  alt="Preview photo"
-                  className="poster-photo"
-                  style={
-                    {
-                      "--photo-pos-x": "50%",
-                      "--photo-pos-y": "50%",
-                      "--photo-pos-x-num": 50,
-                      "--photo-pos-y-num": 50,
-                      "--photo-scale": 1
-                    } as React.CSSProperties
-                  }
-                />
+                <div className="designer-photo-placeholder" aria-hidden="true">
+                  <div className="designer-photo-placeholder-shell" />
+                  <span className="designer-photo-placeholder-label">Foto Produk</span>
+                </div>
               </div>
               <div className="poster-title-box">BATERAI REDMI 9</div>
 

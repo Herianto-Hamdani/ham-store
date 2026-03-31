@@ -53,6 +53,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
                 className="poster-bg-image"
                 fill
                 sizes={CARD_MEDIA_SIZES}
+                unoptimized
               />
             </div>
           ) : null}
@@ -64,6 +65,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
                 className="poster-logo-image"
                 fill
                 sizes="(max-width: 640px) 18vw, (max-width: 980px) 11vw, 88px"
+                unoptimized
               />
             ) : (
               <span className="poster-logo-text">{siteName}</span>
@@ -80,6 +82,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
               className="poster-photo"
               fill
               sizes={CARD_MEDIA_SIZES}
+              unoptimized
               style={
                 {
                   "--photo-pos-x": `${product.imagePosX}%`,
@@ -101,6 +104,7 @@ export function ProductCard({ product, settings }: ProductCardProps) {
             className="thumb-direct"
             fill
             sizes={CARD_MEDIA_SIZES}
+            unoptimized
             style={
               {
                 "--photo-pos-x": `${product.imagePosX}%`,
