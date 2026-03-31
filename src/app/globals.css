@@ -1618,7 +1618,7 @@ body.admin-login-page .auth-card-login input:focus {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
         linear-gradient(135deg, rgba(255, 130, 18, 0.12), rgba(255, 130, 18, 0.01) 28%, rgba(77, 118, 248, 0.06) 80%, rgba(77, 118, 248, 0.01));
-    padding: clamp(1.05rem, 3vw, 1.45rem);
+    padding: clamp(1.05rem, 3vw, 1.55rem);
     min-height: 184px;
     display: grid;
     place-items: center;
@@ -1676,15 +1676,15 @@ body.admin-login-page .auth-card-login input:focus {
 .login-wordmark {
     position: relative;
     z-index: 1;
-    width: min(100%, 24rem);
+    width: min(100%, 25rem);
     height: auto;
 }
 
 .login-wordmark text {
     font-family: "Segoe UI", "Trebuchet MS", sans-serif;
-    font-size: 118px;
+    font-size: 112px;
     font-weight: 800;
-    letter-spacing: 10px;
+    letter-spacing: 8px;
     dominant-baseline: middle;
     fill: transparent;
     stroke-linecap: round;
@@ -1870,14 +1870,15 @@ body.admin-area.admin-login-page .login-panel-admin {
 body.admin-area.admin-login-page .login-panel-brand {
     min-height: 0;
     display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     align-content: start;
     padding: .88rem;
     gap: .74rem;
 }
 
 body.admin-area.admin-login-page .login-wordmark-stage {
-    min-height: 156px;
-    padding: .95rem 1rem;
+    min-height: 164px;
+    padding: 1rem 1.15rem;
 }
 
 body.admin-area.admin-login-page .login-brand-meta p {
@@ -1951,10 +1952,11 @@ body.admin-area.admin-login-page .login-panel-form.auth-card-login .btn-ghost {
     }
 
     body.admin-area.admin-login-page .login-panel-admin {
-        width: min(980px, 100%);
-        grid-template-columns: minmax(0, 1.04fr) minmax(340px, .96fr);
+        width: min(950px, 100%);
+        max-height: calc(100dvh - var(--login-header-height) - 1.25rem);
+        grid-template-columns: minmax(0, 1.02fr) minmax(340px, .98fr);
         align-items: stretch;
-        gap: 1rem;
+        gap: .95rem;
         padding: 1rem;
     }
 
@@ -1964,31 +1966,31 @@ body.admin-area.admin-login-page .login-panel-form.auth-card-login .btn-ghost {
     }
 
     body.admin-area.admin-login-page .login-panel-brand {
-        padding: .96rem;
-        gap: .8rem;
+        padding: .92rem;
+        gap: .72rem;
     }
 
     body.admin-area.admin-login-page .login-wordmark-stage {
         min-height: 0;
         height: 100%;
-        padding: 1rem 1.08rem;
+        padding: 1rem 1.3rem;
     }
 
     body.admin-area.admin-login-page .login-wordmark {
-        width: min(100%, 24rem);
+        width: min(100%, 24.5rem);
     }
 
     body.admin-area.admin-login-page .login-wordmark text {
-        font-size: 122px;
-        letter-spacing: 10px;
+        font-size: 108px;
+        letter-spacing: 7px;
     }
 
     body.admin-area.admin-login-page .login-panel-form.auth-card-login {
-        padding: 1rem;
+        padding: .92rem;
     }
 
     body.admin-area.admin-login-page .login-form {
-        gap: .72rem;
+        gap: .68rem;
     }
 }
 

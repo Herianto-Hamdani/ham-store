@@ -53,7 +53,7 @@ export function LoginForm({
               <span className="login-wordmark-halo login-wordmark-halo-beta" />
               <span className="login-wordmark-grid" />
               <span className="login-wordmark-sweep" />
-              <svg className="login-wordmark" viewBox="0 0 760 220" role="presentation">
+              <svg className="login-wordmark" viewBox="0 0 880 220" role="presentation">
                 <text className="login-wordmark-shadow" x="50%" y="54%" textAnchor="middle">
                   {displayName}
                 </text>
