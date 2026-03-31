@@ -602,6 +602,7 @@ body.admin-area textarea:focus {
     cursor: pointer;
     font-weight: 600;
     transition: transform .2s ease, opacity .2s ease;
+    gap: .45rem;
 }
 
 .btn-primary {
@@ -622,6 +623,30 @@ body.admin-area textarea:focus {
 
 .btn:hover {
     transform: translateY(-1px);
+}
+
+.btn:disabled,
+.btn.is-pending {
+    cursor: wait;
+    opacity: .9;
+    transform: none;
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: .95rem;
+    height: .95rem;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    opacity: 0;
+    transform: scale(.85);
+}
+
+.btn.is-pending .btn-spinner,
+.btn[aria-busy="true"] .btn-spinner {
+    opacity: .9;
+    animation: btn-spin .8s linear infinite;
 }
 
 body.admin-area .btn-primary {
@@ -656,6 +681,12 @@ body.admin-area .btn-nav {
 .btn-small {
     padding: .4rem .64rem;
     font-size: .85rem;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .section-title {

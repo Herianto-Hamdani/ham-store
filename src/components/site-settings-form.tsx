@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 function buildWhatsappPreviewUrl(number?: string | null, message?: string | null): string | null {
   const safeNumber = number ? number.replace(/\D+/g, "") : "";
@@ -36,7 +37,7 @@ type SiteSettingsFormProps = {
 };
 
 export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFormProps) {
-  const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [state, formAction] = useActionState(action, initialFormState);
   const [clientError, setClientError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState(values);
   const objectUrls = useRef<string[]>([]);
@@ -200,9 +201,11 @@ export function SiteSettingsForm({ action, values, maxUploadMb }: SiteSettingsFo
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary" disabled={pending}>
-              {pending ? "Menyimpan..." : "Simpan Pengaturan"}
-            </button>
+            <PendingSubmitButton
+              idleLabel="Simpan Pengaturan"
+              pendingLabel="Menyimpan Pengaturan..."
+              className="btn btn-primary"
+            />
             <a href="/admin/products" className="btn btn-ghost">
               Kembali
             </a>

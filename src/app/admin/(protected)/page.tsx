@@ -39,7 +39,7 @@ export default async function AdminIndexPage() {
         </article>
         <article className="metric-card">
           <span>Akun admin</span>
-          <strong>{overview.adminAccounts.length.toLocaleString("id-ID")}</strong>
+          <strong>{overview.adminCount.toLocaleString("id-ID")}</strong>
           <p>Jumlah akun admin yang aktif saat ini.</p>
         </article>
         <article className="metric-card">

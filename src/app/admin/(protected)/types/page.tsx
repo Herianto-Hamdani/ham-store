@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteTypeAction } from "@/lib/actions/admin";
 import { getTypeList } from "@/lib/data/admin";
 
@@ -121,9 +122,11 @@ export default async function AdminTypesPage({
                             Edit
                           </Link>
                           <form action={deleteTypeAction.bind(null, type.id)}>
-                            <button type="submit" className="btn btn-small btn-danger">
-                              Hapus
-                            </button>
+                            <PendingSubmitButton
+                              idleLabel="Hapus"
+                              pendingLabel="Menghapus..."
+                              className="btn btn-small btn-danger"
+                            />
                           </form>
                         </div>
                       </td>

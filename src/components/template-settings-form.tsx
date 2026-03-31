@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type TemplateValues = {
   siteName: string;
@@ -36,7 +37,7 @@ type TemplateSettingsFormProps = {
 };
 
 export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSettingsFormProps) {
-  const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [state, formAction] = useActionState(action, initialFormState);
   const [clientError, setClientError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState(values);
   const objectUrls = useRef<string[]>([]);
@@ -199,9 +200,11 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
         ))}
 
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary" disabled={pending}>
-            {pending ? "Menyimpan..." : "Simpan Template"}
-          </button>
+          <PendingSubmitButton
+            idleLabel="Simpan Template"
+            pendingLabel="Menyimpan Template..."
+            className="btn btn-primary"
+          />
           <a href="/admin/products" className="btn btn-ghost">
             Kembali
           </a>

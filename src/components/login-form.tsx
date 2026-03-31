@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type LoginFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -23,7 +24,7 @@ export function LoginForm({
   logoUrl,
   hasLogo
 }: LoginFormProps) {
-  const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [state, formAction] = useActionState(action, initialFormState);
   const brandMark = siteName.replace(/\s+/g, "").slice(0, 2).toUpperCase() || "HS";
 
   return (
@@ -101,9 +102,11 @@ export function LoginForm({
                 />
               </label>
               <div className="form-actions auth-actions login-actions">
-                <button type="submit" className="btn btn-primary" disabled={pending}>
-                  {pending ? "Memproses..." : "Masuk Panel"}
-                </button>
+                <PendingSubmitButton
+                  idleLabel="Masuk Panel"
+                  pendingLabel="Memproses Login..."
+                  className="btn btn-primary"
+                />
                 <Link href="/" className="btn btn-ghost">
                   Kembali ke Katalog
                 </Link>

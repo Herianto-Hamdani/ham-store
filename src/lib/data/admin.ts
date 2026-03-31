@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/prisma";
-import { getRecentTraffic, getTopPages, getTrafficSummary } from "@/lib/data/traffic";
+import { getTrafficSummary } from "@/lib/data/traffic";
 
 function sortTypeSummary<T extends { name: string; _count: { products: number } }>(rows: T[]) {
   return [...rows].sort(
@@ -42,48 +42,52 @@ export async function getAdminProductDashboard(options: {
   const totalPages = Math.max(1, Math.ceil(total / perPage));
   const safePage = Math.min(page, totalPages);
 
-  const [products, types, typeSummaryRaw, templateCount, averagePrice, latestProduct] =
-    await Promise.all([
-      prisma.product.findMany({
-        where,
-        include: { type: true },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        skip: (safePage - 1) * perPage,
-        take: perPage
-      }),
-      prisma.type.findMany({ orderBy: { name: "asc" } }),
-      prisma.type.findMany({
-        include: {
-          _count: {
-            select: {
-              products: true
-            }
-          }
-        },
-        orderBy: {
-          name: "asc"
+  const products = await prisma.product.findMany({
+    where,
+    include: { type: true },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    skip: (safePage - 1) * perPage,
+    take: perPage
+  });
+
+  const types = await prisma.type.findMany({ orderBy: { name: "asc" } });
+
+  const typeSummaryRaw = await prisma.type.findMany({
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          products: true
         }
-      }),
-      prisma.product.count({
-        where: {
-          ...where,
-          cardMode: "TEMPLATE"
-        }
-      }),
-      prisma.product.aggregate({
-        where,
-        _avg: {
-          priceItem: true,
-          priceInstall: true
-        }
-      }),
-      prisma.product.findFirst({
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        include: {
-          type: true
-        }
-      })
-    ]);
+      }
+    },
+    orderBy: {
+      name: "asc"
+    }
+  });
+
+  const templateCount = await prisma.product.count({
+    where: {
+      ...where,
+      cardMode: "TEMPLATE"
+    }
+  });
+
+  const averagePrice = await prisma.product.aggregate({
+    where,
+    _avg: {
+      priceItem: true,
+      priceInstall: true
+    }
+  });
+
+  const latestProduct = await prisma.product.findFirst({
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    include: {
+      type: true
+    }
+  });
 
   const typeSummary = sortTypeSummary(typeSummaryRaw);
 
@@ -104,60 +108,39 @@ export async function getAdminProductDashboard(options: {
 
 const getAdminOverviewCached = unstable_cache(
   async () => {
-    const [
-      productCount,
-      typeCount,
-      adminAccounts,
-      recentProducts,
-      typeSummaryRaw,
-      trafficSummary,
-      trafficDaily,
-      trafficPages,
-      templateProducts,
-      averages
-    ] = await Promise.all([
-      prisma.product.count(),
-      prisma.type.count(),
-      prisma.user.findMany({
-        where: {
-          role: "ADMIN"
-        },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }]
-      }),
-      prisma.product.findMany({
-        include: {
-          type: true
-        },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        take: 8
-      }),
-      prisma.type.findMany({
-        include: {
-          _count: {
-            select: {
-              products: true
-            }
+    const productCount = await prisma.product.count();
+    const typeCount = await prisma.type.count();
+    const adminCount = await prisma.user.count({
+      where: {
+        role: "ADMIN"
+      }
+    });
+    const typeSummaryRaw = await prisma.type.findMany({
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            products: true
           }
-        },
-        orderBy: {
-          name: "asc"
         }
-      }),
-      getTrafficSummary(14),
-      getRecentTraffic(14),
-      getTopPages(10),
-      prisma.product.count({
-        where: {
-          cardMode: "TEMPLATE"
-        }
-      }),
-      prisma.product.aggregate({
-        _avg: {
-          priceItem: true,
-          priceInstall: true
-        }
-      })
-    ]);
+      },
+      orderBy: {
+        name: "asc"
+      }
+    });
+    const trafficSummary = await getTrafficSummary(14);
+    const templateProducts = await prisma.product.count({
+      where: {
+        cardMode: "TEMPLATE"
+      }
+    });
+    const averages = await prisma.product.aggregate({
+      _avg: {
+        priceItem: true,
+        priceInstall: true
+      }
+    });
 
     const typeSummary = sortTypeSummary(typeSummaryRaw);
     const activeTypes = typeSummary.filter((item) => item._count.products > 0).length;
@@ -166,12 +149,9 @@ const getAdminOverviewCached = unstable_cache(
       productCount,
       typeCount,
       activeTypes,
-      adminAccounts,
-      recentProducts,
+      adminCount,
       typeSummary,
       trafficSummary,
-      trafficDaily,
-      trafficPages,
       templateProducts,
       directProducts: Math.max(0, productCount - templateProducts),
       averagePackagePrice:
@@ -205,31 +185,32 @@ export async function getTypeList(options: { page: number; search?: string }) {
   const totalPages = Math.max(1, Math.ceil(total / perPage));
   const safePage = Math.min(page, totalPages);
 
-  const [types, summary] = await Promise.all([
-    prisma.type.findMany({
-      where,
-      include: {
-        _count: {
-          select: {
-            products: true
-          }
+  const types = await prisma.type.findMany({
+    where,
+    include: {
+      _count: {
+        select: {
+          products: true
         }
-      },
-      orderBy: { name: "asc" },
-      skip: (safePage - 1) * perPage,
-      take: perPage
-    }),
-    prisma.type.findMany({
-      include: {
-        _count: {
-          select: {
-            products: true
-          }
+      }
+    },
+    orderBy: { name: "asc" },
+    skip: (safePage - 1) * perPage,
+    take: perPage
+  });
+
+  const summary = await prisma.type.findMany({
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          products: true
         }
-      },
-      orderBy: { name: "asc" }
-    })
-  ]);
+      }
+    },
+    orderBy: { name: "asc" }
+  });
 
   const assignedProducts = summary.reduce((sum, item) => sum + item._count.products, 0);
   const activeTypes = summary.filter((item) => item._count.products > 0).length;
@@ -247,6 +228,12 @@ export async function getTypeList(options: { page: number; search?: string }) {
 
 export async function getAdminAccounts() {
   return prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      role: true,
+      createdAt: true
+    },
     where: {
       role: "ADMIN"
     },

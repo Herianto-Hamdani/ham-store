@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { AccountForm } from "@/components/account-form";
 import {
   createAdminAccountAction,
@@ -23,7 +24,8 @@ export default async function AdminAccountsPage({
   const error = typeof params.error === "string" ? params.error : null;
   const editId = typeof params.edit === "string" ? Number.parseInt(params.edit, 10) : null;
 
-  const [accounts, currentUser] = await Promise.all([getAdminAccounts(), getOptionalAdminUser()]);
+  const accounts = await getAdminAccounts();
+  const currentUser = await getOptionalAdminUser();
   const editingAccount = editId ? accounts.find((account) => account.id === editId) ?? null : null;
   const newestAccount = accounts[0] ?? null;
 
@@ -168,9 +170,11 @@ export default async function AdminAccountsPage({
                         </Link>
                         {canDelete ? (
                           <form action={deleteAdminAccountAction.bind(null, account.id)}>
-                            <button type="submit" className="btn btn-small btn-danger">
-                              Hapus
-                            </button>
+                            <PendingSubmitButton
+                              idleLabel="Hapus"
+                              pendingLabel="Menghapus..."
+                              className="btn btn-small btn-danger"
+                            />
                           </form>
                         ) : (
                           <span className="btn btn-small btn-ghost">Terkunci</span>

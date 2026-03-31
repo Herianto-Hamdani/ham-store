@@ -23,7 +23,19 @@ export const getCurrentAdminSession = cache(async () => {
   const tokenHash = hashSessionToken(token);
   const session = await prisma.adminSession.findUnique({
     where: { tokenHash },
-    include: { user: true }
+    select: {
+      id: true,
+      expiresAt: true,
+      lastSeenAt: true,
+      user: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          createdAt: true
+        }
+      }
+    }
   });
 
   if (!session) {

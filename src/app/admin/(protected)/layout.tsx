@@ -11,7 +11,8 @@ export default async function ProtectedAdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [user, settings] = await Promise.all([requireAdmin(), getSiteSettings()]);
+  const user = await requireAdmin();
+  const settings = await getSiteSettings();
   const siteName = getSiteName(settings.webName);
   const logoUrl = resolveImageUrl(settings.logoThumbPath, settings.logoPath);
   const hasLogo = logoUrl !== "/assets/img/placeholder.svg";

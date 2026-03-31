@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type TypeFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -12,7 +13,7 @@ type TypeFormProps = {
 };
 
 export function TypeForm({ action, submitLabel, initialName = "" }: TypeFormProps) {
-  const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [state, formAction] = useActionState(action, initialFormState);
   const [name, setName] = useState(initialName);
   const normalizedName = name.trim() || "Nama Type";
 
@@ -39,9 +40,11 @@ export function TypeForm({ action, submitLabel, initialName = "" }: TypeFormProp
           </label>
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary" disabled={pending}>
-              {pending ? "Menyimpan..." : submitLabel}
-            </button>
+            <PendingSubmitButton
+              idleLabel={submitLabel}
+              pendingLabel="Menyimpan Type..."
+              className="btn btn-primary"
+            />
             <a href="/admin/types" className="btn btn-ghost">
               Batal
             </a>

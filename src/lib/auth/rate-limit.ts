@@ -114,10 +114,8 @@ async function hitKey(
 }
 
 export async function loginRateAvailableIn(username: string, ip: string) {
-  const [credSeconds, ipSeconds] = await Promise.all([
-    availableInKey(credentialKey(username, ip)),
-    availableInKey(ipKey(ip))
-  ]);
+  const credSeconds = await availableInKey(credentialKey(username, ip));
+  const ipSeconds = await availableInKey(ipKey(ip));
 
   return Math.max(credSeconds, ipSeconds);
 }
@@ -127,16 +125,14 @@ export async function loginTooManyAttempts(username: string, ip: string) {
 }
 
 export async function hitLoginRateLimit(username: string, ip: string) {
-  const [credLock, ipLock] = await Promise.all([
-    hitKey(
-      credentialKey(username, ip),
-      RateLimitScope.CREDENTIAL,
-      username.trim().toLowerCase(),
-      ip,
-      LOGIN_MAX_ATTEMPTS
-    ),
-    hitKey(ipKey(ip), RateLimitScope.IP, null, ip, LOGIN_MAX_ATTEMPTS_IP)
-  ]);
+  const credLock = await hitKey(
+    credentialKey(username, ip),
+    RateLimitScope.CREDENTIAL,
+    username.trim().toLowerCase(),
+    ip,
+    LOGIN_MAX_ATTEMPTS
+  );
+  const ipLock = await hitKey(ipKey(ip), RateLimitScope.IP, null, ip, LOGIN_MAX_ATTEMPTS_IP);
 
   return Math.max(credLock, ipLock);
 }

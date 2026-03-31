@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type AccountFormProps = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -22,7 +23,7 @@ export function AccountForm({
   initialUsername = "",
   optionalPassword = false
 }: AccountFormProps) {
-  const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [state, formAction] = useActionState(action, initialFormState);
   const [username, setUsername] = useState(initialUsername);
 
   return (
@@ -65,9 +66,11 @@ export function AccountForm({
             />
           </label>
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary" disabled={pending}>
-              {pending ? "Menyimpan..." : submitLabel}
-            </button>
+            <PendingSubmitButton
+              idleLabel={submitLabel}
+              pendingLabel="Menyimpan Akun..."
+              className="btn btn-primary"
+            />
           </div>
         </form>
       </div>

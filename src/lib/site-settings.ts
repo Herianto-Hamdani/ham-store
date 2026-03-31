@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 import type { SiteSetting } from "@prisma/client";
 
@@ -39,7 +40,7 @@ export const defaultSiteSettingValues = {
   templatePhotoHeight: 58
 } satisfies Omit<SiteSetting, "createdAt" | "updatedAt">;
 
-async function readSiteSettings(): Promise<SiteSetting> {
+const readSiteSettings = cache(async (): Promise<SiteSetting> => {
   const existing = await prisma.siteSetting.findUnique({
     where: { id: 1 }
   });
@@ -57,9 +58,9 @@ async function readSiteSettings(): Promise<SiteSetting> {
       where: { id: 1 }
     });
   }
-}
+});
 
-const getCachedSiteSettings = unstable_cache(readSiteSettings, ["site-settings"], {
+const getCachedSiteSettings = unstable_cache(async () => readSiteSettings(), ["site-settings"], {
   revalidate: 60 * 60,
   tags: [CACHE_TAGS.siteSettings]
 });

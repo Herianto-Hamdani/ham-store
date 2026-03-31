@@ -3,11 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductCard } from "@/components/product-card";
-import {
-  getProductByRef,
-  getProductRecommendations,
-  getProductRefsForStaticPaths
-} from "@/lib/data/catalog";
+import { getProductByRef, getProductRecommendations } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/site-settings";
 import {
   cardModeValue,
@@ -20,10 +16,6 @@ import {
 } from "@/lib/utils";
 
 export const revalidate = 300;
-
-export async function generateStaticParams() {
-  return getProductRefsForStaticPaths();
-}
 
 export default async function ProductDetailPage({
   params

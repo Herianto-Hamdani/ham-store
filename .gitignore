@@ -11,6 +11,9 @@ public/uploads
 storage/metrics
 storage/site_settings.json
 pgdata.tar.gz
+backups/
+*.backup
+*.dump
 prisma/dev.db
 
 .vercel

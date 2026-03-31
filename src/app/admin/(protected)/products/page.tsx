@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteProductAction } from "@/lib/actions/admin";
 import { getAdminProductDashboard } from "@/lib/data/admin";
 import { cardModeValue, encryptPublicId, formatRupiah, getProductCode, resolveImageUrl } from "@/lib/utils";
@@ -191,9 +192,11 @@ export default async function AdminProductsPage({
                             Edit
                           </Link>
                           <form action={deleteProductAction.bind(null, product.id)}>
-                            <button type="submit" className="btn btn-small btn-danger">
-                              Hapus
-                            </button>
+                            <PendingSubmitButton
+                              idleLabel="Hapus"
+                              pendingLabel="Menghapus..."
+                              className="btn btn-small btn-danger"
+                            />
                           </form>
                         </div>
                       </td>

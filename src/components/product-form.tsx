@@ -6,6 +6,7 @@ import type { Type } from "@prisma/client";
 
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type ProductFormValues = {
   name: string;
@@ -46,7 +47,7 @@ export function ProductForm({
   template,
   maxUploadMb
 }: ProductFormProps) {
-  const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [state, formAction] = useActionState(action, initialFormState);
   const [clientError, setClientError] = useState<string | null>(null);
   const [formValues, setFormValues] = useState(values);
   const [imageUrl, setImageUrl] = useState(values.imageUrl);
@@ -405,9 +406,11 @@ export function ProductForm({
         </section>
 
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary" disabled={pending}>
-            {pending ? "Menyimpan..." : submitLabel}
-          </button>
+          <PendingSubmitButton
+            idleLabel={submitLabel}
+            pendingLabel="Menyimpan Produk..."
+            className="btn btn-primary"
+          />
           <a href="/admin/products" className="btn btn-ghost">
             Batal
           </a>

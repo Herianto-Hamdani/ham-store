@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type AdminShellFrameProps = {
   siteName: string;
@@ -178,9 +179,11 @@ export function AdminShellFrame({
           </div>
 
           <form action={logoutAction} className="admin-side-logout">
-            <button type="submit" className="btn btn-danger">
-              Keluar Admin
-            </button>
+            <PendingSubmitButton
+              idleLabel="Keluar Admin"
+              pendingLabel="Keluar..."
+              className="btn btn-danger"
+            />
           </form>
         </aside>
 
