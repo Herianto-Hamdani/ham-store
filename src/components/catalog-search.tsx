@@ -237,6 +237,34 @@ export function CatalogSearch({
     };
   }, []);
 
+  useEffect(() => {
+    const warmSearchRuntime = () => {
+      void fetch("/api/catalog/search?page=1", {
+        headers: {
+          accept: "application/json"
+        }
+      }).catch(() => undefined);
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const handle = window.requestIdleCallback(() => {
+        warmSearchRuntime();
+      });
+
+      return () => {
+        window.cancelIdleCallback(handle);
+      };
+    }
+
+    const timeoutId = globalThis.setTimeout(() => {
+      warmSearchRuntime();
+    }, 900);
+
+    return () => {
+      globalThis.clearTimeout(timeoutId);
+    };
+  }, []);
+
   const normalizedSearch = normalizeSearchInput(searchInput);
   const searchTooShort =
     normalizedSearch.length > 0 &&
