@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createCatalogCardItems } from "@/lib/catalog-card";
-import { getCatalog } from "@/lib/data/catalog";
+import { getCatalogSearchResults } from "@/lib/data/catalog";
 import { normalizeSearchInput, normalizeSearchPage, normalizeTypeId } from "@/lib/search-utils";
 
 const SearchRequestSchema = z.object({
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
   const typeId = normalizeTypeId(parsed.data.type);
   const page = normalizeSearchPage(parsed.data.page);
 
-  const catalog = await getCatalog({
+  const catalog = await getCatalogSearchResults({
     page,
     search,
     typeId

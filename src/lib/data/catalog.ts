@@ -311,47 +311,63 @@ export async function getTypes() {
   return getTypesCached();
 }
 
+async function resolveCatalogResult(page: number, search: string, typeId: number | null) {
+  const exactMatchResult = await exactProductCodeLookup(search, typeId);
+  if (exactMatchResult) {
+    return exactMatchResult;
+  }
+
+  let result: {
+    page: number;
+    total: number;
+    totalPages: number;
+    products: Awaited<ReturnType<typeof fetchProductsByIds>>;
+    strategy: CatalogSearchStrategy;
+  };
+
+  if (search.length === 0) {
+    result = await browseCatalog(page, typeId);
+  } else {
+    const fullTextResult = await searchCatalogIdsByFullText(page, search, typeId);
+
+    if (fullTextResult && fullTextResult.total > 0) {
+      result = fullTextResult;
+    } else {
+      result =
+        (await searchCatalogIdsByTrigram(page, search, typeId)) ??
+        fullTextResult ?? {
+          page: 1,
+          total: 0,
+          totalPages: 1,
+          products: [],
+          strategy: "full-text" as CatalogSearchStrategy
+        };
+    }
+  }
+
+  return result;
+}
+
+const getCatalogResultCached = unstable_cache(
+  async (page: number, search: string, typeId: number | null) =>
+    resolveCatalogResult(page, search, typeId),
+  ["catalog-result"],
+  {
+    revalidate: CATALOG_REVALIDATE_SECONDS,
+    tags: [CACHE_TAGS.catalog, CACHE_TAGS.products]
+  }
+);
+
 const getCatalogCached = unstable_cache(
   async (page: number, search: string, typeId: number | null) => {
-    const exactMatchResult = await exactProductCodeLookup(search, typeId);
-    if (exactMatchResult) {
-      return {
-        ...exactMatchResult,
-        types: await getTypes()
-      };
-    }
-
-    let result: {
-      page: number;
-      total: number;
-      totalPages: number;
-      products: Awaited<ReturnType<typeof fetchProductsByIds>>;
-      strategy: CatalogSearchStrategy;
-    };
-
-    if (search.length === 0) {
-      result = await browseCatalog(page, typeId);
-    } else {
-      const fullTextResult = await searchCatalogIdsByFullText(page, search, typeId);
-
-      if (fullTextResult && fullTextResult.total > 0) {
-        result = fullTextResult;
-      } else {
-        result =
-          (await searchCatalogIdsByTrigram(page, search, typeId)) ??
-          fullTextResult ?? {
-            page: 1,
-            total: 0,
-            totalPages: 1,
-            products: [],
-            strategy: "full-text" as CatalogSearchStrategy
-          };
-      }
-    }
+    const [result, types] = await Promise.all([
+      getCatalogResultCached(page, search, typeId),
+      getTypes()
+    ]);
 
     return {
       ...result,
-      types: await getTypes()
+      types
     };
   },
   ["catalog-page"],
@@ -371,6 +387,18 @@ export async function getCatalog(options: {
   const typeId = normalizeTypeId(options.typeId);
 
   return getCatalogCached(page, search, typeId);
+}
+
+export async function getCatalogSearchResults(options: {
+  page?: number;
+  search?: string;
+  typeId?: number | null;
+}) {
+  const page = normalizeSearchPage(options.page);
+  const search = normalizeSearchInput(options.search);
+  const typeId = normalizeTypeId(options.typeId);
+
+  return getCatalogResultCached(page, search, typeId);
 }
 
 const getCatalogLandingInsightsCached = unstable_cache(

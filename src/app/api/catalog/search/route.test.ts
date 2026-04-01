@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const getCatalog = vi.fn();
+const getCatalogSearchResults = vi.fn();
 const createCatalogCardItems = vi.fn();
 
 vi.mock("@/lib/data/catalog", () => ({
-  getCatalog
+  getCatalogSearchResults
 }));
 
 vi.mock("@/lib/catalog-card", () => ({
@@ -18,12 +18,12 @@ async function loadRouteModule() {
 
 describe("GET /api/catalog/search", () => {
   beforeEach(() => {
-    getCatalog.mockReset();
+    getCatalogSearchResults.mockReset();
     createCatalogCardItems.mockReset();
   });
 
   it("mengembalikan payload search yang ringan", async () => {
-    getCatalog.mockResolvedValue({
+    getCatalogSearchResults.mockResolvedValue({
       page: 2,
       total: 14,
       totalPages: 2,
@@ -46,7 +46,7 @@ describe("GET /api/catalog/search", () => {
         products: [{ id: 10, title: "LCD Redmi Note 11" }]
       }
     });
-    expect(getCatalog).toHaveBeenCalledWith({
+    expect(getCatalogSearchResults).toHaveBeenCalledWith({
       page: 2,
       search: "redmi",
       typeId: 3
@@ -54,7 +54,7 @@ describe("GET /api/catalog/search", () => {
   });
 
   it("menormalkan parameter page yang tidak valid ke halaman pertama", async () => {
-    getCatalog.mockResolvedValue({
+    getCatalogSearchResults.mockResolvedValue({
       page: 1,
       total: 0,
       totalPages: 1,
@@ -67,7 +67,7 @@ describe("GET /api/catalog/search", () => {
     const response = await GET(new Request("https://ham-store.test/api/catalog/search?page=abc"));
 
     expect(response.status).toBe(200);
-    expect(getCatalog).toHaveBeenCalledWith({
+    expect(getCatalogSearchResults).toHaveBeenCalledWith({
       page: 1,
       search: "",
       typeId: null

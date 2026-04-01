@@ -100,6 +100,7 @@ export function CatalogSearch({
 
   const deferredSearchInput = useDeferredValue(searchInput);
   const abortRef = useRef<AbortController | null>(null);
+  const pendingKeyRef = useRef<string | null>(null);
   const activeKeyRef = useRef(buildSearchRequestKey(initialSearch, initialTypeId, initialResults.page));
   const cacheRef = useRef<Map<string, CatalogSearchPayload>>(
     new Map([[activeKeyRef.current, initialResults]])
@@ -139,6 +140,10 @@ export function CatalogSearch({
         return;
       }
 
+      if (pendingKeyRef.current === requestKey) {
+        return;
+      }
+
       const cached = cacheRef.current.get(requestKey);
       if (cached) {
         applyResolvedResults(normalizedSearch, normalizedTypeId, cached);
@@ -148,6 +153,7 @@ export function CatalogSearch({
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
+      pendingKeyRef.current = requestKey;
       setIsLoading(true);
       setErrorMessage(null);
 
@@ -185,6 +191,10 @@ export function CatalogSearch({
 
         setErrorMessage(error instanceof Error ? error.message : "Pencarian gagal diproses.");
       } finally {
+        if (pendingKeyRef.current === requestKey) {
+          pendingKeyRef.current = null;
+        }
+
         if (!controller.signal.aborted) {
           setIsLoading(false);
         }
@@ -205,14 +215,21 @@ export function CatalogSearch({
       return () => undefined;
     }
 
+    if (
+      normalizedSearch !== initialSearch ||
+      normalizeTypeId(selectedTypeId) !== normalizeTypeId(initialTypeId)
+    ) {
+      setIsLoading(true);
+    }
+
     const handle = window.setTimeout(() => {
       void requestCatalog(normalizedSearch, selectedTypeId, 1);
-    }, 260);
+    }, 160);
 
     return () => {
       window.clearTimeout(handle);
     };
-  }, [deferredSearchInput, requestCatalog, selectedTypeId]);
+  }, [deferredSearchInput, initialSearch, initialTypeId, requestCatalog, selectedTypeId]);
 
   useEffect(() => {
     return () => {
