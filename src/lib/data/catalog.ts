@@ -235,21 +235,20 @@ async function searchCatalogIdsByTrigram(page: number, search: string, typeId: n
     return null;
   }
 
-  const loweredSearch = search.toLowerCase();
   const baseFilters = buildBaseFilters(typeId);
   const matchFilter = Prisma.sql`(
-    lower(p.name) % ${loweredSearch} OR
-    lower(p.brand) % ${loweredSearch} OR
-    lower(p.model) % ${loweredSearch} OR
-    lower(t.name) % ${loweredSearch}
+    p.name % ${search} OR
+    p.brand % ${search} OR
+    p.model % ${search} OR
+    t.name % ${search}
   )`;
   const filters = [...baseFilters, matchFilter];
   const whereClause = Prisma.sql`${Prisma.join(filters, " AND ")}`;
   const rank = Prisma.sql`GREATEST(
-    similarity(lower(p.name), ${loweredSearch}) * 1.35,
-    similarity(lower(p.brand), ${loweredSearch}) * 1.1,
-    similarity(lower(p.model), ${loweredSearch}) * 1.1,
-    similarity(lower(t.name), ${loweredSearch}) * 1.2
+    similarity(p.name, ${search}) * 1.35,
+    similarity(p.brand, ${search}) * 1.1,
+    similarity(p.model, ${search}) * 1.1,
+    similarity(t.name, ${search}) * 1.2
   )`;
 
   const countRows = await prisma.$queryRaw<CountRow[]>(Prisma.sql`
@@ -322,18 +321,33 @@ const getCatalogCached = unstable_cache(
       };
     }
 
-    const result =
-      search.length === 0
-        ? await browseCatalog(page, typeId)
-        : (await searchCatalogIdsByFullText(page, search, typeId)) ??
+    let result: {
+      page: number;
+      total: number;
+      totalPages: number;
+      products: Awaited<ReturnType<typeof fetchProductsByIds>>;
+      strategy: CatalogSearchStrategy;
+    };
+
+    if (search.length === 0) {
+      result = await browseCatalog(page, typeId);
+    } else {
+      const fullTextResult = await searchCatalogIdsByFullText(page, search, typeId);
+
+      if (fullTextResult && fullTextResult.total > 0) {
+        result = fullTextResult;
+      } else {
+        result =
           (await searchCatalogIdsByTrigram(page, search, typeId)) ??
-          {
+          fullTextResult ?? {
             page: 1,
             total: 0,
             totalPages: 1,
             products: [],
             strategy: "full-text" as CatalogSearchStrategy
           };
+      }
+    }
 
     return {
       ...result,
