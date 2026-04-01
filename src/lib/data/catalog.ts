@@ -4,30 +4,294 @@ import { Prisma } from "@prisma/client";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
+import {
+  extractProductCodeId,
+  normalizeSearchInput,
+  normalizeSearchPage,
+  normalizeTypeId,
+  tokenizeSearchTerms
+} from "@/lib/search-utils";
 import { decryptPublicId, encryptPublicId, getProductCode } from "@/lib/utils";
 
 const CATALOG_REVALIDATE_SECONDS = 60 * 5;
 
-function buildSearchWhere(search: string, typeId?: number | null): Prisma.ProductWhereInput {
-  const trimmed = search.trim();
-  const where: Prisma.ProductWhereInput = {};
+type CatalogSearchStrategy = "browse" | "exact" | "full-text" | "trigram";
+
+type ProductIdRow = {
+  id: number;
+};
+
+type CountRow = {
+  total: number;
+};
+
+function buildBrowseWhere(typeId?: number | null): Prisma.ProductWhereInput {
+  return typeId && typeId > 0
+    ? {
+        typeId
+      }
+    : {};
+}
+
+function buildCatalogSearchDocument() {
+  return Prisma.sql`
+    setweight(to_tsvector('simple', coalesce(p.name, '')), 'A') ||
+    setweight(to_tsvector('simple', coalesce(p.brand, '')), 'B') ||
+    setweight(to_tsvector('simple', coalesce(p.model, '')), 'B')
+  `;
+}
+
+function buildFullTextSearchQuery(search: string): string | null {
+  const tokens = tokenizeSearchTerms(search);
+  if (tokens.length === 0) {
+    return null;
+  }
+
+  return tokens.map((token) => `${token}:*`).join(" & ");
+}
+
+function buildBaseFilters(typeId: number | null) {
+  const filters: Prisma.Sql[] = [];
 
   if (typeId && typeId > 0) {
-    where.typeId = typeId;
+    filters.push(Prisma.sql`p.type_id = ${typeId}`);
   }
 
-  if (!trimmed) {
-    return where;
+  return filters;
+}
+
+async function fetchProductsByIds(ids: number[]) {
+  if (ids.length === 0) {
+    return [];
   }
 
-  where.OR = [
-    { name: { contains: trimmed, mode: "insensitive" } },
-    { brand: { contains: trimmed, mode: "insensitive" } },
-    { model: { contains: trimmed, mode: "insensitive" } },
-    { type: { name: { contains: trimmed, mode: "insensitive" } } }
-  ];
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: ids
+      }
+    },
+    include: {
+      type: true
+    }
+  });
 
-  return where;
+  const productMap = new Map(products.map((product) => [product.id, product]));
+  return ids
+    .map((id) => productMap.get(id))
+    .filter((product): product is NonNullable<typeof product> => Boolean(product));
+}
+
+async function exactProductCodeLookup(search: string, typeId: number | null) {
+  const productId = extractProductCodeId(search);
+  if (!productId) {
+    return null;
+  }
+
+  const product = await prisma.product.findUnique({
+    where: {
+      id: productId
+    },
+    include: {
+      type: true
+    }
+  });
+
+  const products =
+    product &&
+    (!typeId || product.typeId === typeId) &&
+    getProductCode({
+      id: product.id,
+      createdAt: product.createdAt,
+      type: { name: product.type.name }
+    }) === search.toUpperCase()
+      ? [product]
+      : [];
+
+  return {
+    page: 1,
+    total: products.length,
+    totalPages: 1,
+    products,
+    strategy: "exact" as const
+  };
+}
+
+async function browseCatalog(page: number, typeId: number | null) {
+  const where = buildBrowseWhere(typeId);
+  const total = await prisma.product.count({ where });
+  const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const skip = (safePage - 1) * DEFAULT_PAGE_SIZE;
+  const products = await prisma.product.findMany({
+    where,
+    include: {
+      type: true
+    },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    skip,
+    take: DEFAULT_PAGE_SIZE
+  });
+
+  return {
+    page: safePage,
+    total,
+    totalPages,
+    products,
+    strategy: "browse" as const
+  };
+}
+
+async function searchCatalogIdsByFullText(page: number, search: string, typeId: number | null) {
+  const tsQuery = buildFullTextSearchQuery(search);
+  if (!tsQuery) {
+    return null;
+  }
+
+  const loweredSearch = search.toLowerCase();
+  const prefixLike = `${loweredSearch}%`;
+  const document = buildCatalogSearchDocument();
+  const baseFilters = buildBaseFilters(typeId);
+  const matchFilter = Prisma.sql`(
+    ${document} @@ to_tsquery('simple', ${tsQuery}) OR
+    lower(t.name) = ${loweredSearch} OR
+    lower(t.name) LIKE ${prefixLike} OR
+    lower(p.name) LIKE ${prefixLike} OR
+    lower(p.brand) LIKE ${prefixLike} OR
+    lower(p.model) LIKE ${prefixLike}
+  )`;
+  const filters = [...baseFilters, matchFilter];
+  const whereClause = Prisma.sql`${Prisma.join(filters, " AND ")}`;
+  const rank = Prisma.sql`(
+    ts_rank_cd(${document}, to_tsquery('simple', ${tsQuery})) +
+    CASE
+      WHEN lower(p.name) = ${loweredSearch} THEN 0.75
+      WHEN lower(p.name) LIKE ${prefixLike} THEN 0.28
+      ELSE 0
+    END +
+    CASE
+      WHEN lower(p.brand) = ${loweredSearch} THEN 0.35
+      WHEN lower(p.brand) LIKE ${prefixLike} THEN 0.18
+      ELSE 0
+    END +
+    CASE
+      WHEN lower(p.model) = ${loweredSearch} THEN 0.35
+      WHEN lower(p.model) LIKE ${prefixLike} THEN 0.18
+      ELSE 0
+    END +
+    CASE
+      WHEN lower(t.name) = ${loweredSearch} THEN 0.4
+      WHEN lower(t.name) LIKE ${prefixLike} THEN 0.22
+      ELSE 0
+    END
+  )`;
+
+  const [countRows] = await Promise.all([
+    prisma.$queryRaw<CountRow[]>(Prisma.sql`
+      SELECT COUNT(*)::int AS total
+      FROM products p
+      INNER JOIN types t ON t.id = p.type_id
+      WHERE ${whereClause}
+    `)
+  ]);
+
+  const total = countRows[0]?.total ?? 0;
+  if (total === 0) {
+    return {
+      page: 1,
+      total: 0,
+      totalPages: 1,
+      products: [] as Awaited<ReturnType<typeof fetchProductsByIds>>,
+      strategy: "full-text" as const
+    };
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const skip = (safePage - 1) * DEFAULT_PAGE_SIZE;
+  const idRows = await prisma.$queryRaw<ProductIdRow[]>(Prisma.sql`
+    SELECT p.id
+    FROM products p
+    INNER JOIN types t ON t.id = p.type_id
+    WHERE ${whereClause}
+    ORDER BY ${rank} DESC, p.created_at DESC, p.id DESC
+    OFFSET ${skip}
+    LIMIT ${DEFAULT_PAGE_SIZE}
+  `);
+
+  const products = await fetchProductsByIds(idRows.map((row) => row.id));
+
+  return {
+    page: safePage,
+    total,
+    totalPages,
+    products,
+    strategy: "full-text" as const
+  };
+}
+
+async function searchCatalogIdsByTrigram(page: number, search: string, typeId: number | null) {
+  if (search.length < 3) {
+    return null;
+  }
+
+  const loweredSearch = search.toLowerCase();
+  const baseFilters = buildBaseFilters(typeId);
+  const matchFilter = Prisma.sql`(
+    lower(p.name) % ${loweredSearch} OR
+    lower(p.brand) % ${loweredSearch} OR
+    lower(p.model) % ${loweredSearch} OR
+    lower(t.name) % ${loweredSearch}
+  )`;
+  const filters = [...baseFilters, matchFilter];
+  const whereClause = Prisma.sql`${Prisma.join(filters, " AND ")}`;
+  const rank = Prisma.sql`GREATEST(
+    similarity(lower(p.name), ${loweredSearch}) * 1.35,
+    similarity(lower(p.brand), ${loweredSearch}) * 1.1,
+    similarity(lower(p.model), ${loweredSearch}) * 1.1,
+    similarity(lower(t.name), ${loweredSearch}) * 1.2
+  )`;
+
+  const countRows = await prisma.$queryRaw<CountRow[]>(Prisma.sql`
+    SELECT COUNT(*)::int AS total
+    FROM products p
+    INNER JOIN types t ON t.id = p.type_id
+    WHERE ${whereClause}
+  `);
+
+  const total = countRows[0]?.total ?? 0;
+  if (total === 0) {
+    return {
+      page: 1,
+      total: 0,
+      totalPages: 1,
+      products: [] as Awaited<ReturnType<typeof fetchProductsByIds>>,
+      strategy: "trigram" as const
+    };
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const skip = (safePage - 1) * DEFAULT_PAGE_SIZE;
+  const idRows = await prisma.$queryRaw<ProductIdRow[]>(Prisma.sql`
+    SELECT p.id
+    FROM products p
+    INNER JOIN types t ON t.id = p.type_id
+    WHERE ${whereClause}
+    ORDER BY ${rank} DESC, p.created_at DESC, p.id DESC
+    OFFSET ${skip}
+    LIMIT ${DEFAULT_PAGE_SIZE}
+  `);
+
+  const products = await fetchProductsByIds(idRows.map((row) => row.id));
+
+  return {
+    page: safePage,
+    total,
+    totalPages,
+    products,
+    strategy: "trigram" as const
+  };
 }
 
 const getTypesCached = unstable_cache(
@@ -50,63 +314,30 @@ export async function getTypes() {
 
 const getCatalogCached = unstable_cache(
   async (page: number, search: string, typeId: number | null) => {
-    const where = buildSearchWhere(search, typeId);
-
-    const exactCodeMatch = search.toUpperCase().match(/^[A-Z0-9]+-(\d{4})-(\d+)$/);
-    if (exactCodeMatch) {
-      const product = await prisma.product.findUnique({
-        where: {
-          id: Number.parseInt(exactCodeMatch[2], 10)
-        },
-        include: {
-          type: true
-        }
-      });
-
-      const products =
-        product &&
-        (!typeId || product.typeId === typeId) &&
-        getProductCode({
-          id: product.id,
-          createdAt: product.createdAt,
-          type: { name: product.type.name }
-        }) === search.toUpperCase()
-          ? [product]
-          : [];
-
+    const exactMatchResult = await exactProductCodeLookup(search, typeId);
+    if (exactMatchResult) {
       return {
-        page: 1,
-        total: products.length,
-        totalPages: 1,
-        products,
+        ...exactMatchResult,
         types: await getTypes()
       };
     }
 
-    const total = await prisma.product.count({ where });
-    const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
-    const safePage = Math.min(page, totalPages);
-    const skip = (safePage - 1) * DEFAULT_PAGE_SIZE;
-
-    const [products, types] = await Promise.all([
-      prisma.product.findMany({
-        where,
-        include: {
-          type: true
-        },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        skip,
-        take: DEFAULT_PAGE_SIZE
-      }),
-      getTypes()
-    ]);
+    const result =
+      search.length === 0
+        ? await browseCatalog(page, typeId)
+        : (await searchCatalogIdsByFullText(page, search, typeId)) ??
+          (await searchCatalogIdsByTrigram(page, search, typeId)) ??
+          {
+            page: 1,
+            total: 0,
+            totalPages: 1,
+            products: [],
+            strategy: "full-text" as CatalogSearchStrategy
+          };
 
     return {
-      page: safePage,
-      total,
-      totalPages,
-      products,
-      types
+      ...result,
+      types: await getTypes()
     };
   },
   ["catalog-page"],
@@ -121,9 +352,9 @@ export async function getCatalog(options: {
   search?: string;
   typeId?: number | null;
 }) {
-  const page = Math.max(1, options.page ?? 1);
-  const search = options.search?.trim() ?? "";
-  const typeId = options.typeId && options.typeId > 0 ? options.typeId : null;
+  const page = normalizeSearchPage(options.page);
+  const search = normalizeSearchInput(options.search);
+  const typeId = normalizeTypeId(options.typeId);
 
   return getCatalogCached(page, search, typeId);
 }
@@ -341,3 +572,5 @@ const getProductRefsForStaticPathsCached = unstable_cache(
 export async function getProductRefsForStaticPaths() {
   return getProductRefsForStaticPathsCached();
 }
+
+
