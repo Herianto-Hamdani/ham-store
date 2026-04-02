@@ -6,7 +6,14 @@ import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteProductAction } from "@/lib/actions/admin";
 import { getAdminProductDashboard } from "@/lib/data/admin";
-import { cardModeValue, encryptPublicId, formatRupiah, getProductCode, resolveImageUrl } from "@/lib/utils";
+import {
+  cardModeValue,
+  encryptPublicId,
+  formatDateOnly,
+  formatRupiah,
+  getProductCode,
+  resolveImageUrl
+} from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const preferredRegion = "icn1";
@@ -169,7 +176,7 @@ export default async function AdminProductsPage({
                       <td>{formatRupiah(product.priceItem)}</td>
                       <td>{formatRupiah(product.priceInstall)}</td>
                       <td>{formatRupiah(totalPrice)}</td>
-                      <td>{product.createdAt.toISOString().slice(0, 10)}</td>
+                      <td>{formatDateOnly(product.createdAt)}</td>
                       <td>
                         <div className="row-actions">
                           <Link className="btn btn-small btn-ghost" href={`/produk/${publicRef}`}>

@@ -205,11 +205,36 @@ export function getSiteName(name?: string | null): string {
   return (name ?? "").trim() || APP_NAME;
 }
 
+export function toDateValue(value: Date | string | number | null | undefined): Date | null {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  return null;
+}
+
+export function formatDateOnly(value: Date | string | number | null | undefined, fallback = "-"): string {
+  const date = toDateValue(value);
+  return date ? date.toISOString().slice(0, 10) : fallback;
+}
+
+export function getDateRevisionToken(
+  value: Date | string | number | null | undefined,
+  fallback = "unknown"
+): string {
+  const date = toDateValue(value);
+  return date ? date.toISOString() : fallback;
+}
+
 export function getProductCode(product: ProductCodeInput): string {
   const typeRaw = (product.typeName ?? product.type?.name ?? "TYPE").trim().toUpperCase();
   const typeToken = typeRaw.replace(/[^A-Z0-9]+/g, "") || "TYPE";
-  const createdAt =
-    product.createdAt instanceof Date ? product.createdAt : new Date(product.createdAt);
+  const createdAt = toDateValue(product.createdAt) ?? new Date(0);
   const monthDay = new Intl.DateTimeFormat("en-GB", {
     month: "2-digit",
     day: "2-digit",

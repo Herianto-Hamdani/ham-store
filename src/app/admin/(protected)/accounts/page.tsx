@@ -10,6 +10,7 @@ import {
 } from "@/lib/actions/admin";
 import { getOptionalAdminUser } from "@/lib/auth/session";
 import { getAdminAccounts } from "@/lib/data/admin";
+import { formatDateOnly } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,7 @@ export default async function AdminAccountsPage({
         <article className="metric-card">
           <span>Admin terbaru</span>
           <strong>{newestAccount?.username ?? "-"}</strong>
-          <p>{newestAccount ? newestAccount.createdAt.toISOString().slice(0, 10) : "Belum ada data"}</p>
+          <p>{newestAccount ? formatDateOnly(newestAccount.createdAt) : "Belum ada data"}</p>
         </article>
       </section>
 
@@ -105,7 +106,7 @@ export default async function AdminAccountsPage({
               <div className="admin-list-item" key={account.id}>
                 <strong>{account.username}</strong>
                 <span>ADMIN</span>
-                <small>{account.createdAt.toISOString().slice(0, 10)}</small>
+                <small>{formatDateOnly(account.createdAt)}</small>
               </div>
             ))}
           </div>
@@ -160,7 +161,7 @@ export default async function AdminAccountsPage({
                       <span className="admin-inline-pill">ADMIN</span>
                     </td>
                     <td>********</td>
-                    <td>{account.createdAt.toISOString().slice(0, 10)}</td>
+                    <td>{formatDateOnly(account.createdAt)}</td>
                       <td>
                         <div className="row-actions">
                           <LoadingLink

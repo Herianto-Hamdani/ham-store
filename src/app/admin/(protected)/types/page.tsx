@@ -5,6 +5,7 @@ import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteTypeAction } from "@/lib/actions/admin";
 import { getTypeList } from "@/lib/data/admin";
+import { formatDateOnly } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const preferredRegion = "icn1";
@@ -100,7 +101,7 @@ export default async function AdminTypesPage({
                       <td>
                         <span className="admin-inline-pill">{hasProducts ? "Aktif" : "Kosong"}</span>
                       </td>
-                      <td>{type.createdAt.toISOString().slice(0, 10)}</td>
+                      <td>{formatDateOnly(type.createdAt)}</td>
                       <td>
                         <div className="row-actions">
                           <LoadingLink

@@ -10,6 +10,7 @@ import { getMaxUploadMb } from "@/lib/upload-config";
 import {
   cardModeValue,
   encryptPublicId,
+  getDateRevisionToken,
   getProductCode,
   getSiteName,
   resolveImageUrl,
@@ -62,7 +63,7 @@ export default async function AdminProductEditPage({
         </div>
       </section>
       <ProductForm
-        key={`product-form-${product.id}-${product.updatedAt.toISOString()}`}
+        key={`product-form-${product.id}-${getDateRevisionToken(product.updatedAt)}`}
         action={updateProductAction.bind(null, product.id)}
         submitLabel="Update"
         pendingLabel="Memperbarui Produk..."
