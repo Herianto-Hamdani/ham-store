@@ -119,6 +119,20 @@ export function ProductForm({
       }) as React.CSSProperties,
     [formValues.imagePosX, formValues.imagePosY, formValues.imageScale]
   );
+  const templateCardStyle = useMemo(
+    () =>
+      formValues.cardMode === "template"
+        ? ({
+            ...template.style,
+            ...(template.backgroundUrl
+              ? {
+                  ["--template-card-background-image" as string]: `url("${template.backgroundUrl}")`
+                }
+              : {})
+          } as React.CSSProperties)
+        : undefined,
+    [formValues.cardMode, template.backgroundUrl, template.style]
+  );
 
   function updateField<K extends keyof ProductFormValues>(key: K, nextValue: ProductFormValues[K]) {
     setFormValues((current) => ({
@@ -485,37 +499,54 @@ export function ProductForm({
           className={`product-card ${
             formValues.cardMode === "template" ? "product-card-template" : "product-card-image"
           } designer-preview-card${previewInteracting ? " designer-dragging" : ""}`}
+          style={templateCardStyle}
           onPointerMove={onPreviewMove}
           onPointerUp={stopPreviewInteraction}
           onPointerCancel={stopPreviewInteraction}
         >
           {formValues.cardMode === "template" ? (
-            <div
-              className="poster-frame product-card-media"
-              style={template.style}
-            >
-              <TemplatePosterContent
-                backgroundUrl={template.backgroundUrl}
-                logoUrl={template.logoUrl}
-                siteName={template.siteName}
-                title={previewTitle}
-                modelLabel={previewModel}
-                brandLabel={previewBrand}
-                imageUrl={imageUrl}
-                imageAlt="Preview produk"
-                imageStyle={previewImageStyle}
-              />
+            <div className="product-card-template-shell">
               <div
-                className="product-preview-node product-preview-node-template"
-                onPointerDown={(event) => startPreviewInteraction("drag", event)}
+                className="poster-frame product-card-media product-card-template-stage"
+                style={template.style}
               >
-                <span className="designer-node-badge">Foto Produk</span>
-                <button
-                  type="button"
-                  className="designer-resize-handle"
-                  aria-label="Resize foto produk"
-                  onPointerDown={(event) => startPreviewInteraction("resize", event)}
+                <TemplatePosterContent
+                  backgroundUrl={template.backgroundUrl}
+                  logoUrl={template.logoUrl}
+                  siteName={template.siteName}
+                  title={previewTitle}
+                  modelLabel={previewModel}
+                  brandLabel={previewBrand}
+                  imageUrl={imageUrl}
+                  imageAlt="Preview produk"
+                  imageStyle={previewImageStyle}
+                  showBackgroundLayer={false}
                 />
+                <div
+                  className="product-preview-node product-preview-node-template"
+                  onPointerDown={(event) => startPreviewInteraction("drag", event)}
+                >
+                  <span className="designer-node-badge">Foto Produk</span>
+                  <button
+                    type="button"
+                    className="designer-resize-handle"
+                    aria-label="Resize foto produk"
+                    onPointerDown={(event) => startPreviewInteraction("resize", event)}
+                  />
+                </div>
+              </div>
+              <div className="card-body card-body-template">
+                <div className="chip">{typeName}</div>
+                <p>{previewDetail}</p>
+                <div className="price-table-wrap">
+                  <div className="price-inline-card" aria-label="Preview harga paket">
+                    <span className="price-inline-card-label">
+                      <span>Harga</span>
+                      <span>Paket</span>
+                    </span>
+                    <strong className="price-inline-card-value">{`Rp ${new Intl.NumberFormat("id-ID").format(totalPrice)}`}</strong>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
@@ -545,20 +576,22 @@ export function ProductForm({
               </div>
             </div>
           )}
-          <div className="card-body">
-            <div className="chip">{typeName}</div>
-            <p>{previewDetail}</p>
-            <div className="price-table-wrap">
-              <table className="price-table" aria-label="Preview harga paket">
-                <tbody>
-                  <tr>
-                    <th>Harga Paket</th>
-                    <td>{`Rp ${new Intl.NumberFormat("id-ID").format(totalPrice)}`}</td>
-                  </tr>
-                </tbody>
-              </table>
+          {formValues.cardMode === "image" ? (
+            <div className="card-body">
+              <div className="chip">{typeName}</div>
+              <p>{previewDetail}</p>
+              <div className="price-table-wrap">
+                <table className="price-table" aria-label="Preview harga paket">
+                  <tbody>
+                    <tr>
+                      <th>Harga Paket</th>
+                      <td>{`Rp ${new Intl.NumberFormat("id-ID").format(totalPrice)}`}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </aside>
     </section>

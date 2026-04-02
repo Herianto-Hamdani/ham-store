@@ -29,8 +29,8 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
       style={templateCardStyle}
     >
       {isTemplateMode ? (
-        <Link className="poster-frame product-card-media product-card-template-shell" href={item.href}>
-          <div className="product-card-template-stage">
+        <Link className="product-card-template-shell" href={item.href}>
+          <div className="poster-frame product-card-media product-card-template-stage">
             <TemplatePosterContent
               backgroundUrl={template.backgroundUrl}
               logoUrl={template.logoUrl}
@@ -41,6 +41,7 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
               imageUrl={item.thumbUrl}
               imageAlt={item.title}
               imageStyle={item.imageStyle}
+              showBackgroundLayer={false}
             />
           </div>
           <div className="card-body card-body-link card-body-template">

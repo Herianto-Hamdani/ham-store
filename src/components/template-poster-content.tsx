@@ -11,6 +11,7 @@ type TemplatePosterContentProps = {
   imageLoading?: "eager" | "lazy";
   imageDecoding?: "async" | "auto" | "sync";
   placeholder?: React.ReactNode;
+  showBackgroundLayer?: boolean;
 };
 
 export function TemplatePosterContent({
@@ -25,11 +26,12 @@ export function TemplatePosterContent({
   imageStyle,
   imageLoading = "lazy",
   imageDecoding = "async",
-  placeholder = null
+  placeholder = null,
+  showBackgroundLayer = true
 }: TemplatePosterContentProps) {
   return (
     <>
-      {backgroundUrl ? (
+      {showBackgroundLayer && backgroundUrl ? (
         <div className="poster-bg-layer">
           <img
             src={backgroundUrl}

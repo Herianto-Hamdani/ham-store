@@ -1033,18 +1033,20 @@ body.admin-area .btn-nav {
 
 .product-card-template-shell {
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
     min-height: 100%;
+    height: 100%;
     color: inherit;
     text-decoration: none;
     background: transparent;
+    align-content: start;
 }
 
 .product-card-template-stage {
     position: relative;
     grid-row: 1;
     min-height: 0;
-    height: 100%;
+    height: auto;
     align-self: stretch;
 }
 
@@ -1321,16 +1323,10 @@ body.admin-area .btn-nav {
     background: #ffffff;
 }
 
-.product-card-template .poster-frame.product-card-media,
+.product-card-template-shell > .product-card-template-stage.product-card-media,
 .product-card-image .thumb-wrap.product-card-media {
     height: auto;
     min-height: 0;
-}
-
-.product-card-template .poster-frame.product-card-media {
-    aspect-ratio: auto;
-    height: 100%;
-    min-height: 100%;
 }
 
 .product-card-image .thumb-direct {
@@ -2621,6 +2617,10 @@ body.admin-area .designer-preview-panel {
     min-height: min(760px, 74vh);
 }
 
+.designer-preview-card .product-card-template-shell {
+    height: 100%;
+}
+
 .template-designer-grid {
     grid-template-columns: minmax(0, .95fr) minmax(340px, 1.05fr);
 }
@@ -3562,10 +3562,6 @@ small {
 
     .product-card-media {
         aspect-ratio: 5 / 4;
-    }
-
-    .product-card-template .poster-frame.product-card-media {
-        aspect-ratio: auto;
     }
 
     .product-card-template .poster-title-box {

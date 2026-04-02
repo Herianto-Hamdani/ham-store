@@ -344,6 +344,18 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
       }) as React.CSSProperties,
     [formValues]
   );
+  const previewCardStyle = useMemo(
+    () =>
+      ({
+        ...previewStyle,
+        ...(formValues.backgroundUrl
+          ? {
+              ["--template-card-background-image" as string]: `url("${formValues.backgroundUrl}")`
+            }
+          : {})
+      }) as React.CSSProperties,
+    [formValues.backgroundUrl, previewStyle]
+  );
 
   const designerNodeStyles = useMemo(
     () =>
@@ -529,58 +541,61 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
             ref={frameRef}
             id="templateDesignerFrame"
             className={`product-card product-card-template designer-preview-card${dragging ? " designer-dragging" : ""}`}
+            style={previewCardStyle}
             onPointerMove={handlePointerMove}
             onPointerUp={finishInteraction}
             onPointerCancel={finishInteraction}
           >
-            <div className="poster-frame product-card-media" style={previewStyle}>
-              <TemplatePosterContent
-                backgroundUrl={formValues.backgroundUrl}
-                logoUrl={formValues.logoUrl}
-                siteName={formValues.siteName}
-                title="BATERAI REDMI 9"
-                modelLabel="MODEL: BN52"
-                brandLabel="ORI BRD"
-                placeholder={
-                  <div className="designer-photo-placeholder" aria-hidden="true">
-                    <div className="designer-photo-placeholder-shell" />
-                    <span className="designer-photo-placeholder-label">Foto Produk</span>
+            <div className="product-card-template-shell">
+              <div className="poster-frame product-card-media product-card-template-stage" style={previewStyle}>
+                <TemplatePosterContent
+                  backgroundUrl={formValues.backgroundUrl}
+                  logoUrl={formValues.logoUrl}
+                  siteName={formValues.siteName}
+                  title="BATERAI REDMI 9"
+                  modelLabel="MODEL: BN52"
+                  brandLabel="ORI BRD"
+                  showBackgroundLayer={false}
+                  placeholder={
+                    <div className="designer-photo-placeholder" aria-hidden="true">
+                      <div className="designer-photo-placeholder-shell" />
+                      <span className="designer-photo-placeholder-label">Foto Produk</span>
+                    </div>
+                  }
+                />
+
+                {(Object.keys(NODE_LABELS) as DesignerNode[]).map((node) => (
+                  <div
+                    key={node}
+                    className={`designer-node designer-node-${node}${activeNode === node ? " is-active" : ""}`}
+                    style={designerNodeStyles[node]}
+                    onPointerDown={(event) => startInteraction(node, "drag", event)}
+                  >
+                    <span className="designer-node-badge">{NODE_LABELS[node]}</span>
+                    {RESIZABLE_NODES.has(node) ? (
+                      <button
+                        type="button"
+                        className="designer-resize-handle"
+                        aria-label={`Resize ${NODE_LABELS[node]}`}
+                        onPointerDown={(event) => startInteraction(node, "resize", event)}
+                      />
+                    ) : null}
                   </div>
-                }
-              />
+                ))}
+              </div>
 
-              {(Object.keys(NODE_LABELS) as DesignerNode[]).map((node) => (
-                <div
-                  key={node}
-                  className={`designer-node designer-node-${node}${activeNode === node ? " is-active" : ""}`}
-                  style={designerNodeStyles[node]}
-                  onPointerDown={(event) => startInteraction(node, "drag", event)}
-                >
-                  <span className="designer-node-badge">{NODE_LABELS[node]}</span>
-                  {RESIZABLE_NODES.has(node) ? (
-                    <button
-                      type="button"
-                      className="designer-resize-handle"
-                      aria-label={`Resize ${NODE_LABELS[node]}`}
-                      onPointerDown={(event) => startInteraction(node, "resize", event)}
-                    />
-                  ) : null}
+              <div className="card-body card-body-template">
+                <div className="chip">Type</div>
+                <p>Perubahan di canvas ini akan menjadi template global untuk semua kartu mode template.</p>
+                <div className="price-table-wrap">
+                  <div className="price-inline-card" aria-label="Preview harga paket">
+                    <span className="price-inline-card-label">
+                      <span>Harga</span>
+                      <span>Paket</span>
+                    </span>
+                    <strong className="price-inline-card-value">Rp 250.000</strong>
+                  </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="card-body">
-              <div className="chip">Type</div>
-              <p>Perubahan di canvas ini akan menjadi template global untuk semua kartu mode template.</p>
-              <div className="price-table-wrap">
-                <table className="price-table">
-                  <tbody>
-                    <tr>
-                      <th>Harga Paket</th>
-                      <td>Rp 250.000</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>
