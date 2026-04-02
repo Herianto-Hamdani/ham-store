@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ActionLoadingOverlay } from "@/components/action-loading-overlay";
@@ -24,6 +24,9 @@ export function LoadingLink({
 }: LoadingLinkProps) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const prefetchRoute = useCallback(() => {
+    router.prefetch(href);
+  }, [href, router]);
 
   return (
     <>
@@ -31,6 +34,9 @@ export function LoadingLink({
         href={href}
         className={`${className}${pending ? " is-pending" : ""}`}
         aria-busy={pending}
+        onMouseEnter={prefetchRoute}
+        onTouchStart={prefetchRoute}
+        onFocus={prefetchRoute}
         onClick={(event) => {
           if (
             event.defaultPrevented ||

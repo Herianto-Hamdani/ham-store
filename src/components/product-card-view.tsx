@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 
 import { TemplatePosterContent } from "@/components/template-poster-content";
@@ -10,13 +11,25 @@ type ProductCardViewProps = {
 
 export function ProductCardView({ item, template }: ProductCardViewProps) {
   const isTemplateMode = item.mode === "template";
+  const templateCardStyle = isTemplateMode
+    ? ({
+        ...template.style,
+        ...(template.backgroundUrl
+          ? {
+              ["--template-card-background-image" as string]: `url("${template.backgroundUrl}")`
+            }
+          : {})
+      } as CSSProperties)
+    : undefined;
 
   return (
     <article
       className={`product-card ${isTemplateMode ? "product-card-template" : "product-card-image"}`}
+      data-title-density={item.titleDensity}
+      style={templateCardStyle}
     >
       {isTemplateMode ? (
-        <Link className="poster-frame product-card-media" href={item.href} style={template.style}>
+        <Link className="poster-frame product-card-media product-card-template-shell" href={item.href}>
           <TemplatePosterContent
             backgroundUrl={template.backgroundUrl}
             logoUrl={template.logoUrl}
@@ -28,6 +41,19 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
             imageAlt={item.title}
             imageStyle={item.imageStyle}
           />
+          <div className="card-body card-body-link card-body-template">
+            <div className="chip">{item.typeName}</div>
+            <p>{item.detailExcerpt}</p>
+            <div className="price-table-wrap">
+              <div className="price-inline-card" aria-label="Harga paket">
+                <span className="price-inline-card-label">
+                  <span>Harga</span>
+                  <span>Paket</span>
+                </span>
+                <strong className="price-inline-card-value">{item.packagePriceText}</strong>
+              </div>
+            </div>
+          </div>
         </Link>
       ) : (
         <Link className="thumb-wrap thumb-wrap-direct product-card-media" href={item.href}>
@@ -44,19 +70,21 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
         </Link>
       )}
 
-      <Link className="card-body card-body-link" href={item.href}>
-        <div className="chip">{item.typeName}</div>
-        <p>{item.detailExcerpt}</p>
-        <div className="price-table-wrap">
-          <div className="price-inline-card" aria-label="Harga paket">
-            <span className="price-inline-card-label">
-              <span>Harga</span>
-              <span>Paket</span>
-            </span>
-            <strong className="price-inline-card-value">{item.packagePriceText}</strong>
+      {!isTemplateMode ? (
+        <Link className="card-body card-body-link" href={item.href}>
+          <div className="chip">{item.typeName}</div>
+          <p>{item.detailExcerpt}</p>
+          <div className="price-table-wrap">
+            <div className="price-inline-card" aria-label="Harga paket">
+              <span className="price-inline-card-label">
+                <span>Harga</span>
+                <span>Paket</span>
+              </span>
+              <strong className="price-inline-card-value">{item.packagePriceText}</strong>
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      ) : null}
     </article>
   );
 }

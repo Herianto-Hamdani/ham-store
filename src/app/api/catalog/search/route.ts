@@ -11,6 +11,8 @@ const SearchRequestSchema = z.object({
   page: z.string().optional().default("1")
 });
 
+export const preferredRegion = "icn1";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const parsed = SearchRequestSchema.safeParse({

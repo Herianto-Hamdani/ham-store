@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { AdminLiveFilters } from "@/components/admin-live-filters";
 import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteTypeAction } from "@/lib/actions/admin";
 import { getTypeList } from "@/lib/data/admin";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "icn1";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -67,20 +69,7 @@ export default async function AdminTypesPage({
       </section>
 
       <section className="filter-panel">
-        <form method="get" action="/admin/types" className="filter-grid filter-grid-two">
-          <label>
-            Cari type
-            <input type="text" name="q" defaultValue={search} placeholder="Cari type..." />
-          </label>
-          <div className="filter-actions">
-            <button type="submit" className="btn btn-primary">
-              Terapkan
-            </button>
-            <Link href="/admin/types" className="btn btn-ghost">
-              Reset
-            </Link>
-          </div>
-        </form>
+        <AdminLiveFilters mode="types" initialSearch={search} />
       </section>
 
       <section>

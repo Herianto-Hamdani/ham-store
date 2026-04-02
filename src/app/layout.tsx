@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "Katalog sparepart premium dengan panel admin Next.js siap deploy ke Vercel."
 };
 
+export const preferredRegion = "icn1";
+
 export default async function RootLayout({
   children
 }: Readonly<{

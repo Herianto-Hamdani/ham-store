@@ -5,6 +5,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 import { getSiteName, resolveImageUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "icn1";
 
 export default async function ProtectedAdminLayout({
   children

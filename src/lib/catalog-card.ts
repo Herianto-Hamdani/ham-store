@@ -22,6 +22,7 @@ export type CatalogCardItem = {
   detailExcerpt: string;
   typeName: string;
   title: string;
+  titleDensity: "regular" | "compact" | "tight";
   brandLabel: string;
   modelLabel: string;
   mode: "image" | "template";
@@ -51,6 +52,13 @@ export function createCatalogCardItem(product: ProductWithType): CatalogCardItem
   const model = product.model.trim();
   const title =
     product.name.trim() || `${product.type.name} ${brand} ${model}`.trim() || "NAMA BARANG";
+  const titleWordCount = title.split(/\s+/).filter(Boolean).length;
+  const titleDensity =
+    title.length > 32 || titleWordCount >= 5
+      ? "tight"
+      : title.length > 22 || titleWordCount >= 4
+        ? "compact"
+        : "regular";
 
   return {
     id: product.id,
@@ -58,6 +66,7 @@ export function createCatalogCardItem(product: ProductWithType): CatalogCardItem
     detailExcerpt: excerpt(product.detail, 120),
     typeName: product.type.name,
     title,
+    titleDensity,
     brandLabel: brand ? brand.toUpperCase() : "ORI",
     modelLabel: model ? `MODEL: ${model.toUpperCase()}` : "MODEL: -",
     mode: cardModeValue(product.cardMode),

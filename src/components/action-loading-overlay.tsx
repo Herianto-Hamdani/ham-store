@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { LoaderScene, type LoaderSceneIcon } from "@/components/loader-scene";
 
 type ActionLoadingOverlayProps = {
@@ -53,6 +55,22 @@ export function ActionLoadingOverlay({
   label,
   modeOverride = "auto"
 }: ActionLoadingOverlayProps) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      setVisible(true);
+    }, 160);
+
+    return () => {
+      window.clearTimeout(handle);
+    };
+  }, []);
+
+  if (!visible) {
+    return null;
+  }
+
   const visual =
     modeOverride === "auto"
       ? inferLoadingVisual(label)

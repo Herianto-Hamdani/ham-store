@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { AdminLiveFilters } from "@/components/admin-live-filters";
 import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { deleteProductAction } from "@/lib/actions/admin";
@@ -8,6 +9,7 @@ import { getAdminProductDashboard } from "@/lib/data/admin";
 import { cardModeValue, encryptPublicId, formatRupiah, getProductCode, resolveImageUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "icn1";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -102,31 +104,15 @@ export default async function AdminProductsPage({
       ) : null}
 
       <section className="filter-panel">
-        <form method="get" action="/admin/products" className="filter-grid">
-          <label>
-            Cari nama, merek, model, atau kode
-            <input type="text" name="q" defaultValue={search} placeholder="Contoh: LCD-0305-79" />
-          </label>
-          <label>
-            Filter type
-            <select name="type" defaultValue={typeId ? String(typeId) : "0"}>
-              <option value="0">Semua Type</option>
-              {dashboard.types.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="filter-actions">
-            <button type="submit" className="btn btn-primary">
-              Terapkan
-            </button>
-            <Link href="/admin/products" className="btn btn-ghost">
-              Reset
-            </Link>
-          </div>
-        </form>
+        <AdminLiveFilters
+          mode="products"
+          initialSearch={search}
+          initialTypeId={typeId}
+          types={dashboard.types.map((type) => ({
+            id: type.id,
+            name: type.name
+          }))}
+        />
       </section>
 
       <section>
