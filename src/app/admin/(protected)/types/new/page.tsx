@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { LoadingLink } from "@/components/loading-link";
 import { TypeForm } from "@/components/type-form";
 import { createTypeAction } from "@/lib/actions/admin";
 
@@ -17,9 +16,15 @@ export default function AdminTypeNewPage() {
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/types" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/types"
+            className="btn btn-ghost"
+            loadingLabel="Kembali ke Manajemen Type..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Kembali ke Type
-          </Link>
+          </LoadingLink>
         </div>
       </section>
       <TypeForm action={createTypeAction} submitLabel="Simpan" pendingLabel="Menyimpan Type Baru..." />

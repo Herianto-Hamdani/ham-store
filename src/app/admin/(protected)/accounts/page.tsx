@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { AccountForm } from "@/components/account-form";
@@ -41,12 +39,24 @@ export default async function AdminAccountsPage({
           </p>
         </div>
         <div className="filter-actions">
-          <Link className="btn btn-ghost" href="/admin">
+          <LoadingLink
+            className="btn btn-ghost"
+            href="/admin"
+            loadingLabel="Membuka Dashboard Admin..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Dashboard
-          </Link>
-          <Link className="btn btn-ghost" href="/admin/products">
+          </LoadingLink>
+          <LoadingLink
+            className="btn btn-ghost"
+            href="/admin/products"
+            loadingLabel="Membuka Manajemen Produk..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Produk
-          </Link>
+          </LoadingLink>
         </div>
       </section>
 
@@ -168,6 +178,8 @@ export default async function AdminAccountsPage({
                             className="btn btn-small btn-ghost"
                             href={`/admin/accounts?edit=${account.id}`}
                             loadingLabel="Membuka Editor Akun Admin..."
+                            showInlineSpinner={false}
+                            showOverlay={false}
                           >
                             Edit
                           </LoadingLink>

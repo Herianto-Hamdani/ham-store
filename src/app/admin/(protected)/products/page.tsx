@@ -50,12 +50,24 @@ export default async function AdminProductsPage({
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin"
+            className="btn btn-ghost"
+            loadingLabel="Membuka Dashboard Admin..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Dashboard
-          </Link>
-          <Link href="/admin/products/new" className="btn btn-primary">
+          </LoadingLink>
+          <LoadingLink
+            href="/admin/products/new"
+            className="btn btn-primary"
+            loadingLabel="Membuka Form Produk Baru..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Tambah Produk
-          </Link>
+          </LoadingLink>
         </div>
       </section>
 
@@ -103,6 +115,8 @@ export default async function AdminProductsPage({
               href={`/admin/products/${dashboard.latestProduct.id}/edit`}
               className="btn btn-primary"
               loadingLabel="Membuka Editor Produk..."
+              showInlineSpinner={false}
+              showOverlay={false}
             >
               Edit Produk Terbaru
             </LoadingLink>
@@ -186,6 +200,8 @@ export default async function AdminProductsPage({
                             className="btn btn-small btn-ghost"
                             href={`/admin/products/${product.id}/edit`}
                             loadingLabel="Membuka Editor Produk..."
+                            showInlineSpinner={false}
+                            showOverlay={false}
                           >
                             Edit
                           </LoadingLink>
@@ -230,7 +246,7 @@ export default async function AdminProductsPage({
                   className=""
                   loadingLabel={`Memuat Halaman Produk ${targetPage}...`}
                   showInlineSpinner={false}
-                  overlayMode="wordmark"
+                  showOverlay={false}
                 >
                   {targetPage}
                 </LoadingLink>

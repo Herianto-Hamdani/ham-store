@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type AdminShellFrameProps = {
@@ -156,16 +157,28 @@ export function AdminShellFrame({
           </div>
 
           <nav className="admin-side-nav admin-side-nav-panel">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={isItemActive(pathname, item.href) ? "is-active" : ""}
-              >
-                <strong>{item.label}</strong>
-                <small>{item.description}</small>
-              </Link>
-            ))}
+            {navItems.map((item) =>
+              isItemActive(pathname, item.href) ? (
+                <span key={item.href} className="is-active" aria-current="page">
+                  <strong>{item.label}</strong>
+                  <small>{item.description}</small>
+                </span>
+              ) : (
+                <LoadingLink
+                  key={item.href}
+                  href={item.href}
+                  className=""
+                  loadingLabel={`Membuka ${item.label}...`}
+                  showInlineSpinner={false}
+                  showOverlay={false}
+                >
+                  <>
+                    <strong>{item.label}</strong>
+                    <small>{item.description}</small>
+                  </>
+                </LoadingLink>
+              )
+            )}
             <Link href="/" className="admin-side-nav-external">
               <strong>Preview Publik</strong>
               <small>Lihat halaman user</small>

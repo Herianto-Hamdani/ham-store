@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { LoadingLink } from "@/components/loading-link";
 import { SiteSettingsForm } from "@/components/site-settings-form";
 import { updateSiteSettingsAction } from "@/lib/actions/admin";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -30,9 +29,15 @@ export default async function AdminSettingsPage({
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/template" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/template"
+            className="btn btn-ghost"
+            loadingLabel="Membuka Pengaturan Template Card..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Atur Template Card
-          </Link>
+          </LoadingLink>
         </div>
       </section>
       <SiteSettingsForm

@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { LoadingLink } from "@/components/loading-link";
 import { ProductForm } from "@/components/product-form";
 import { createProductAction } from "@/lib/actions/admin";
 import { getTypes } from "@/lib/data/catalog";
@@ -30,9 +29,15 @@ export default async function AdminProductNewPage() {
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/products" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/products"
+            className="btn btn-ghost"
+            loadingLabel="Kembali ke Manajemen Produk..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Kembali ke Produk
-          </Link>
+          </LoadingLink>
         </div>
       </section>
       <ProductForm

@@ -1040,6 +1040,14 @@ body.admin-area .btn-nav {
     background: transparent;
 }
 
+.product-card-template-stage {
+    position: relative;
+    grid-row: 1;
+    min-height: 0;
+    height: 100%;
+    align-self: stretch;
+}
+
 .poster-bg-layer {
     position: absolute;
     inset: 0;

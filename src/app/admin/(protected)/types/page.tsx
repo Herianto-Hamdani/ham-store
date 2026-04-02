@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { AdminLiveFilters } from "@/components/admin-live-filters";
 import { LoadingLink } from "@/components/loading-link";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
@@ -34,12 +32,24 @@ export default async function AdminTypesPage({
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/products" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/products"
+            className="btn btn-ghost"
+            loadingLabel="Membuka Manajemen Produk..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Produk
-          </Link>
-          <Link href="/admin/types/new" className="btn btn-primary">
+          </LoadingLink>
+          <LoadingLink
+            href="/admin/types/new"
+            className="btn btn-primary"
+            loadingLabel="Membuka Form Type Baru..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Tambah Type
-          </Link>
+          </LoadingLink>
         </div>
       </section>
 
@@ -108,6 +118,8 @@ export default async function AdminTypesPage({
                             className="btn btn-small btn-ghost"
                             href={`/admin/types/${type.id}/edit`}
                             loadingLabel="Membuka Editor Type..."
+                            showInlineSpinner={false}
+                            showOverlay={false}
                           >
                             Edit
                           </LoadingLink>
@@ -153,7 +165,7 @@ export default async function AdminTypesPage({
                   className=""
                   loadingLabel={`Memuat Halaman Type ${targetPage}...`}
                   showInlineSpinner={false}
-                  overlayMode="wordmark"
+                  showOverlay={false}
                 >
                   {targetPage}
                 </LoadingLink>

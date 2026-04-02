@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { ActionLoadingOverlay } from "@/components/action-loading-overlay";
 
@@ -11,6 +11,7 @@ type LoadingLinkProps = {
   children: React.ReactNode;
   loadingLabel: string;
   showInlineSpinner?: boolean;
+  showOverlay?: boolean;
   overlayMode?: "auto" | "wordmark" | "action";
 };
 
@@ -20,10 +21,22 @@ export function LoadingLink({
   children,
   loadingLabel,
   showInlineSpinner = true,
+  showOverlay = true,
   overlayMode = "auto"
 }: LoadingLinkProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, setPending] = useState(false);
+  const currentLocation = useMemo(() => {
+    const query = searchParams.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
+    setPending(false);
+  }, [currentLocation]);
+
   const prefetchRoute = useCallback(() => {
     router.prefetch(href);
   }, [href, router]);
@@ -49,6 +62,10 @@ export function LoadingLink({
             return;
           }
 
+          if (href === currentLocation || (href === pathname && !searchParams.toString())) {
+            return;
+          }
+
           event.preventDefault();
           setPending(true);
           router.push(href);
@@ -58,7 +75,9 @@ export function LoadingLink({
         <span>{children}</span>
       </a>
 
-      {pending ? <ActionLoadingOverlay label={loadingLabel} modeOverride={overlayMode} /> : null}
+      {pending && showOverlay ? (
+        <ActionLoadingOverlay label={loadingLabel} modeOverride={overlayMode} />
+      ) : null}
     </>
   );
 }

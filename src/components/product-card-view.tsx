@@ -30,17 +30,19 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
     >
       {isTemplateMode ? (
         <Link className="poster-frame product-card-media product-card-template-shell" href={item.href}>
-          <TemplatePosterContent
-            backgroundUrl={template.backgroundUrl}
-            logoUrl={template.logoUrl}
-            siteName={template.siteName}
-            title={item.title.toUpperCase()}
-            modelLabel={item.modelLabel}
-            brandLabel={item.brandLabel}
-            imageUrl={item.thumbUrl}
-            imageAlt={item.title}
-            imageStyle={item.imageStyle}
-          />
+          <div className="product-card-template-stage">
+            <TemplatePosterContent
+              backgroundUrl={template.backgroundUrl}
+              logoUrl={template.logoUrl}
+              siteName={template.siteName}
+              title={item.title.toUpperCase()}
+              modelLabel={item.modelLabel}
+              brandLabel={item.brandLabel}
+              imageUrl={item.thumbUrl}
+              imageAlt={item.title}
+              imageStyle={item.imageStyle}
+            />
+          </div>
           <div className="card-body card-body-link card-body-template">
             <div className="chip">{item.typeName}</div>
             <p>{item.detailExcerpt}</p>

@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { LoadingLink } from "@/components/loading-link";
 import { getAdminOverview } from "@/lib/data/admin";
 import { formatRupiah } from "@/lib/utils";
 
@@ -17,12 +16,24 @@ export default async function AdminIndexPage() {
           <p className="admin-lead">Ringkasan singkat untuk kondisi katalog dan operasional inti.</p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/products/new" className="btn btn-primary">
+          <LoadingLink
+            href="/admin/products/new"
+            className="btn btn-primary"
+            loadingLabel="Membuka Form Produk Baru..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Tambah Produk
-          </Link>
-          <Link href="/admin/settings" className="btn btn-ghost">
+          </LoadingLink>
+          <LoadingLink
+            href="/admin/settings"
+            className="btn btn-ghost"
+            loadingLabel="Membuka Pengaturan Situs..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Atur Situs
-          </Link>
+          </LoadingLink>
         </div>
       </section>
 
@@ -81,12 +92,24 @@ export default async function AdminIndexPage() {
             </div>
           </div>
           <div className="admin-quick-actions">
-            <Link href="/admin/products" className="btn btn-ghost btn-small">
+            <LoadingLink
+              href="/admin/products"
+              className="btn btn-ghost btn-small"
+              loadingLabel="Membuka Manajemen Produk..."
+              showInlineSpinner={false}
+              showOverlay={false}
+            >
               Kelola Produk
-            </Link>
-            <Link href="/admin/settings" className="btn btn-ghost btn-small">
+            </LoadingLink>
+            <LoadingLink
+              href="/admin/settings"
+              className="btn btn-ghost btn-small"
+              loadingLabel="Membuka Pengaturan Situs..."
+              showInlineSpinner={false}
+              showOverlay={false}
+            >
               Pengaturan Situs
-            </Link>
+            </LoadingLink>
           </div>
         </article>
 

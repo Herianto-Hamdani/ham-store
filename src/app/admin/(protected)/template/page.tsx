@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { LoadingLink } from "@/components/loading-link";
 import { TemplateSettingsForm } from "@/components/template-settings-form";
 import { updateTemplateSettingsAction } from "@/lib/actions/admin";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -30,12 +29,24 @@ export default async function AdminTemplatePage({
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/settings" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/settings"
+            className="btn btn-ghost"
+            loadingLabel="Membuka Pengaturan Situs..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Pengaturan Situs
-          </Link>
-          <Link href="/admin/products" className="btn btn-ghost">
+          </LoadingLink>
+          <LoadingLink
+            href="/admin/products"
+            className="btn btn-ghost"
+            loadingLabel="Kembali ke Manajemen Produk..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Kembali ke Produk
-          </Link>
+          </LoadingLink>
         </div>
       </section>
 

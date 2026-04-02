@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { LoadingLink } from "@/components/loading-link";
 import { TypeForm } from "@/components/type-form";
 import { updateTypeAction } from "@/lib/actions/admin";
 import { prisma } from "@/lib/prisma";
@@ -34,9 +34,15 @@ export default async function AdminTypeEditPage({
           </p>
         </div>
         <div className="filter-actions">
-          <Link href="/admin/types" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/types"
+            className="btn btn-ghost"
+            loadingLabel="Kembali ke Manajemen Type..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Kembali ke Type
-          </Link>
+          </LoadingLink>
         </div>
       </section>
       <TypeForm

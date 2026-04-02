@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { LoadingLink } from "@/components/loading-link";
 import { ProductForm } from "@/components/product-form";
 import { updateProductAction } from "@/lib/actions/admin";
 import { getTypes } from "@/lib/data/catalog";
@@ -57,9 +58,15 @@ export default async function AdminProductEditPage({
           <Link href={`/produk/${encryptPublicId(product.id)}`} className="btn btn-ghost">
             Lihat Publik
           </Link>
-          <Link href="/admin/products" className="btn btn-ghost">
+          <LoadingLink
+            href="/admin/products"
+            className="btn btn-ghost"
+            loadingLabel="Kembali ke Manajemen Produk..."
+            showInlineSpinner={false}
+            showOverlay={false}
+          >
             Kembali ke Produk
-          </Link>
+          </LoadingLink>
         </div>
       </section>
       <ProductForm
