@@ -5,6 +5,7 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TemplateCardBands } from "@/components/template-card-bands";
 import { TemplatePosterContent } from "@/components/template-poster-content";
 
 type TemplateValues = {
@@ -90,10 +91,44 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, Math.round(value)));
 }
 
+function constrainTemplateValues(values: TemplateValues): TemplateValues {
+  const templateLogoWidth = clamp(values.templateLogoWidth, 8, 42);
+  const templatePhotoWidth = clamp(values.templatePhotoWidth, 26, 82);
+  const templatePhotoHeight = clamp(values.templatePhotoHeight, 26, 74);
+  const templateTitleWidth = clamp(values.templateTitleWidth, 42, 86);
+  const templateSideFont = clamp(values.templateSideFont, 8, 24);
+
+  return {
+    ...values,
+    templateBgPosX: clamp(values.templateBgPosX, 0, 100),
+    templateBgPosY: clamp(values.templateBgPosY, 0, 100),
+    templateBgScale: clamp(values.templateBgScale, 10, 300),
+    templateLogoWidth,
+    templateLogoTop: clamp(
+      values.templateLogoTop,
+      0,
+      Math.max(0, 100 - Math.max(16, templateLogoWidth * 0.45))
+    ),
+    templateLogoRight: clamp(values.templateLogoRight, 0, Math.max(0, 100 - templateLogoWidth)),
+    templateTitleWidth,
+    templateTitleLeft: clamp(values.templateTitleLeft, 4, Math.max(4, 100 - templateTitleWidth - 4)),
+    templateTitleBottom: clamp(values.templateTitleBottom, 6, 26),
+    templateTitleFont: clamp(values.templateTitleFont, 10, 30),
+    templateSideTop: clamp(values.templateSideTop, 12, 52),
+    templateSideLeft: clamp(values.templateSideLeft, 2, 16),
+    templateSideRight: clamp(values.templateSideRight, 2, 16),
+    templateSideFont,
+    templatePhotoTop: clamp(values.templatePhotoTop, 8, Math.max(8, 100 - templatePhotoHeight - 16)),
+    templatePhotoLeft: clamp(values.templatePhotoLeft, 8, Math.max(8, 100 - templatePhotoWidth - 8)),
+    templatePhotoWidth,
+    templatePhotoHeight
+  };
+}
+
 export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSettingsFormProps) {
   const [state, formAction] = useActionState(action, initialFormState);
   const [clientError, setClientError] = useState<string | null>(null);
-  const [formValues, setFormValues] = useState(values);
+  const [formValues, setFormValues] = useState(() => constrainTemplateValues(values));
   const [activeNode, setActiveNode] = useState<DesignerNode>("photo");
   const [dragging, setDragging] = useState(false);
   const objectUrls = useRef<string[]>([]);
@@ -111,7 +146,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
   useEffect(() => {
     objectUrls.current.forEach((item) => URL.revokeObjectURL(item));
     objectUrls.current = [];
-    setFormValues(values);
+    setFormValues(constrainTemplateValues(values));
     setClientError(null);
     setActiveNode("photo");
     setDragging(false);
@@ -125,7 +160,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
 
     const nextUrl = URL.createObjectURL(file);
     objectUrls.current.push(nextUrl);
-    setFormValues((current) => ({ ...current, [field]: nextUrl }));
+    setFormValues((current) => constrainTemplateValues({ ...current, [field]: nextUrl }));
   }
 
   function validateImageFile(file: File | null) {
@@ -230,7 +265,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
         }
       }
 
-      return next;
+      return constrainTemplateValues(next);
     });
   }
 
@@ -278,7 +313,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           break;
       }
 
-      return next;
+      return constrainTemplateValues(next);
     });
   }
 
@@ -302,7 +337,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           break;
       }
 
-      return next;
+      return constrainTemplateValues(next);
     });
   }
 
@@ -367,7 +402,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           top: `${formValues.templateLogoTop}%`,
           right: `${formValues.templateLogoRight}%`,
           width: `${formValues.templateLogoWidth}%`,
-          height: `${Math.max(14, formValues.templateLogoWidth * 0.44)}%`
+          height: `${Math.max(12, Math.min(24, formValues.templateLogoWidth * 0.44))}%`
         },
         title: {
           left: `${formValues.templateTitleLeft}%`,
@@ -384,14 +419,14 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
         sideLeft: {
           top: `${formValues.templateSideTop}%`,
           left: `${formValues.templateSideLeft}%`,
-          width: `${Math.max(24, formValues.templateSideFont * 2.1)}px`,
-          height: `${Math.max(120, formValues.templateSideFont * 9)}px`
+          width: `${Math.max(8, Math.min(16, formValues.templateSideFont * 1.08))}%`,
+          height: `${Math.max(24, Math.min(54, formValues.templateSideFont * 4.1))}%`
         },
         sideRight: {
           top: `${formValues.templateSideTop}%`,
           right: `${formValues.templateSideRight}%`,
-          width: `${Math.max(24, formValues.templateSideFont * 2.1)}px`,
-          height: `${Math.max(120, formValues.templateSideFont * 9)}px`
+          width: `${Math.max(8, Math.min(16, formValues.templateSideFont * 1.08))}%`,
+          height: `${Math.max(24, Math.min(54, formValues.templateSideFont * 4.1))}%`
         }
       }) satisfies Record<DesignerNode, React.CSSProperties>,
     [formValues]
@@ -584,19 +619,12 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
                 ))}
               </div>
 
-              <div className="card-body card-body-template">
-                <div className="chip">Type</div>
-                <p>Perubahan di canvas ini akan menjadi template global untuk semua kartu mode template.</p>
-                <div className="price-table-wrap">
-                  <div className="price-inline-card" aria-label="Preview harga paket">
-                    <span className="price-inline-card-label">
-                      <span>Harga</span>
-                      <span>Paket</span>
-                    </span>
-                    <strong className="price-inline-card-value">Rp 250.000</strong>
-                  </div>
-                </div>
-              </div>
+              <TemplateCardBands
+                typeName="Type"
+                detailText="Perubahan di canvas ini akan menjadi template global untuk semua kartu mode template."
+                packagePriceText="Rp 250.000"
+                priceLabel="Preview harga paket"
+              />
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import type { CardMode, SiteSetting } from "@prisma/client";
 
 import { APP_NAME, DEFAULT_WHATSAPP_MESSAGE, STORAGE_BUCKET } from "@/lib/constants";
 import { env } from "@/lib/env";
+export { getScheduledThemeMode } from "@/lib/theme-schedule";
 
 type ProductCodeInput = {
   id: number;

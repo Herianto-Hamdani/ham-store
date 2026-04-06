@@ -6,15 +6,18 @@ import {
   buildWhatsappUrl,
   formatRupiah,
   getDefaultWhatsappMessage,
+  getSiteName,
   getProductCode
 } from "@/lib/utils";
 
-export async function redirectToWhatsapp(productRef?: string | null) {
+export async function getWhatsappContactData(productRef?: string | null) {
   const settings = await getSiteSettings();
+  const siteName = getSiteName(settings.webName);
   let message = getDefaultWhatsappMessage(settings.whatsappMessage);
+  let product = null;
 
   if (productRef) {
-    const product = await getProductByRef(productRef);
+    product = await getProductByRef(productRef);
     if (product) {
       const lines = [
         message,
@@ -32,7 +35,16 @@ export async function redirectToWhatsapp(productRef?: string | null) {
     }
   }
 
-  const whatsappUrl = buildWhatsappUrl(settings.whatsappNumber, message);
+  return {
+    product,
+    siteName,
+    settings,
+    whatsappUrl: buildWhatsappUrl(settings.whatsappNumber, message)
+  };
+}
+
+export async function redirectToWhatsapp(productRef?: string | null) {
+  const { whatsappUrl } = await getWhatsappContactData(productRef);
   if (!whatsappUrl) {
     redirect("/?error=Kontak%20WhatsApp%20belum%20diatur%20oleh%20admin.");
   }

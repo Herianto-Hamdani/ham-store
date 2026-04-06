@@ -9,15 +9,37 @@ import { QueryToast } from "@/components/query-toast";
 import { TopNav } from "@/components/top-nav";
 import { APP_NAME } from "@/lib/constants";
 import { getSiteSettings } from "@/lib/site-settings";
-import { buildWhatsappUrl, getSiteName, resolveImageUrl } from "@/lib/utils";
+import { absoluteUrl, buildWhatsappUrl, getSiteName, resolveImageUrl } from "@/lib/utils";
 
 import "./globals.css";
 import "./enterprise-refresh.css";
 
-export const metadata: Metadata = {
-  title: APP_NAME,
-  description: "Katalog sparepart premium dengan panel admin Next.js siap deploy ke Vercel."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const siteName = getSiteName(settings.webName);
+  const logoUrl = resolveImageUrl(settings.logoThumbPath, settings.logoPath);
+  const hasLogo = logoUrl !== "/assets/img/placeholder.svg";
+
+  return {
+    title: siteName || APP_NAME,
+    description: "Katalog sparepart premium dengan panel admin Next.js siap deploy ke Vercel.",
+    icons: hasLogo
+      ? {
+          icon: [absoluteUrl(logoUrl)],
+          shortcut: [absoluteUrl(logoUrl)],
+          apple: [absoluteUrl(logoUrl)]
+        }
+      : undefined,
+    openGraph: {
+      title: siteName || APP_NAME,
+      images: hasLogo ? [{ url: absoluteUrl(logoUrl), alt: `${siteName} logo` }] : undefined
+    },
+    twitter: {
+      card: "summary",
+      images: hasLogo ? [absoluteUrl(logoUrl)] : undefined
+    }
+  };
+}
 
 export const preferredRegion = "icn1";
 
@@ -34,7 +56,7 @@ export default async function RootLayout({
 
   return (
     <html lang="id">
-      <body className="public-area">
+      <body className="public-area theme-light">
         <BodyClassManager />
         <Suspense fallback={null}>
           <QueryToast />

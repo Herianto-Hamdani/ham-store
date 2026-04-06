@@ -46,4 +46,14 @@ describe("date serialization helpers", () => {
       })
     ).toBe("LCD-0204-79");
   });
+
+  it("menggunakan mode light antara jam 06:00 sampai 18:00", () => {
+    expect(utils.getScheduledThemeMode(new Date("2026-04-07T06:00:00+08:00"))).toBe("light");
+    expect(utils.getScheduledThemeMode(new Date("2026-04-07T18:00:00+08:00"))).toBe("light");
+  });
+
+  it("menggunakan mode dark di luar jam light", () => {
+    expect(utils.getScheduledThemeMode(new Date("2026-04-07T05:59:00+08:00"))).toBe("dark");
+    expect(utils.getScheduledThemeMode(new Date("2026-04-07T18:01:00+08:00"))).toBe("dark");
+  });
 });

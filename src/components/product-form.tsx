@@ -7,6 +7,7 @@ import type { Type } from "@prisma/client";
 import type { FormState } from "@/lib/form-state";
 import { initialFormState } from "@/lib/form-state";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TemplateCardBands } from "@/components/template-card-bands";
 import { TemplatePosterContent } from "@/components/template-poster-content";
 
 type ProductFormValues = {
@@ -535,19 +536,12 @@ export function ProductForm({
                   />
                 </div>
               </div>
-              <div className="card-body card-body-template">
-                <div className="chip">{typeName}</div>
-                <p>{previewDetail}</p>
-                <div className="price-table-wrap">
-                  <div className="price-inline-card" aria-label="Preview harga paket">
-                    <span className="price-inline-card-label">
-                      <span>Harga</span>
-                      <span>Paket</span>
-                    </span>
-                    <strong className="price-inline-card-value">{`Rp ${new Intl.NumberFormat("id-ID").format(totalPrice)}`}</strong>
-                  </div>
-                </div>
-              </div>
+              <TemplateCardBands
+                typeName={typeName}
+                detailText={previewDetail}
+                packagePriceText={`Rp ${new Intl.NumberFormat("id-ID").format(totalPrice)}`}
+                priceLabel="Preview harga paket"
+              />
             </div>
           ) : (
             <div

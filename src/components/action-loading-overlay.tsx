@@ -7,6 +7,7 @@ import { LoaderScene, type LoaderSceneIcon } from "@/components/loader-scene";
 type ActionLoadingOverlayProps = {
   label: string;
   modeOverride?: "auto" | "wordmark" | "action";
+  delayMs?: number;
 };
 
 function inferLoadingVisual(label: string): { mode: "wordmark" | "action"; icon: LoaderSceneIcon } {
@@ -53,28 +54,30 @@ function inferLoadingVisual(label: string): { mode: "wordmark" | "action"; icon:
 
 export function ActionLoadingOverlay({
   label,
-  modeOverride = "auto"
+  modeOverride = "auto",
+  delayMs
 }: ActionLoadingOverlayProps) {
+  const inferredVisual =
+    modeOverride === "auto"
+      ? inferLoadingVisual(label)
+      : { mode: modeOverride, icon: "save" as const };
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
       setVisible(true);
-    }, 160);
+    }, delayMs ?? (inferredVisual.mode === "wordmark" ? 120 : 60));
 
     return () => {
       window.clearTimeout(handle);
     };
-  }, []);
+  }, [delayMs, inferredVisual.mode]);
 
   if (!visible) {
     return null;
   }
 
-  const visual =
-    modeOverride === "auto"
-      ? inferLoadingVisual(label)
-      : { mode: modeOverride, icon: "save" as const };
+  const visual = inferredVisual;
 
   if (visual.mode === "wordmark") {
     return (

@@ -10,6 +10,7 @@ type PendingSubmitButtonProps = {
   className?: string;
   disabled?: boolean;
   showOverlay?: boolean;
+  overlayDelayMs?: number;
 };
 
 export function PendingSubmitButton({
@@ -17,7 +18,8 @@ export function PendingSubmitButton({
   pendingLabel = "Memproses...",
   className = "btn btn-primary",
   disabled = false,
-  showOverlay = true
+  showOverlay = true,
+  overlayDelayMs = 40
 }: PendingSubmitButtonProps) {
   const { pending } = useFormStatus();
 
@@ -33,7 +35,9 @@ export function PendingSubmitButton({
         <span>{pending ? pendingLabel : idleLabel}</span>
       </button>
 
-      {pending && showOverlay ? <ActionLoadingOverlay label={pendingLabel} /> : null}
+      {pending && showOverlay ? (
+        <ActionLoadingOverlay label={pendingLabel} delayMs={overlayDelayMs} />
+      ) : null}
     </>
   );
 }

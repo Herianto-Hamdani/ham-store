@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 
+import { TemplateCardBands } from "@/components/template-card-bands";
 import { TemplatePosterContent } from "@/components/template-poster-content";
 import type { CatalogCardItem, CatalogCardTemplateConfig } from "@/lib/catalog-card";
 
@@ -44,19 +45,11 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
               showBackgroundLayer={false}
             />
           </div>
-          <div className="card-body card-body-link card-body-template">
-            <div className="chip">{item.typeName}</div>
-            <p>{item.detailExcerpt}</p>
-            <div className="price-table-wrap">
-              <div className="price-inline-card" aria-label="Harga paket">
-                <span className="price-inline-card-label">
-                  <span>Harga</span>
-                  <span>Paket</span>
-                </span>
-                <strong className="price-inline-card-value">{item.packagePriceText}</strong>
-              </div>
-            </div>
-          </div>
+          <TemplateCardBands
+            typeName={item.typeName}
+            detailText={item.detailExcerpt}
+            packagePriceText={item.packagePriceText}
+          />
         </Link>
       ) : (
         <Link className="thumb-wrap thumb-wrap-direct product-card-media" href={item.href}>
