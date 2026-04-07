@@ -1,0 +1,15 @@
+ALTER TABLE site_settings
+  ADD COLUMN IF NOT EXISTS template_type_top integer NOT NULL DEFAULT 10,
+  ADD COLUMN IF NOT EXISTS template_type_left integer NOT NULL DEFAULT 6,
+  ADD COLUMN IF NOT EXISTS template_type_width integer NOT NULL DEFAULT 28,
+  ADD COLUMN IF NOT EXISTS template_type_height integer NOT NULL DEFAULT 22,
+  ADD COLUMN IF NOT EXISTS template_type_font integer NOT NULL DEFAULT 12,
+  ADD COLUMN IF NOT EXISTS template_detail_top integer NOT NULL DEFAULT 36,
+  ADD COLUMN IF NOT EXISTS template_detail_left integer NOT NULL DEFAULT 6,
+  ADD COLUMN IF NOT EXISTS template_detail_width integer NOT NULL DEFAULT 88,
+  ADD COLUMN IF NOT EXISTS template_detail_height integer NOT NULL DEFAULT 24,
+  ADD COLUMN IF NOT EXISTS template_detail_font integer NOT NULL DEFAULT 12,
+  ADD COLUMN IF NOT EXISTS template_price_top integer NOT NULL DEFAULT 70,
+  ADD COLUMN IF NOT EXISTS template_price_left integer NOT NULL DEFAULT 6,
+  ADD COLUMN IF NOT EXISTS template_price_width integer NOT NULL DEFAULT 88,
+  ADD COLUMN IF NOT EXISTS template_price_height integer NOT NULL DEFAULT 22;

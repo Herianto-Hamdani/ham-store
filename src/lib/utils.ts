@@ -40,6 +40,20 @@ type TemplateInput = Pick<
   | "templatePhotoLeft"
   | "templatePhotoWidth"
   | "templatePhotoHeight"
+  | "templateTypeTop"
+  | "templateTypeLeft"
+  | "templateTypeWidth"
+  | "templateTypeHeight"
+  | "templateTypeFont"
+  | "templateDetailTop"
+  | "templateDetailLeft"
+  | "templateDetailWidth"
+  | "templateDetailHeight"
+  | "templateDetailFont"
+  | "templatePriceTop"
+  | "templatePriceLeft"
+  | "templatePriceWidth"
+  | "templatePriceHeight"
 >;
 
 export function clamp(value: number, min: number, max: number): number {
@@ -261,16 +275,30 @@ export function templateStyleVars(settings: TemplateInput): CSSProperties {
     ["--tpl-logo-width" as string]: `${clamp(settings.templateLogoWidth, 8, 80)}%`,
     ["--tpl-title-left" as string]: `${clamp(settings.templateTitleLeft, 0, 60)}%`,
     ["--tpl-title-width" as string]: `${clamp(settings.templateTitleWidth, 30, 100)}%`,
-    ["--tpl-title-bottom" as string]: `${clamp(settings.templateTitleBottom, 0, 40)}%`,
+    ["--tpl-title-bottom" as string]: `${clamp(settings.templateTitleBottom, 4, 40)}%`,
     ["--tpl-title-font" as string]: clamp(settings.templateTitleFont, 10, 42),
     ["--tpl-side-top" as string]: `${clamp(settings.templateSideTop, 0, 80)}%`,
     ["--tpl-side-left" as string]: `${clamp(settings.templateSideLeft, 0, 20)}%`,
     ["--tpl-side-right" as string]: `${clamp(settings.templateSideRight, 0, 20)}%`,
     ["--tpl-side-font" as string]: clamp(settings.templateSideFont, 8, 36),
-    ["--tpl-photo-top" as string]: `${clamp(settings.templatePhotoTop, 0, 80)}%`,
+    ["--tpl-photo-top" as string]: `${clamp(settings.templatePhotoTop, 8, 80)}%`,
     ["--tpl-photo-left" as string]: `${clamp(settings.templatePhotoLeft, 0, 60)}%`,
     ["--tpl-photo-width" as string]: `${clamp(settings.templatePhotoWidth, 20, 100)}%`,
-    ["--tpl-photo-height" as string]: `${clamp(settings.templatePhotoHeight, 20, 90)}%`
+    ["--tpl-photo-height" as string]: `${clamp(settings.templatePhotoHeight, 20, 72)}%`,
+    ["--tpl-type-top" as string]: `${clamp(settings.templateTypeTop, 0, 76)}%`,
+    ["--tpl-type-left" as string]: `${clamp(settings.templateTypeLeft, 0, 80)}%`,
+    ["--tpl-type-width" as string]: `${clamp(settings.templateTypeWidth, 18, 70)}%`,
+    ["--tpl-type-height" as string]: `${clamp(settings.templateTypeHeight, 16, 40)}%`,
+    ["--tpl-type-font" as string]: clamp(settings.templateTypeFont, 10, 22),
+    ["--tpl-detail-top" as string]: `${clamp(settings.templateDetailTop, 0, 84)}%`,
+    ["--tpl-detail-left" as string]: `${clamp(settings.templateDetailLeft, 0, 60)}%`,
+    ["--tpl-detail-width" as string]: `${clamp(settings.templateDetailWidth, 28, 94)}%`,
+    ["--tpl-detail-height" as string]: `${clamp(settings.templateDetailHeight, 14, 46)}%`,
+    ["--tpl-detail-font" as string]: clamp(settings.templateDetailFont, 10, 18),
+    ["--tpl-price-top" as string]: `${clamp(settings.templatePriceTop, 0, 84)}%`,
+    ["--tpl-price-left" as string]: `${clamp(settings.templatePriceLeft, 0, 60)}%`,
+    ["--tpl-price-width" as string]: `${clamp(settings.templatePriceWidth, 32, 94)}%`,
+    ["--tpl-price-height" as string]: `${clamp(settings.templatePriceHeight, 16, 34)}%`
   };
 }
 

@@ -271,6 +271,19 @@ export function CatalogSearch({
     normalizedSearch.length < SEARCH_QUERY_MIN_LENGTH &&
     !isExactProductCodeQuery(normalizedSearch);
   const hasActiveFilter = normalizedSearch.length > 0 || Boolean(selectedTypeId);
+  const activeTypeName = selectedTypeId
+    ? types.find((type) => type.id === selectedTypeId)?.name ?? "Type terpilih"
+    : null;
+  const searchStrategyLabel =
+    results.strategy === "trigram"
+      ? "Pencarian typo-tolerant"
+      : results.strategy === "full-text"
+        ? "Pencarian cepat"
+        : results.strategy === "exact"
+          ? "Kode produk akurat"
+          : "Mode jelajah katalog";
+  const pageSummary =
+    results.totalPages > 1 ? `Halaman ${results.page} dari ${results.totalPages}` : "Semua hasil tampil";
   const resultLabel = hasActiveFilter ? "hasil ditemukan" : "produk tersedia";
   const loadingCards = Math.min(
     DEFAULT_SKELETON_COUNT,
@@ -306,6 +319,19 @@ export function CatalogSearch({
       </section>
 
       <section className="filter-panel filter-panel-compact catalog-search-shell">
+        <div className="catalog-search-head">
+          <div className="catalog-search-copy">
+            <span className="section-eyebrow">Pencarian katalog</span>
+            <h2 className="catalog-search-title">Temukan produk dengan lebih cepat</h2>
+            <p>Gunakan nama, merek, model, type, atau kode produk untuk menemukan harga paket yang sesuai.</p>
+          </div>
+          <div className="catalog-search-status">
+            <span className="catalog-search-status-pill">{searchStrategyLabel}</span>
+            <span className="catalog-search-status-pill">
+              {activeTypeName ? `Type: ${activeTypeName}` : "Semua type"}
+            </span>
+          </div>
+        </div>
         <form
           method="get"
           action="/"
@@ -366,24 +392,44 @@ export function CatalogSearch({
           </div>
         </form>
         <div className="catalog-search-meta" aria-live="polite">
-          {searchTooShort ? (
-            <p>Ketik minimal 2 karakter untuk pencarian otomatis, atau tekan Terapkan.</p>
-          ) : errorMessage ? (
-            <p className="catalog-search-error">{errorMessage}</p>
-          ) : isLoading ? (
-            <p>Mencari hasil yang paling relevan...</p>
-          ) : (
-            <p>
-              {results.total.toLocaleString("id-ID")} {resultLabel}
-            </p>
-          )}
+          <p className={errorMessage ? "catalog-search-error" : undefined}>
+            {searchTooShort
+              ? "Ketik minimal 2 karakter untuk pencarian otomatis, atau tekan Terapkan."
+              : errorMessage
+                ? errorMessage
+                : isLoading
+                  ? "Mencari hasil yang paling relevan..."
+                  : `${results.total.toLocaleString("id-ID")} ${resultLabel}`}
+          </p>
+          <div className="catalog-search-meta-tags" aria-hidden={searchTooShort && !errorMessage}>
+            <span className="catalog-search-meta-pill">
+              {normalizedSearch ? `Kata kunci: ${normalizedSearch}` : "Tanpa kata kunci"}
+            </span>
+            <span className="catalog-search-meta-pill">{pageSummary}</span>
+          </div>
         </div>
       </section>
 
       <section id="katalogProduk" className="catalog-results-section">
-        <div className="section-title">
-          <h2>Daftar Harga Produk {siteName}</h2>
-          <p aria-live="polite">{results.total} item ditemukan</p>
+        <div className="catalog-results-head">
+          <div className="catalog-results-copy">
+            <span className="section-eyebrow">Etalase publik</span>
+            <h2>Daftar Harga Produk {siteName}</h2>
+            <p>
+              Harga paket ditata lebih ringkas supaya pelanggan bisa membandingkan produk dengan cepat
+              di desktop maupun smartphone.
+            </p>
+          </div>
+          <div className="catalog-results-stats" aria-live="polite">
+            <div className="catalog-results-stat">
+              <span>Total Produk</span>
+              <strong>{results.total.toLocaleString("id-ID")}</strong>
+            </div>
+            <div className="catalog-results-stat">
+              <span>Filter Aktif</span>
+              <strong>{activeTypeName ?? (normalizedSearch ? "Pencarian" : "Semua Produk")}</strong>
+            </div>
+          </div>
         </div>
 
         {isLoading ? (

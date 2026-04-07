@@ -73,7 +73,21 @@ export default async function AdminTemplatePage({
           templatePhotoTop: settings.templatePhotoTop,
           templatePhotoLeft: settings.templatePhotoLeft,
           templatePhotoWidth: settings.templatePhotoWidth,
-          templatePhotoHeight: settings.templatePhotoHeight
+          templatePhotoHeight: settings.templatePhotoHeight,
+          templateTypeTop: settings.templateTypeTop,
+          templateTypeLeft: settings.templateTypeLeft,
+          templateTypeWidth: settings.templateTypeWidth,
+          templateTypeHeight: settings.templateTypeHeight,
+          templateTypeFont: settings.templateTypeFont,
+          templateDetailTop: settings.templateDetailTop,
+          templateDetailLeft: settings.templateDetailLeft,
+          templateDetailWidth: settings.templateDetailWidth,
+          templateDetailHeight: settings.templateDetailHeight,
+          templateDetailFont: settings.templateDetailFont,
+          templatePriceTop: settings.templatePriceTop,
+          templatePriceLeft: settings.templatePriceLeft,
+          templatePriceWidth: settings.templatePriceWidth,
+          templatePriceHeight: settings.templatePriceHeight
         }}
         maxUploadMb={maxUploadMb}
       />

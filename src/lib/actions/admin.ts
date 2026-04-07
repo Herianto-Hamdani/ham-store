@@ -657,7 +657,21 @@ export async function updateTemplateSettingsAction(
           templatePhotoTop: parseRange(formData.get("template_photo_top"), 0, 80, current.templatePhotoTop, "Posisi atas area foto"),
           templatePhotoLeft: parseRange(formData.get("template_photo_left"), 0, 60, current.templatePhotoLeft, "Posisi kiri area foto"),
           templatePhotoWidth: parseRange(formData.get("template_photo_width"), 20, 100, current.templatePhotoWidth, "Lebar area foto"),
-          templatePhotoHeight: parseRange(formData.get("template_photo_height"), 20, 90, current.templatePhotoHeight, "Tinggi area foto")
+          templatePhotoHeight: parseRange(formData.get("template_photo_height"), 20, 90, current.templatePhotoHeight, "Tinggi area foto"),
+          templateTypeTop: parseRange(formData.get("template_type_top"), 0, 80, current.templateTypeTop, "Posisi atas type"),
+          templateTypeLeft: parseRange(formData.get("template_type_left"), 0, 80, current.templateTypeLeft, "Posisi kiri type"),
+          templateTypeWidth: parseRange(formData.get("template_type_width"), 18, 70, current.templateTypeWidth, "Lebar type"),
+          templateTypeHeight: parseRange(formData.get("template_type_height"), 16, 40, current.templateTypeHeight, "Tinggi type"),
+          templateTypeFont: parseRange(formData.get("template_type_font"), 10, 22, current.templateTypeFont, "Ukuran huruf type"),
+          templateDetailTop: parseRange(formData.get("template_detail_top"), 0, 84, current.templateDetailTop, "Posisi atas deskripsi"),
+          templateDetailLeft: parseRange(formData.get("template_detail_left"), 0, 60, current.templateDetailLeft, "Posisi kiri deskripsi"),
+          templateDetailWidth: parseRange(formData.get("template_detail_width"), 28, 94, current.templateDetailWidth, "Lebar deskripsi"),
+          templateDetailHeight: parseRange(formData.get("template_detail_height"), 14, 46, current.templateDetailHeight, "Tinggi deskripsi"),
+          templateDetailFont: parseRange(formData.get("template_detail_font"), 10, 18, current.templateDetailFont, "Ukuran huruf deskripsi"),
+          templatePriceTop: parseRange(formData.get("template_price_top"), 0, 84, current.templatePriceTop, "Posisi atas harga paket"),
+          templatePriceLeft: parseRange(formData.get("template_price_left"), 0, 60, current.templatePriceLeft, "Posisi kiri harga paket"),
+          templatePriceWidth: parseRange(formData.get("template_price_width"), 32, 94, current.templatePriceWidth, "Lebar harga paket"),
+          templatePriceHeight: parseRange(formData.get("template_price_height"), 16, 34, current.templatePriceHeight, "Tinggi harga paket")
         },
         create: {
           id: 1,
@@ -687,7 +701,21 @@ export async function updateTemplateSettingsAction(
           templatePhotoTop: parseRange(formData.get("template_photo_top"), 0, 80, current.templatePhotoTop, "Posisi atas area foto"),
           templatePhotoLeft: parseRange(formData.get("template_photo_left"), 0, 60, current.templatePhotoLeft, "Posisi kiri area foto"),
           templatePhotoWidth: parseRange(formData.get("template_photo_width"), 20, 100, current.templatePhotoWidth, "Lebar area foto"),
-          templatePhotoHeight: parseRange(formData.get("template_photo_height"), 20, 90, current.templatePhotoHeight, "Tinggi area foto")
+          templatePhotoHeight: parseRange(formData.get("template_photo_height"), 20, 90, current.templatePhotoHeight, "Tinggi area foto"),
+          templateTypeTop: parseRange(formData.get("template_type_top"), 0, 80, current.templateTypeTop, "Posisi atas type"),
+          templateTypeLeft: parseRange(formData.get("template_type_left"), 0, 80, current.templateTypeLeft, "Posisi kiri type"),
+          templateTypeWidth: parseRange(formData.get("template_type_width"), 18, 70, current.templateTypeWidth, "Lebar type"),
+          templateTypeHeight: parseRange(formData.get("template_type_height"), 16, 40, current.templateTypeHeight, "Tinggi type"),
+          templateTypeFont: parseRange(formData.get("template_type_font"), 10, 22, current.templateTypeFont, "Ukuran huruf type"),
+          templateDetailTop: parseRange(formData.get("template_detail_top"), 0, 84, current.templateDetailTop, "Posisi atas deskripsi"),
+          templateDetailLeft: parseRange(formData.get("template_detail_left"), 0, 60, current.templateDetailLeft, "Posisi kiri deskripsi"),
+          templateDetailWidth: parseRange(formData.get("template_detail_width"), 28, 94, current.templateDetailWidth, "Lebar deskripsi"),
+          templateDetailHeight: parseRange(formData.get("template_detail_height"), 14, 46, current.templateDetailHeight, "Tinggi deskripsi"),
+          templateDetailFont: parseRange(formData.get("template_detail_font"), 10, 18, current.templateDetailFont, "Ukuran huruf deskripsi"),
+          templatePriceTop: parseRange(formData.get("template_price_top"), 0, 84, current.templatePriceTop, "Posisi atas harga paket"),
+          templatePriceLeft: parseRange(formData.get("template_price_left"), 0, 60, current.templatePriceLeft, "Posisi kiri harga paket"),
+          templatePriceWidth: parseRange(formData.get("template_price_width"), 32, 94, current.templatePriceWidth, "Lebar harga paket"),
+          templatePriceHeight: parseRange(formData.get("template_price_height"), 16, 34, current.templatePriceHeight, "Tinggi harga paket")
         }
       });
     } catch (error) {

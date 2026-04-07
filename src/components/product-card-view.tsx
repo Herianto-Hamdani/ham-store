@@ -69,7 +69,7 @@ export function ProductCardView({ item, template }: ProductCardViewProps) {
       {!isTemplateMode ? (
         <Link className="card-body card-body-link" href={item.href}>
           <div className="chip">{item.typeName}</div>
-          <p>{item.detailExcerpt}</p>
+          {item.detailExcerpt ? <p>{item.detailExcerpt}</p> : null}
           <div className="price-table-wrap">
             <div className="price-inline-card" aria-label="Harga paket">
               <span className="price-inline-card-label">

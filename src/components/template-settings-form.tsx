@@ -30,6 +30,20 @@ type TemplateValues = {
   templatePhotoLeft: number;
   templatePhotoWidth: number;
   templatePhotoHeight: number;
+  templateTypeTop: number;
+  templateTypeLeft: number;
+  templateTypeWidth: number;
+  templateTypeHeight: number;
+  templateTypeFont: number;
+  templateDetailTop: number;
+  templateDetailLeft: number;
+  templateDetailWidth: number;
+  templateDetailHeight: number;
+  templateDetailFont: number;
+  templatePriceTop: number;
+  templatePriceLeft: number;
+  templatePriceWidth: number;
+  templatePriceHeight: number;
 };
 
 type TemplateSettingsFormProps = {
@@ -44,10 +58,14 @@ type DesignerNode =
   | "title"
   | "photo"
   | "sideLeft"
-  | "sideRight";
+  | "sideRight"
+  | "type"
+  | "detail"
+  | "price";
 
 type InteractionState = {
   node: DesignerNode;
+  area: "stage" | "meta";
   mode: "drag" | "resize";
   pointerId: number;
   startX: number;
@@ -61,10 +79,21 @@ const NODE_LABELS: Record<DesignerNode, string> = {
   title: "Judul",
   photo: "Foto Produk",
   sideLeft: "Label Model",
-  sideRight: "Label Brand"
+  sideRight: "Label Brand",
+  type: "Type",
+  detail: "Deskripsi",
+  price: "Harga Paket"
 };
 
-const RESIZABLE_NODES = new Set<DesignerNode>(["background", "logo", "title", "photo"]);
+const RESIZABLE_NODES = new Set<DesignerNode>([
+  "background",
+  "logo",
+  "title",
+  "photo",
+  "type",
+  "detail",
+  "price"
+]);
 
 const HIDDEN_FIELD_MAP: Array<[name: string, key: keyof TemplateValues]> = [
   ["template_bg_pos_x", "templateBgPosX"],
@@ -84,7 +113,21 @@ const HIDDEN_FIELD_MAP: Array<[name: string, key: keyof TemplateValues]> = [
   ["template_photo_top", "templatePhotoTop"],
   ["template_photo_left", "templatePhotoLeft"],
   ["template_photo_width", "templatePhotoWidth"],
-  ["template_photo_height", "templatePhotoHeight"]
+  ["template_photo_height", "templatePhotoHeight"],
+  ["template_type_top", "templateTypeTop"],
+  ["template_type_left", "templateTypeLeft"],
+  ["template_type_width", "templateTypeWidth"],
+  ["template_type_height", "templateTypeHeight"],
+  ["template_type_font", "templateTypeFont"],
+  ["template_detail_top", "templateDetailTop"],
+  ["template_detail_left", "templateDetailLeft"],
+  ["template_detail_width", "templateDetailWidth"],
+  ["template_detail_height", "templateDetailHeight"],
+  ["template_detail_font", "templateDetailFont"],
+  ["template_price_top", "templatePriceTop"],
+  ["template_price_left", "templatePriceLeft"],
+  ["template_price_width", "templatePriceWidth"],
+  ["template_price_height", "templatePriceHeight"]
 ];
 
 function clamp(value: number, min: number, max: number) {
@@ -94,9 +137,15 @@ function clamp(value: number, min: number, max: number) {
 function constrainTemplateValues(values: TemplateValues): TemplateValues {
   const templateLogoWidth = clamp(values.templateLogoWidth, 8, 42);
   const templatePhotoWidth = clamp(values.templatePhotoWidth, 26, 82);
-  const templatePhotoHeight = clamp(values.templatePhotoHeight, 26, 74);
+  const templatePhotoHeight = clamp(values.templatePhotoHeight, 26, 68);
   const templateTitleWidth = clamp(values.templateTitleWidth, 42, 86);
   const templateSideFont = clamp(values.templateSideFont, 8, 24);
+  const templateTypeWidth = clamp(values.templateTypeWidth, 18, 70);
+  const templateTypeHeight = clamp(values.templateTypeHeight, 16, 40);
+  const templateDetailWidth = clamp(values.templateDetailWidth, 28, 94);
+  const templateDetailHeight = clamp(values.templateDetailHeight, 14, 46);
+  const templatePriceWidth = clamp(values.templatePriceWidth, 32, 94);
+  const templatePriceHeight = clamp(values.templatePriceHeight, 16, 34);
 
   return {
     ...values,
@@ -112,16 +161,30 @@ function constrainTemplateValues(values: TemplateValues): TemplateValues {
     templateLogoRight: clamp(values.templateLogoRight, 0, Math.max(0, 100 - templateLogoWidth)),
     templateTitleWidth,
     templateTitleLeft: clamp(values.templateTitleLeft, 4, Math.max(4, 100 - templateTitleWidth - 4)),
-    templateTitleBottom: clamp(values.templateTitleBottom, 6, 26),
+    templateTitleBottom: clamp(values.templateTitleBottom, 8, 28),
     templateTitleFont: clamp(values.templateTitleFont, 10, 30),
     templateSideTop: clamp(values.templateSideTop, 12, 52),
     templateSideLeft: clamp(values.templateSideLeft, 2, 16),
     templateSideRight: clamp(values.templateSideRight, 2, 16),
     templateSideFont,
-    templatePhotoTop: clamp(values.templatePhotoTop, 8, Math.max(8, 100 - templatePhotoHeight - 16)),
+    templatePhotoTop: clamp(values.templatePhotoTop, 8, Math.max(8, 100 - templatePhotoHeight - 20)),
     templatePhotoLeft: clamp(values.templatePhotoLeft, 8, Math.max(8, 100 - templatePhotoWidth - 8)),
     templatePhotoWidth,
-    templatePhotoHeight
+    templatePhotoHeight,
+    templateTypeTop: clamp(values.templateTypeTop, 0, Math.max(0, 100 - templateTypeHeight)),
+    templateTypeLeft: clamp(values.templateTypeLeft, 0, Math.max(0, 100 - templateTypeWidth)),
+    templateTypeWidth,
+    templateTypeHeight,
+    templateTypeFont: clamp(values.templateTypeFont, 10, 22),
+    templateDetailTop: clamp(values.templateDetailTop, 0, Math.max(0, 100 - templateDetailHeight)),
+    templateDetailLeft: clamp(values.templateDetailLeft, 0, Math.max(0, 100 - templateDetailWidth)),
+    templateDetailWidth,
+    templateDetailHeight,
+    templateDetailFont: clamp(values.templateDetailFont, 10, 18),
+    templatePriceTop: clamp(values.templatePriceTop, 0, Math.max(0, 100 - templatePriceHeight)),
+    templatePriceLeft: clamp(values.templatePriceLeft, 0, Math.max(0, 100 - templatePriceWidth)),
+    templatePriceWidth,
+    templatePriceHeight
   };
 }
 
@@ -132,7 +195,8 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
   const [activeNode, setActiveNode] = useState<DesignerNode>("photo");
   const [dragging, setDragging] = useState(false);
   const objectUrls = useRef<string[]>([]);
-  const frameRef = useRef<HTMLDivElement | null>(null);
+  const stageFrameRef = useRef<HTMLDivElement | null>(null);
+  const metaFrameRef = useRef<HTMLDivElement | null>(null);
   const interactionRef = useRef<InteractionState | null>(null);
   const maxUploadBytes = maxUploadMb * 1024 * 1024;
   const visibleError = clientError ?? state.error;
@@ -181,6 +245,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
 
   function startInteraction(
     node: DesignerNode,
+    area: "stage" | "meta",
     mode: "drag" | "resize",
     event: React.PointerEvent<HTMLElement>
   ) {
@@ -191,6 +256,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
     setDragging(true);
     interactionRef.current = {
       node,
+      area,
       mode,
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -198,12 +264,13 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
       snapshot: formValues
     };
 
-    frameRef.current?.setPointerCapture?.(event.pointerId);
+    const interactionFrame = area === "stage" ? stageFrameRef.current : metaFrameRef.current;
+    interactionFrame?.setPointerCapture?.(event.pointerId);
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
     const interaction = interactionRef.current;
-    const frame = frameRef.current;
+    const frame = interaction?.area === "meta" ? metaFrameRef.current : stageFrameRef.current;
     if (!interaction || !frame) {
       return;
     }
@@ -242,6 +309,42 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
             next.templateSideTop = clamp(snapshot.templateSideTop + deltaY, 0, 80);
             next.templateSideRight = clamp(snapshot.templateSideRight - deltaX, 0, 20);
             break;
+          case "type":
+            next.templateTypeTop = clamp(
+              snapshot.templateTypeTop + deltaY,
+              0,
+              100 - snapshot.templateTypeHeight
+            );
+            next.templateTypeLeft = clamp(
+              snapshot.templateTypeLeft + deltaX,
+              0,
+              100 - snapshot.templateTypeWidth
+            );
+            break;
+          case "detail":
+            next.templateDetailTop = clamp(
+              snapshot.templateDetailTop + deltaY,
+              0,
+              100 - snapshot.templateDetailHeight
+            );
+            next.templateDetailLeft = clamp(
+              snapshot.templateDetailLeft + deltaX,
+              0,
+              100 - snapshot.templateDetailWidth
+            );
+            break;
+          case "price":
+            next.templatePriceTop = clamp(
+              snapshot.templatePriceTop + deltaY,
+              0,
+              100 - snapshot.templatePriceHeight
+            );
+            next.templatePriceLeft = clamp(
+              snapshot.templatePriceLeft + deltaX,
+              0,
+              100 - snapshot.templatePriceWidth
+            );
+            break;
         }
       } else {
         switch (interaction.node) {
@@ -262,6 +365,18 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
             next.templatePhotoWidth = clamp(snapshot.templatePhotoWidth + deltaX, 20, 100);
             next.templatePhotoHeight = clamp(snapshot.templatePhotoHeight + deltaY, 20, 90);
             break;
+          case "type":
+            next.templateTypeWidth = clamp(snapshot.templateTypeWidth + deltaX, 18, 70);
+            next.templateTypeHeight = clamp(snapshot.templateTypeHeight + deltaY, 16, 40);
+            break;
+          case "detail":
+            next.templateDetailWidth = clamp(snapshot.templateDetailWidth + deltaX, 28, 94);
+            next.templateDetailHeight = clamp(snapshot.templateDetailHeight + deltaY, 14, 46);
+            break;
+          case "price":
+            next.templatePriceWidth = clamp(snapshot.templatePriceWidth + deltaX, 32, 94);
+            next.templatePriceHeight = clamp(snapshot.templatePriceHeight + deltaY, 16, 34);
+            break;
         }
       }
 
@@ -270,12 +385,14 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
   }
 
   function finishInteraction(event?: React.PointerEvent<HTMLDivElement>) {
-    if (!interactionRef.current) {
+    const interaction = interactionRef.current;
+    if (!interaction) {
       return;
     }
 
     if (event) {
-      frameRef.current?.releasePointerCapture?.(event.pointerId);
+      const interactionFrame = interaction.area === "stage" ? stageFrameRef.current : metaFrameRef.current;
+      interactionFrame?.releasePointerCapture?.(event.pointerId);
     }
 
     interactionRef.current = null;
@@ -311,6 +428,18 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           next.templateSideRight = clamp(current.templateSideRight - deltaX, 0, 20);
           next.templateSideTop = clamp(current.templateSideTop + deltaY, 0, 80);
           break;
+        case "type":
+          next.templateTypeLeft = clamp(current.templateTypeLeft + deltaX, 0, 100 - current.templateTypeWidth);
+          next.templateTypeTop = clamp(current.templateTypeTop + deltaY, 0, 100 - current.templateTypeHeight);
+          break;
+        case "detail":
+          next.templateDetailLeft = clamp(current.templateDetailLeft + deltaX, 0, 100 - current.templateDetailWidth);
+          next.templateDetailTop = clamp(current.templateDetailTop + deltaY, 0, 100 - current.templateDetailHeight);
+          break;
+        case "price":
+          next.templatePriceLeft = clamp(current.templatePriceLeft + deltaX, 0, 100 - current.templatePriceWidth);
+          next.templatePriceTop = clamp(current.templatePriceTop + deltaY, 0, 100 - current.templatePriceHeight);
+          break;
       }
 
       return constrainTemplateValues(next);
@@ -335,6 +464,18 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           next.templatePhotoWidth = clamp(current.templatePhotoWidth + delta, 20, 100);
           next.templatePhotoHeight = clamp(current.templatePhotoHeight + delta, 20, 90);
           break;
+        case "type":
+          next.templateTypeWidth = clamp(current.templateTypeWidth + delta, 18, 70);
+          next.templateTypeHeight = clamp(current.templateTypeHeight + delta, 16, 40);
+          break;
+        case "detail":
+          next.templateDetailWidth = clamp(current.templateDetailWidth + delta, 28, 94);
+          next.templateDetailHeight = clamp(current.templateDetailHeight + delta, 14, 46);
+          break;
+        case "price":
+          next.templatePriceWidth = clamp(current.templatePriceWidth + delta, 32, 94);
+          next.templatePriceHeight = clamp(current.templatePriceHeight + delta, 16, 34);
+          break;
       }
 
       return constrainTemplateValues(next);
@@ -349,9 +490,13 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
         next.templateTitleFont = clamp(current.templateTitleFont + delta, 10, 42);
       } else if (activeNode === "sideLeft" || activeNode === "sideRight") {
         next.templateSideFont = clamp(current.templateSideFont + delta, 8, 36);
+      } else if (activeNode === "type") {
+        next.templateTypeFont = clamp(current.templateTypeFont + delta, 10, 22);
+      } else if (activeNode === "detail") {
+        next.templateDetailFont = clamp(current.templateDetailFont + delta, 10, 18);
       }
 
-      return next;
+      return constrainTemplateValues(next);
     });
   }
 
@@ -375,7 +520,21 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
         "--tpl-photo-top": `${formValues.templatePhotoTop}%`,
         "--tpl-photo-left": `${formValues.templatePhotoLeft}%`,
         "--tpl-photo-width": `${formValues.templatePhotoWidth}%`,
-        "--tpl-photo-height": `${formValues.templatePhotoHeight}%`
+        "--tpl-photo-height": `${formValues.templatePhotoHeight}%`,
+        "--tpl-type-top": `${formValues.templateTypeTop}%`,
+        "--tpl-type-left": `${formValues.templateTypeLeft}%`,
+        "--tpl-type-width": `${formValues.templateTypeWidth}%`,
+        "--tpl-type-height": `${formValues.templateTypeHeight}%`,
+        "--tpl-type-font": formValues.templateTypeFont,
+        "--tpl-detail-top": `${formValues.templateDetailTop}%`,
+        "--tpl-detail-left": `${formValues.templateDetailLeft}%`,
+        "--tpl-detail-width": `${formValues.templateDetailWidth}%`,
+        "--tpl-detail-height": `${formValues.templateDetailHeight}%`,
+        "--tpl-detail-font": formValues.templateDetailFont,
+        "--tpl-price-top": `${formValues.templatePriceTop}%`,
+        "--tpl-price-left": `${formValues.templatePriceLeft}%`,
+        "--tpl-price-width": `${formValues.templatePriceWidth}%`,
+        "--tpl-price-height": `${formValues.templatePriceHeight}%`
       }) as React.CSSProperties,
     [formValues]
   );
@@ -427,6 +586,24 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           right: `${formValues.templateSideRight}%`,
           width: `${Math.max(8, Math.min(16, formValues.templateSideFont * 1.08))}%`,
           height: `${Math.max(24, Math.min(54, formValues.templateSideFont * 4.1))}%`
+        },
+        type: {
+          top: `${formValues.templateTypeTop}%`,
+          left: `${formValues.templateTypeLeft}%`,
+          width: `${formValues.templateTypeWidth}%`,
+          height: `${formValues.templateTypeHeight}%`
+        },
+        detail: {
+          top: `${formValues.templateDetailTop}%`,
+          left: `${formValues.templateDetailLeft}%`,
+          width: `${formValues.templateDetailWidth}%`,
+          height: `${formValues.templateDetailHeight}%`
+        },
+        price: {
+          top: `${formValues.templatePriceTop}%`,
+          left: `${formValues.templatePriceLeft}%`,
+          width: `${formValues.templatePriceWidth}%`,
+          height: `${formValues.templatePriceHeight}%`
         }
       }) satisfies Record<DesignerNode, React.CSSProperties>,
     [formValues]
@@ -441,8 +618,8 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           <span className="section-eyebrow">Canvas editor</span>
           <h2>Atur Template Langsung di Canvas</h2>
           <p>
-            Drag elemen di canvas, kecilkan dengan handle sudut, lalu simpan. Semua produk mode
-            template di halaman publik akan langsung mengikuti pengaturan ini setelah disimpan.
+            Drag semua elemen di canvas, termasuk type, deskripsi, dan harga paket. Semua produk
+            mode template di halaman publik akan langsung mengikuti pengaturan ini setelah disimpan.
           </p>
         </div>
 
@@ -507,7 +684,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
         <div className="designer-inspector">
           <div>
             <strong>Elemen Aktif: {NODE_LABELS[activeNode]}</strong>
-            <p>Gunakan drag di canvas atau tombol cepat ini untuk penyesuaian presisi.</p>
+            <p>Gunakan drag di canvas atau tombol cepat ini untuk penyesuaian presisi seluruh card.</p>
           </div>
 
           <div className="designer-quick-actions">
@@ -533,7 +710,11 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
                 </button>
               </>
             ) : null}
-            {activeNode === "title" || activeNode === "sideLeft" || activeNode === "sideRight" ? (
+            {activeNode === "title" ||
+            activeNode === "sideLeft" ||
+            activeNode === "sideRight" ||
+            activeNode === "type" ||
+            activeNode === "detail" ? (
               <>
                 <button type="button" className="btn btn-ghost btn-small" onClick={() => adjustFont(-1)}>
                   Font -
@@ -573,16 +754,19 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
 
         <div className="designer-frame-shell">
           <div
-            ref={frameRef}
             id="templateDesignerFrame"
             className={`product-card product-card-template designer-preview-card${dragging ? " designer-dragging" : ""}`}
             style={previewCardStyle}
-            onPointerMove={handlePointerMove}
-            onPointerUp={finishInteraction}
-            onPointerCancel={finishInteraction}
           >
             <div className="product-card-template-shell">
-              <div className="poster-frame product-card-media product-card-template-stage" style={previewStyle}>
+              <div
+                ref={stageFrameRef}
+                className="poster-frame product-card-media product-card-template-stage"
+                style={previewStyle}
+                onPointerMove={handlePointerMove}
+                onPointerUp={finishInteraction}
+                onPointerCancel={finishInteraction}
+              >
                 <TemplatePosterContent
                   backgroundUrl={formValues.backgroundUrl}
                   logoUrl={formValues.logoUrl}
@@ -599,12 +783,14 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
                   }
                 />
 
-                {(Object.keys(NODE_LABELS) as DesignerNode[]).map((node) => (
+                {(
+                  ["background", "logo", "title", "photo", "sideLeft", "sideRight"] as DesignerNode[]
+                ).map((node) => (
                   <div
                     key={node}
                     className={`designer-node designer-node-${node}${activeNode === node ? " is-active" : ""}`}
                     style={designerNodeStyles[node]}
-                    onPointerDown={(event) => startInteraction(node, "drag", event)}
+                    onPointerDown={(event) => startInteraction(node, "stage", "drag", event)}
                   >
                     <span className="designer-node-badge">{NODE_LABELS[node]}</span>
                     {RESIZABLE_NODES.has(node) ? (
@@ -612,7 +798,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
                         type="button"
                         className="designer-resize-handle"
                         aria-label={`Resize ${NODE_LABELS[node]}`}
-                        onPointerDown={(event) => startInteraction(node, "resize", event)}
+                        onPointerDown={(event) => startInteraction(node, "stage", "resize", event)}
                       />
                     ) : null}
                   </div>
@@ -620,11 +806,36 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
               </div>
 
               <TemplateCardBands
+                containerRef={metaFrameRef}
+                className="designer-meta-frame"
                 typeName="Type"
                 detailText="Perubahan di canvas ini akan menjadi template global untuk semua kartu mode template."
+                alwaysShowDetail
                 packagePriceText="Rp 250.000"
                 priceLabel="Preview harga paket"
-              />
+                onPointerMove={handlePointerMove}
+                onPointerUp={finishInteraction}
+                onPointerCancel={finishInteraction}
+              >
+                {(["type", "detail", "price"] as DesignerNode[]).map((node) => (
+                  <div
+                    key={node}
+                    className={`designer-node designer-node-${node}${activeNode === node ? " is-active" : ""}`}
+                    style={designerNodeStyles[node]}
+                    onPointerDown={(event) => startInteraction(node, "meta", "drag", event)}
+                  >
+                    <span className="designer-node-badge">{NODE_LABELS[node]}</span>
+                    {RESIZABLE_NODES.has(node) ? (
+                      <button
+                        type="button"
+                        className="designer-resize-handle"
+                        aria-label={`Resize ${NODE_LABELS[node]}`}
+                        onPointerDown={(event) => startInteraction(node, "meta", "resize", event)}
+                      />
+                    ) : null}
+                  </div>
+                ))}
+              </TemplateCardBands>
             </div>
           </div>
         </div>

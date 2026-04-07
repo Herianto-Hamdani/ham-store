@@ -34,7 +34,21 @@ export const defaultSiteSettingValues = {
   templatePhotoTop: 18,
   templatePhotoLeft: 15,
   templatePhotoWidth: 70,
-  templatePhotoHeight: 58
+  templatePhotoHeight: 58,
+  templateTypeTop: 10,
+  templateTypeLeft: 6,
+  templateTypeWidth: 28,
+  templateTypeHeight: 22,
+  templateTypeFont: 12,
+  templateDetailTop: 36,
+  templateDetailLeft: 6,
+  templateDetailWidth: 88,
+  templateDetailHeight: 24,
+  templateDetailFont: 12,
+  templatePriceTop: 70,
+  templatePriceLeft: 6,
+  templatePriceWidth: 88,
+  templatePriceHeight: 22
 } satisfies Omit<SiteSetting, "createdAt" | "updatedAt">;
 
 async function ensureSiteSettingsRecord(): Promise<SiteSetting> {

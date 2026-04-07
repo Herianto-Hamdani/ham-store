@@ -538,7 +538,7 @@ export function ProductForm({
               </div>
               <TemplateCardBands
                 typeName={typeName}
-                detailText={previewDetail}
+                detailText={formValues.detail.trim()}
                 packagePriceText={`Rp ${new Intl.NumberFormat("id-ID").format(totalPrice)}`}
                 priceLabel="Preview harga paket"
               />

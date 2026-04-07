@@ -63,16 +63,18 @@ export function TemplatePosterContent({
       <div className="poster-side poster-side-right">{brandLabel}</div>
       <div className="poster-photo-wrap">
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={imageAlt}
-            className="poster-photo"
-            width={1200}
-            height={900}
-            loading={imageLoading}
-            decoding={imageDecoding}
-            style={imageStyle}
-          />
+          <div className="poster-photo-stage">
+            <img
+              src={imageUrl}
+              alt={imageAlt}
+              className="poster-photo"
+              width={1200}
+              height={900}
+              loading={imageLoading}
+              decoding={imageDecoding}
+              style={imageStyle}
+            />
+          </div>
         ) : (
           placeholder
         )}
