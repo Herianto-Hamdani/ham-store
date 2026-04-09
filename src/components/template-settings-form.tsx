@@ -136,8 +136,8 @@ function clamp(value: number, min: number, max: number) {
 
 function constrainTemplateValues(values: TemplateValues): TemplateValues {
   const templateLogoWidth = clamp(values.templateLogoWidth, 8, 42);
-  const templatePhotoWidth = clamp(values.templatePhotoWidth, 26, 82);
-  const templatePhotoHeight = clamp(values.templatePhotoHeight, 26, 68);
+  const templatePhotoWidth = clamp(values.templatePhotoWidth, 26, 88);
+  const templatePhotoHeight = clamp(values.templatePhotoHeight, 30, 82);
   const templateTitleWidth = clamp(values.templateTitleWidth, 42, 86);
   const templateSideFont = clamp(values.templateSideFont, 8, 24);
   const templateTypeWidth = clamp(values.templateTypeWidth, 18, 70);
@@ -161,13 +161,13 @@ function constrainTemplateValues(values: TemplateValues): TemplateValues {
     templateLogoRight: clamp(values.templateLogoRight, 0, Math.max(0, 100 - templateLogoWidth)),
     templateTitleWidth,
     templateTitleLeft: clamp(values.templateTitleLeft, 4, Math.max(4, 100 - templateTitleWidth - 4)),
-    templateTitleBottom: clamp(values.templateTitleBottom, 8, 28),
+    templateTitleBottom: clamp(values.templateTitleBottom, 4, 28),
     templateTitleFont: clamp(values.templateTitleFont, 10, 30),
     templateSideTop: clamp(values.templateSideTop, 12, 52),
     templateSideLeft: clamp(values.templateSideLeft, 2, 16),
     templateSideRight: clamp(values.templateSideRight, 2, 16),
     templateSideFont,
-    templatePhotoTop: clamp(values.templatePhotoTop, 8, Math.max(8, 100 - templatePhotoHeight - 20)),
+    templatePhotoTop: clamp(values.templatePhotoTop, 4, Math.max(4, 100 - templatePhotoHeight - 16)),
     templatePhotoLeft: clamp(values.templatePhotoLeft, 8, Math.max(8, 100 - templatePhotoWidth - 8)),
     templatePhotoWidth,
     templatePhotoHeight,
@@ -363,7 +363,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
             break;
           case "photo":
             next.templatePhotoWidth = clamp(snapshot.templatePhotoWidth + deltaX, 20, 100);
-            next.templatePhotoHeight = clamp(snapshot.templatePhotoHeight + deltaY, 20, 90);
+            next.templatePhotoHeight = clamp(snapshot.templatePhotoHeight + deltaY, 24, 90);
             break;
           case "type":
             next.templateTypeWidth = clamp(snapshot.templateTypeWidth + deltaX, 18, 70);
@@ -462,7 +462,7 @@ export function TemplateSettingsForm({ action, values, maxUploadMb }: TemplateSe
           break;
         case "photo":
           next.templatePhotoWidth = clamp(current.templatePhotoWidth + delta, 20, 100);
-          next.templatePhotoHeight = clamp(current.templatePhotoHeight + delta, 20, 90);
+          next.templatePhotoHeight = clamp(current.templatePhotoHeight + delta, 24, 90);
           break;
         case "type":
           next.templateTypeWidth = clamp(current.templateTypeWidth + delta, 18, 70);
